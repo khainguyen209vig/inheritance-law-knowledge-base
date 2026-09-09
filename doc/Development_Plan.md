@@ -246,6 +246,14 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 
 ## 7. Kế hoạch triển khai
 
+### Trạng thái triển khai hiện tại
+
+- Đã tạo fact contracts dùng chung trong `knowledge-base/templates.clp`.
+- Đã tạo vertical slice đầu tiên cho mô-đun tính hợp pháp của di chúc với R-B01–R-B04.
+- Đã sinh `module-result`, `intermediate-conclusion` và `inference-trace` bằng forward chaining.
+- Đã chạy đạt ba test: hợp lệ, không hợp lệ và thiếu dữ kiện (`UNKNOWN`).
+- Chưa triển khai các trường hợp đặc biệt R-B05–R-B09 và chưa tích hợp Next.js/SQLite.
+
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 
 - Chốt phạm vi câu hỏi mà MVP phải trả lời.
