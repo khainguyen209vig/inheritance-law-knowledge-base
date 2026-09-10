@@ -1,172 +1,135 @@
-; Module 1: basic validity of a will.
-; Initial vertical slice implements R-B01 through R-B04 from Loc_Rulebase.md.
-
-(defrule initialize-will-validity-trace
-  (declare (salience 1000))
-  (analysis-request (case-id ?case-id) (module will-validity))
-  (not (trace-counter (case-id ?case-id)))
-  =>
-  (assert (trace-counter (case-id ?case-id) (next 1))))
+; Domain rules for module 1: basic validity of a will.
+; These rules depend only on domain knowledge. UI/module selection and trace
+; formatting are intentionally handled elsewhere.
 
 (defrule R-B01-valid-intention
-  (declare (salience 100))
-  (analysis-request (case-id ?case-id) (module will-validity))
-  (will-input
+  (declare (salience 500))
+  (asserted-fact
+    (fact-id ?mental-fact-id)
     (case-id ?case-id)
-    (mental-capacity true)
-    (deceived-or-threatened false))
-  (not (intermediate-conclusion
+    (subject ?will-id)
+    (predicate testator-mental-state)
+    (value lucid))
+  (asserted-fact
+    (fact-id ?influence-fact-id)
     (case-id ?case-id)
-    (predicate valid-intention)
-    (value true)))
-  ?counter <- (trace-counter (case-id ?case-id) (next ?sequence))
-  =>
-  (assert (intermediate-conclusion
+    (subject ?will-id)
+    (predicate undue-influence)
+    (value none))
+  (not (derived-fact
     (case-id ?case-id)
+    (subject ?will-id)
     (predicate valid-intention)
     (value true)
     (rule-id R-B01)))
-  (assert (inference-trace
+  =>
+  (assert (derived-fact
     (case-id ?case-id)
-    (sequence ?sequence)
+    (subject ?will-id)
+    (predicate valid-intention)
+    (value true)
     (rule-id R-B01)
-    (supports mental-capacity=true deceived-or-threatened=false)
-    (conclusion "Điều kiện về ý chí hợp lệ")))
-  (modify ?counter (next (+ ?sequence 1))))
+    (supports ?mental-fact-id ?influence-fact-id))))
 
 (defrule R-B02-valid-content-and-form
-  (declare (salience 100))
-  (analysis-request (case-id ?case-id) (module will-validity))
-  (will-input
+  (declare (salience 500))
+  (asserted-fact
+    (fact-id ?content-fact-id)
     (case-id ?case-id)
-    (content-lawful true)
-    (form-lawful true))
-  (not (intermediate-conclusion
+    (subject ?will-id)
+    (predicate prohibited-content)
+    (value not-detected))
+  (asserted-fact
+    (fact-id ?form-fact-id)
     (case-id ?case-id)
-    (predicate valid-content-and-form)
-    (value true)))
-  ?counter <- (trace-counter (case-id ?case-id) (next ?sequence))
-  =>
-  (assert (intermediate-conclusion
+    (subject ?will-id)
+    (predicate formal-defect)
+    (value not-detected))
+  (not (derived-fact
     (case-id ?case-id)
+    (subject ?will-id)
     (predicate valid-content-and-form)
     (value true)
     (rule-id R-B02)))
-  (assert (inference-trace
+  =>
+  (assert (derived-fact
     (case-id ?case-id)
-    (sequence ?sequence)
+    (subject ?will-id)
+    (predicate valid-content-and-form)
+    (value true)
     (rule-id R-B02)
-    (supports content-lawful=true form-lawful=true)
-    (conclusion "Điều kiện về nội dung và hình thức hợp lệ")))
-  (modify ?counter (next (+ ?sequence 1))))
+    (supports ?content-fact-id ?form-fact-id))))
 
 (defrule R-B03-valid-will
-  (declare (salience 90))
-  (analysis-request (case-id ?case-id) (module will-validity))
-  (intermediate-conclusion
+  (declare (salience 500))
+  (derived-fact
     (case-id ?case-id)
+    (subject ?will-id)
     (predicate valid-intention)
     (value true))
-  (intermediate-conclusion
+  (derived-fact
     (case-id ?case-id)
+    (subject ?will-id)
     (predicate valid-content-and-form)
     (value true))
-  (not (module-result
+  (not (derived-fact
     (case-id ?case-id)
-    (module will-validity)
-    (predicate valid-will)))
-  ?counter <- (trace-counter (case-id ?case-id) (next ?sequence))
+    (subject ?will-id)
+    (predicate valid-will)
+    (value true)
+    (rule-id R-B03)))
   =>
-  (assert (module-result
+  (assert (derived-fact
     (case-id ?case-id)
-    (module will-validity)
+    (subject ?will-id)
     (predicate valid-will)
     (value true)
     (rule-id R-B03)
-    (legal-source "Điều 630 Bộ luật Dân sự 2015")
-    (explanation "Có đủ điều kiện cơ bản về ý chí, nội dung và hình thức theo rule-base hiện tại.")))
-  (assert (inference-trace
-    (case-id ?case-id)
-    (sequence ?sequence)
-    (rule-id R-B03)
-    (supports valid-intention=true valid-content-and-form=true)
-    (conclusion "Di chúc hợp pháp")))
-  (modify ?counter (next (+ ?sequence 1))))
+    (supports valid-intention=true valid-content-and-form=true))))
 
+; The OR condition from R-B04 is represented as separate production rules.
 (defrule R-B04-invalid-will-no-mental-capacity
-  (declare (salience 200))
-  (analysis-request (case-id ?case-id) (module will-validity))
-  (will-input (case-id ?case-id) (mental-capacity false))
-  (not (module-result
+  (declare (salience 500))
+  (asserted-fact
+    (fact-id ?mental-fact-id)
     (case-id ?case-id)
-    (module will-validity)
-    (predicate valid-will)))
-  ?counter <- (trace-counter (case-id ?case-id) (next ?sequence))
+    (subject ?will-id)
+    (predicate testator-mental-state)
+    (value not-lucid))
+  (not (derived-fact
+    (case-id ?case-id)
+    (subject ?will-id)
+    (predicate valid-will)
+    (value false)
+    (rule-id R-B04)))
   =>
-  (assert (module-result
+  (assert (derived-fact
     (case-id ?case-id)
-    (module will-validity)
+    (subject ?will-id)
     (predicate valid-will)
     (value false)
     (rule-id R-B04)
-    (legal-source "Điều 630 khoản 1 điểm a Bộ luật Dân sự 2015")
-    (explanation "Người lập di chúc không minh mẫn, sáng suốt.")))
-  (assert (inference-trace
-    (case-id ?case-id)
-    (sequence ?sequence)
-    (rule-id R-B04)
-    (supports mental-capacity=false)
-    (conclusion "Di chúc không hợp pháp")))
-  (modify ?counter (next (+ ?sequence 1))))
+    (supports ?mental-fact-id))))
 
-(defrule R-B04-invalid-will-deceived-or-threatened
-  (declare (salience 200))
-  (analysis-request (case-id ?case-id) (module will-validity))
-  (will-input (case-id ?case-id) (deceived-or-threatened true))
-  (not (module-result
+(defrule R-B04-invalid-will-undue-influence
+  (declare (salience 500))
+  (asserted-fact
+    (fact-id ?influence-fact-id)
     (case-id ?case-id)
-    (module will-validity)
-    (predicate valid-will)))
-  ?counter <- (trace-counter (case-id ?case-id) (next ?sequence))
+    (subject ?will-id)
+    (predicate undue-influence)
+    (value ?influence&deception|threat))
+  (not (derived-fact
+    (case-id ?case-id)
+    (subject ?will-id)
+    (predicate valid-will)
+    (value false)
+    (rule-id R-B04)))
   =>
-  (assert (module-result
+  (assert (derived-fact
     (case-id ?case-id)
-    (module will-validity)
+    (subject ?will-id)
     (predicate valid-will)
     (value false)
     (rule-id R-B04)
-    (legal-source "Điều 630 khoản 1 điểm a Bộ luật Dân sự 2015")
-    (explanation "Người lập di chúc bị lừa dối hoặc đe dọa.")))
-  (assert (inference-trace
-    (case-id ?case-id)
-    (sequence ?sequence)
-    (rule-id R-B04)
-    (supports deceived-or-threatened=true)
-    (conclusion "Di chúc không hợp pháp")))
-  (modify ?counter (next (+ ?sequence 1))))
-
-(defrule will-validity-unknown
-  (declare (salience -1000))
-  (analysis-request (case-id ?case-id) (module will-validity))
-  (not (module-result
-    (case-id ?case-id)
-    (module will-validity)
-    (predicate valid-will)))
-  ?counter <- (trace-counter (case-id ?case-id) (next ?sequence))
-  =>
-  (assert (module-result
-    (case-id ?case-id)
-    (module will-validity)
-    (predicate valid-will)
-    (value unknown)
-    (rule-id SYSTEM-INCOMPLETE)
-    (legal-source "")
-    (explanation "Chưa đủ dữ kiện để kết luận tính hợp pháp của di chúc.")))
-  (assert (inference-trace
-    (case-id ?case-id)
-    (sequence ?sequence)
-    (rule-id SYSTEM-INCOMPLETE)
-    (supports missing-required-facts)
-    (conclusion "Chưa đủ dữ kiện để kết luận")))
-  (modify ?counter (next (+ ?sequence 1))))
-
+    (supports ?influence-fact-id))))

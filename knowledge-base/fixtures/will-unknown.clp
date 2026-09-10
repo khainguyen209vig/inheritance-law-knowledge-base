@@ -1,7 +1,18 @@
-(analysis-request (case-id case-unknown) (module will-validity))
-(will-input
+(analysis-request
   (case-id case-unknown)
-  (mental-capacity true)
-  (deceived-or-threatened unknown)
-  (content-lawful true)
-  (form-lawful unknown))
+  (subject will-unknown-01)
+  (module will-validity))
+
+(asserted-fact
+  (fact-id unknown-mental-state)
+  (case-id case-unknown)
+  (subject will-unknown-01)
+  (predicate testator-mental-state)
+  (value lucid))
+
+(asserted-fact
+  (fact-id unknown-prohibited-content)
+  (case-id case-unknown)
+  (subject will-unknown-01)
+  (predicate prohibited-content)
+  (value not-detected))

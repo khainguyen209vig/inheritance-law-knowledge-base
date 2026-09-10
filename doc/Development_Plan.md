@@ -250,8 +250,10 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 
 - Đã tạo fact contracts dùng chung trong `knowledge-base/templates.clp`.
 - Đã tạo vertical slice đầu tiên cho mô-đun tính hợp pháp của di chúc với R-B01–R-B04.
-- Đã sinh `module-result`, `intermediate-conclusion` và `inference-trace` bằng forward chaining.
-- Đã chạy đạt ba test: hợp lệ, không hợp lệ và thiếu dữ kiện (`UNKNOWN`).
+- Đã tách asserted facts, derived knowledge, legal metadata, completeness/conflict, explanation và result projection.
+- Domain rules không còn phụ thuộc vào `analysis-request`; yêu cầu từ UI chỉ chọn kết quả trình bày.
+- Đã loại bỏ trace counter khỏi luật pháp lý và thay bằng provenance/dependency trace.
+- Đã chạy đạt năm test: hợp lệ, không hợp lệ, thiếu dữ kiện (`UNKNOWN`), mâu thuẫn (`CONFLICT`) và domain inference độc lập với UI.
 - Chưa triển khai các trường hợp đặc biệt R-B05–R-B09 và chưa tích hợp Next.js/SQLite.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức

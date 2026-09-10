@@ -101,6 +101,8 @@ Kết quả mong đợi:
 PASS will-valid
 PASS will-invalid
 PASS will-unknown
+PASS will-conflict
+PASS domain-independent-from-analysis-request
 ```
 
 ## Chạy ví dụ suy luận
@@ -138,6 +140,7 @@ Facts đầu vào
 │   ├── fixtures/                    # Facts mẫu cho từng trường hợp
 │   ├── rules/                       # Production rules CLIPS
 │   ├── tests/                       # Regression tests của knowledge base
+│   ├── rule-metadata.clp            # Căn cứ và mô tả luật
 │   ├── templates.clp                # Fact contracts dùng chung
 │   └── run-fixture.clp              # Điểm chạy ví dụ bằng CLI
 ├── reference/                       # Tài liệu nghiên cứu tham khảo
@@ -146,30 +149,34 @@ Facts đầu vào
 
 ## Mô hình kết quả CLIPS
 
-Mỗi lần suy luận có thể sinh ba loại fact:
+Mỗi lần suy luận sử dụng hoặc có thể sinh các loại fact sau:
 
-- `intermediate-conclusion`: kết luận trung gian được các luật khác sử dụng.
+- `asserted-fact`: dữ kiện nguyên tử được cung cấp cho vụ việc.
+- `derived-fact`: kết luận trung gian hoặc cuối cùng được luật suy ra, kèm provenance.
 - `module-result`: kết quả công khai của một mô-đun phân tích.
 - `inference-trace`: Rule ID, facts hỗ trợ và kết luận của từng bước.
+- `missing-requirement`: dữ kiện bắt buộc còn thiếu.
 
 Ví dụ rút gọn:
 
 ```clips
 (module-result
   (case-id case-valid)
+  (subject will-valid-01)
   (module will-validity)
   (predicate valid-will)
   (value true)
-  (rule-id R-B03)
-  (legal-source "Điều 630 Bộ luật Dân sự 2015"))
+  (derivations R-B03))
 ```
 
-Không có fact chứng minh một mệnh đề không đồng nghĩa với mệnh đề đó sai. Nếu thiếu dữ kiện, mô-đun phải trả về `unknown` thay vì tự suy đoán.
+Căn cứ và mô tả của R-B03 được tra từ `rule-metadata.clp`, không viết lặp lại trong từng kết quả. Không có fact chứng minh một mệnh đề không đồng nghĩa với mệnh đề đó sai. Nếu thiếu dữ kiện, mô-đun trả `unknown`; nếu có kết luận trái ngược, mô-đun trả `conflict`.
 
 ## Nguyên tắc phát triển
 
 - Luật pháp lý không được viết cứng bằng `if/else` trong Next.js.
 - Knowledge base độc lập với inference engine và giao diện.
+- Domain rules chỉ phụ thuộc vào facts nghiệp vụ, không phụ thuộc vào route hoặc màn hình đang mở.
+- Logic completeness, explanation và result projection được tách khỏi domain rules.
 - Dữ liệu đầu vào phải được kiểm tra trước khi chuyển thành CLIPS facts.
 - Không ghép trực tiếp chuỗi do người dùng nhập vào mã lệnh CLIPS.
 - Mỗi rule phải có Rule ID và căn cứ pháp lý.

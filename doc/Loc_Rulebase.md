@@ -42,6 +42,8 @@ verification_status: "Chưa đối chiếu với văn bản pháp luật chính 
 
 ## 2. Bảng Luật (Rules)
 
+> **Quy ước:** Các cột `IF` và `THEN` dưới đây là cách mô tả dễ đọc của production rules, không phải các câu lệnh `if/else` hoặc thứ tự thực thi. Đây là rule catalog từ tài liệu nguồn; knowledge base thực thi phải chuẩn hóa điều kiện thành facts/predicates nguyên tử và để inference engine quyết định luật nào được kích hoạt. Cách viết như `R-B01 = TRUE` được hiểu là kết luận do R-B01 sinh ra, không xem bản thân Rule ID là một biến Boolean.
+
 ### NHÓM A — Xác định loại thừa kế (Theo di chúc hay Theo pháp luật)
 
 | **Rule ID** | **Điều luật** | **IF (Điều kiện)** | **THEN (Kết luận)** |
