@@ -245,7 +245,8 @@ npm run build
 │   ├── legal-sources/               # Catalog điều/khoản/điểm đã chuẩn hóa
 │   ├── rules/                       # Production rules CLIPS
 │   ├── tests/                       # Regression tests của knowledge base
-│   ├── rule-metadata.clp            # Căn cứ và mô tả luật
+│   ├── rule-registry.json           # Nguồn duy nhất cho metadata và giải thích rule
+│   ├── rule-metadata.clp            # Metadata CLIPS được sinh từ registry
 │   ├── templates.clp                # Fact contracts dùng chung
 │   └── run-fixture.clp              # Điểm chạy ví dụ bằng CLI
 ├── src/
@@ -258,7 +259,8 @@ npm run build
 │       └── db/                       # SQLite schema và repositories
 ├── tests/                            # CLIPS, adapter và persistence tests
 ├── scripts/
-│   └── extract-legal-provisions.ts  # Trích xuất .doc thành legal catalog JSON
+│   ├── extract-legal-provisions.ts  # Trích xuất .doc thành legal catalog JSON
+│   └── generate-rule-metadata.ts    # Sinh metadata CLIPS từ rule registry
 ├── package.json
 ├── reference/                       # Tài liệu nghiên cứu tham khảo
 └── README.md
@@ -286,7 +288,17 @@ Ví dụ rút gọn:
   (derivations R-B03))
 ```
 
-Căn cứ và mô tả của R-B03 được tra từ `rule-metadata.clp`, không viết lặp lại trong từng kết quả. Không có fact chứng minh một mệnh đề không đồng nghĩa với mệnh đề đó sai. Nếu thiếu dữ kiện, mô-đun trả `unknown`; nếu có kết luận trái ngược, mô-đun trả `conflict`.
+Căn cứ và mô tả của R-B03 được định nghĩa một lần trong `rule-registry.json`. UI đọc trực tiếp registry; `rule-metadata.clp` được sinh cho CLIPS bằng `npm run kb:generate`. Không có fact chứng minh một mệnh đề không đồng nghĩa với mệnh đề đó sai. Nếu thiếu dữ kiện, mô-đun trả `unknown`; nếu có kết luận trái ngược, mô-đun trả `conflict`.
+
+Khi thay đổi metadata, căn cứ hoặc trạng thái review của rule:
+
+```bash
+# sửa knowledge-base/rule-registry.json
+npm run kb:generate
+npm test
+```
+
+Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata chưa được sinh lại, Rule ID thiếu/mồ côi, implementation bị trùng hoặc căn cứ trỏ tới điều/khoản không tồn tại.
 
 ## Nguyên tắc phát triển
 

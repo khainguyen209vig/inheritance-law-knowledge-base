@@ -22,7 +22,8 @@ Nếu các observations đều có mặt nhưng chưa khớp đường suy luậ
 | Lớp | Tệp | Trách nhiệm |
 |---|---|---|
 | Fact contracts | `templates.clp` | Định nghĩa hình dạng của dữ kiện, kết luận và provenance |
-| Legal metadata | `rule-metadata.clp` | Lưu căn cứ, mô tả và trạng thái kiểm duyệt của luật |
+| Rule registry | `rule-registry.json` | Nguồn duy nhất cho căn cứ, giải thích, implementation và trạng thái kiểm duyệt |
+| Legal metadata | `rule-metadata.clp` | Dữ liệu CLIPS được sinh tự động từ rule registry |
 | Domain knowledge | `rules/01-will-validity.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
 | Completeness/conflict | `rules/90-will-validity-completeness.clp` | Phát hiện facts thiếu và kết luận mâu thuẫn |
 | Explanation | `rules/98-explanation.clp` | Chuyển provenance của derived facts thành trace đồng nhất |
@@ -32,6 +33,17 @@ Nếu các observations đều có mặt nhưng chưa khớp đường suy luậ
 `analysis-request` không được sử dụng trong domain rules. Vì vậy tri thức vẫn được suy ra khi không có yêu cầu hiển thị từ UI; yêu cầu chỉ điều khiển projection của kết quả.
 
 Các con số trong tên tệp thể hiện tầng ưu tiên của kiến trúc, không phải thứ tự thủ tục bắt buộc. CLIPS vẫn đối sánh toàn bộ facts và quản lý activations qua agenda.
+
+## Cập nhật metadata của rule
+
+Sửa `rule-registry.json`, sau đó chạy:
+
+```bash
+npm run kb:generate
+npm test
+```
+
+Không sửa `rule-metadata.clp` trực tiếp. Mỗi Rule ID giải thích được có thể ánh xạ tới một hoặc nhiều `defrule` qua trường `implementations`; rule hệ thống được phân biệt bằng `kind=system`, còn adapter kỹ thuật dùng `kind=internal`. Test registry kiểm tra các implementation của domain, Rule ID được phát ra, tham chiếu legal catalog và tính đồng bộ của file sinh.
 
 ## Rule base không phải chuỗi `if/else`
 

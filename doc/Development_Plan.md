@@ -261,7 +261,8 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 - Đã triển khai reasoning workspace responsive bằng Tailwind CSS và shadcn/ui: question cards thích ứng, working memory, bốn trạng thái kết quả, missing facts và inference trace.
 - Explanation UI trình bày luồng dữ kiện → rule → kết luận bằng tiếng Việt; mỗi rule liên kết đúng điều, khoản, điểm và dialog toàn văn lấy từ legal catalog đã trích xuất từ `doc/Luat_ThuaKe.doc`.
 - Đã bổ sung legal catalog JSON cùng ID ổn định ở cấp điều/khoản/điểm; script `law:extract` tái tạo catalog từ file `.doc` và lưu fingerprint SHA-256 của nguồn.
-- Test bảo đảm mọi R-B01–R-B09 có mô tả và không tham chiếu tới section không tồn tại.
+- Đã hợp nhất metadata CLIPS và giải thích UI vào `rule-registry.json`; `rule-metadata.clp` được sinh tự động bằng `kb:generate`.
+- Test bảo đảm mọi R-B01–R-B09 có mô tả, mọi domain `defrule` thuộc đúng một Rule ID, các ID phát ra không thiếu/mồ côi và không có tham chiếu tới section không tồn tại.
 - Đã kiểm thử integration qua native CLIPS process, smoke-test toàn bộ route HTTP và kiểm tra trực quan giao diện desktop/mobile.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
