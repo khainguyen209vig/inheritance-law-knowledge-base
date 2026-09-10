@@ -1,12 +1,12 @@
 import type { ComponentType } from "react";
-import { ReasoningWorkspace } from "@/components/reasoning-workspace";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAnalysisModule, type AnalysisModuleDefinition, type AnalysisModuleId } from "@/domain/analysis-modules";
+import { WillValidityWorkspace } from "@/modules/will-validity/workspace";
 
 type WorkspacePresenter = ComponentType<{ module: AnalysisModuleDefinition }>;
 
 const workspacePresenters: Partial<Record<AnalysisModuleId, WorkspacePresenter>> = {
-  "will-validity": ReasoningWorkspace,
+  "will-validity": WillValidityWorkspace,
 };
 
 export function ModuleWorkspace({ moduleId }: { moduleId: AnalysisModuleId }) {

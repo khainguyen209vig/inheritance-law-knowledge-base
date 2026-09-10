@@ -180,6 +180,8 @@ Trong TypeScript có thể truy xuất trực tiếp bằng `getLegalProvision("
 
 UI sử dụng Tailwind CSS và các shadcn source components trong `src/components/ui`. Hàm `cn()` kết hợp `clsx` với `tailwind-merge` để xử lý class variants.
 
+Trang `/modules` đọc module registry và hiển thị các mục tiêu phân tích cùng kiểu interaction dự kiến. `/modules/will-validity` mở presenter đã triển khai; các mô-đun còn lại hiển thị trạng thái dự kiến mà không tái sử dụng nhầm form di chúc.
+
 API đầu tiên nhận dữ kiện đã chuẩn hóa tại `POST /api/inference/will-validity`. Ví dụ request tối thiểu cho một di chúc bằng văn bản:
 
 ```json
@@ -257,6 +259,9 @@ npm run build
 │   ├── app/                          # Next.js App Router và Route Handlers
 │   ├── components/                   # Module shell, presenters và shadcn/ui
 │   ├── domain/                       # Module registry và input schema nghiệp vụ
+│   ├── modules/
+│   │   ├── contracts.ts             # Contract chung của answer, question, fact và result
+│   │   └── will-validity/            # Question flow, fact mapper, presenter và presentation labels
 │   └── server/
 │       ├── clips/                    # CLIPS adapter và output parser
 │       ├── cases/                    # Application service

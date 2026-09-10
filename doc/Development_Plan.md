@@ -304,6 +304,8 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 - Test bảo đảm mọi R-B01–R-B09 có mô tả, mọi domain `defrule` thuộc đúng một Rule ID, các ID phát ra không thiếu/mồ côi và không có tham chiếu tới section không tồn tại.
 - Đã tạo module registry và dependency graph có kiểm soát trạng thái; `will-validity` là mô-đun thực thi đầu tiên, các dependency dự kiến không tham gia runtime khi chưa review.
 - Đã thêm `ModuleWorkspace` để chọn presenter theo mô-đun, cho phép family tree, people table hoặc timeline thay vì ép mọi bài toán vào form hiện tại.
+- Đã tách question flow, fact mapper và presentation labels của `will-validity` khỏi workspace; interaction rules được kiểm thử riêng và không nằm trong CLIPS rule base.
+- Đã tách dialog căn cứ pháp lý thành component explanation dùng chung và thêm trang `/modules` để lựa chọn mục tiêu phân tích.
 - Đã kiểm thử integration qua native CLIPS process, smoke-test toàn bộ route HTTP và kiểm tra trực quan giao diện desktop/mobile.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
