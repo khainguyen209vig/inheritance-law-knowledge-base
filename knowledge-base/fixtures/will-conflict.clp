@@ -3,6 +3,13 @@
   (subject will-conflict-01)
   (module will-validity))
 
+(asserted-fact
+  (fact-id conflict-will-type)
+  (case-id case-conflict)
+  (subject will-conflict-01)
+  (predicate will-type)
+  (value written))
+
 ; Two incompatible observations are intentional in this fixture.
 (asserted-fact
   (fact-id conflict-mental-state-lucid)

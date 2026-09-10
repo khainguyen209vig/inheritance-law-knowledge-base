@@ -13,7 +13,8 @@
   (not (module-result
     (case-id ?case-id)
     (subject ?will-id)
-    (module will-validity)))
+    (module will-validity)
+    (predicate valid-will)))
   =>
   (assert (module-result
     (case-id ?case-id)
@@ -40,7 +41,8 @@
   (not (module-result
     (case-id ?case-id)
     (subject ?will-id)
-    (module will-validity)))
+    (module will-validity)
+    (predicate valid-will)))
   =>
   (assert (module-result
     (case-id ?case-id)
@@ -65,7 +67,8 @@
   (not (module-result
     (case-id ?case-id)
     (subject ?will-id)
-    (module will-validity)))
+    (module will-validity)
+    (predicate valid-will)))
   =>
   (assert (module-result
     (case-id ?case-id)
@@ -74,3 +77,26 @@
     (predicate valid-will)
     (value unknown)
     (derivations SYSTEM-INCOMPLETE))))
+
+(defrule project-will-current-effect
+  (declare (salience 50))
+  (analysis-request (case-id ?case-id) (subject ?will-id) (module will-validity))
+  (derived-fact
+    (case-id ?case-id)
+    (subject ?will-id)
+    (predicate will-currently-effective)
+    (value ?value&true|false)
+    (rule-id ?rule-id))
+  (not (module-result
+    (case-id ?case-id)
+    (subject ?will-id)
+    (module will-validity)
+    (predicate will-currently-effective)))
+  =>
+  (assert (module-result
+    (case-id ?case-id)
+    (subject ?will-id)
+    (module will-validity)
+    (predicate will-currently-effective)
+    (value ?value)
+    (derivations ?rule-id))))

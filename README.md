@@ -49,10 +49,10 @@ Next.js + TypeScript
 
 - [x] Chuyển rule-base từ DOCX sang Markdown.
 - [x] Định nghĩa fact contracts dùng chung trong CLIPS.
-- [x] Triển khai R-B01–R-B04 bằng forward chaining.
+- [x] Triển khai R-B01–R-B09 bằng forward chaining.
 - [x] Sinh kết luận trung gian, kết quả mô-đun và inference trace.
 - [x] Kiểm thử trường hợp hợp lệ, không hợp lệ và thiếu dữ kiện.
-- [ ] Triển khai các trường hợp đặc biệt R-B05–R-B09.
+- [x] Kiểm thử các trường hợp đặc biệt R-B05–R-B09.
 - [ ] Khởi tạo ứng dụng Next.js.
 - [ ] Xây dựng TypeScript CLIPS adapter.
 - [ ] Tích hợp SQLite và giao diện nhập facts.
@@ -102,6 +102,11 @@ PASS will-valid
 PASS will-invalid
 PASS will-unknown
 PASS will-conflict
+PASS will-minor-valid
+PASS will-minor-invalid
+PASS will-accessibility-valid
+PASS will-oral-valid-boundaries
+PASS will-oral-automatically-revoked
 PASS domain-independent-from-analysis-request
 ```
 
@@ -125,7 +130,12 @@ Facts đầu vào
 
 - `knowledge-base/fixtures/will-valid.clp`;
 - `knowledge-base/fixtures/will-invalid.clp`;
-- `knowledge-base/fixtures/will-unknown.clp`.
+- `knowledge-base/fixtures/will-unknown.clp`;
+- `knowledge-base/fixtures/will-minor-valid.clp`;
+- `knowledge-base/fixtures/will-minor-invalid.clp`;
+- `knowledge-base/fixtures/will-accessibility-valid.clp`;
+- `knowledge-base/fixtures/will-oral-valid.clp`;
+- `knowledge-base/fixtures/will-oral-revoked.clp`.
 
 ## Cấu trúc repository
 
@@ -193,9 +203,8 @@ Căn cứ và mô tả của R-B03 được tra từ `rule-metadata.clp`, không
 
 ## Roadmap gần nhất
 
-1. Hoàn thiện R-B05–R-B09 cho mô-đun tính hợp pháp của di chúc.
-2. Chuẩn hóa output của CLIPS để TypeScript có thể đọc ổn định.
-3. Khởi tạo ứng dụng Next.js full-stack.
-4. Xây dựng `POST /api/inference/will-validity`.
-5. Thêm SQLite để lưu case, asserted facts, derived facts và inference trace.
-6. Xây dựng giao diện nhập dữ kiện và xem cây giải thích.
+1. Chuẩn hóa output của CLIPS để TypeScript có thể đọc ổn định.
+2. Khởi tạo ứng dụng Next.js full-stack.
+3. Xây dựng TypeScript CLIPS adapter và `POST /api/inference/will-validity`.
+4. Thêm SQLite để lưu case, asserted facts, derived facts và inference trace.
+5. Xây dựng giao diện nhập dữ kiện và xem cây giải thích.

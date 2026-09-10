@@ -71,6 +71,106 @@
     (printout t "FAIL will-conflict" crlf))
 
 (reset)
+(load-facts "knowledge-base/fixtures/will-minor-valid.clp")
+(run)
+(if (and
+      (any-factp ((?fact derived-fact))
+        (and
+          (eq ?fact:case-id case-minor-valid)
+          (eq ?fact:predicate minor-special-requirement)
+          (eq ?fact:value satisfied)
+          (eq ?fact:rule-id R-B05)))
+      (any-factp ((?result module-result))
+        (and
+          (eq ?result:case-id case-minor-valid)
+          (eq ?result:predicate valid-will)
+          (eq ?result:value true))))
+  then
+    (printout t "PASS will-minor-valid" crlf)
+  else
+    (printout t "FAIL will-minor-valid" crlf))
+
+(reset)
+(load-facts "knowledge-base/fixtures/will-minor-invalid.clp")
+(run)
+(if (and
+      (any-factp ((?fact derived-fact))
+        (and
+          (eq ?fact:case-id case-minor-invalid)
+          (eq ?fact:predicate minor-special-requirement)
+          (eq ?fact:value failed)
+          (eq ?fact:rule-id R-B06)))
+      (any-factp ((?result module-result))
+        (and
+          (eq ?result:case-id case-minor-invalid)
+          (eq ?result:predicate valid-will)
+          (eq ?result:value false))))
+  then
+    (printout t "PASS will-minor-invalid" crlf)
+  else
+    (printout t "FAIL will-minor-invalid" crlf))
+
+(reset)
+(load-facts "knowledge-base/fixtures/will-accessibility-valid.clp")
+(run)
+(if (and
+      (any-factp ((?fact derived-fact))
+        (and
+          (eq ?fact:case-id case-accessibility-valid)
+          (eq ?fact:predicate accessibility-form-requirement)
+          (eq ?fact:value satisfied)
+          (eq ?fact:rule-id R-B07)))
+      (any-factp ((?result module-result))
+        (and
+          (eq ?result:case-id case-accessibility-valid)
+          (eq ?result:predicate valid-will)
+          (eq ?result:value true))))
+  then
+    (printout t "PASS will-accessibility-valid" crlf)
+  else
+    (printout t "FAIL will-accessibility-valid" crlf))
+
+(reset)
+(load-facts "knowledge-base/fixtures/will-oral-valid.clp")
+(run)
+(if (and
+      (any-factp ((?fact derived-fact))
+        (and
+          (eq ?fact:case-id case-oral-valid)
+          (eq ?fact:predicate oral-form-requirement)
+          (eq ?fact:value satisfied)
+          (eq ?fact:rule-id R-B09)))
+      (any-factp ((?result module-result))
+        (and
+          (eq ?result:case-id case-oral-valid)
+          (eq ?result:predicate valid-will)
+          (eq ?result:value true))))
+  then
+    (printout t "PASS will-oral-valid-boundaries" crlf)
+  else
+    (printout t "FAIL will-oral-valid-boundaries" crlf))
+
+(reset)
+(load-facts "knowledge-base/fixtures/will-oral-revoked.clp")
+(run)
+(if (and
+      (any-factp ((?fact derived-fact))
+        (and
+          (eq ?fact:case-id case-oral-revoked)
+          (eq ?fact:predicate will-effect-status)
+          (eq ?fact:value automatically-revoked)
+          (eq ?fact:rule-id R-B08)))
+      (any-factp ((?result module-result))
+        (and
+          (eq ?result:case-id case-oral-revoked)
+          (eq ?result:predicate will-currently-effective)
+          (eq ?result:value false))))
+  then
+    (printout t "PASS will-oral-automatically-revoked" crlf)
+  else
+    (printout t "FAIL will-oral-automatically-revoked" crlf))
+
+(reset)
 (load-facts "knowledge-base/fixtures/will-valid-domain-only.clp")
 (run)
 (if (and

@@ -1,0 +1,13 @@
+; Usage: clips -f2 knowledge-base/run-machine-fixture.clp
+(load "knowledge-base/templates.clp")
+(load "knowledge-base/rule-metadata.clp")
+(load "knowledge-base/rules/01-will-validity.clp")
+(load "knowledge-base/rules/90-will-validity-completeness.clp")
+(load "knowledge-base/rules/98-explanation.clp")
+(load "knowledge-base/rules/99-result-projection.clp")
+(load "knowledge-base/machine-output.clp")
+(reset)
+(load-facts "knowledge-base/fixtures/will-valid.clp")
+(run)
+(emit-machine-output)
+(exit)

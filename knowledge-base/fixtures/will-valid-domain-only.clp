@@ -2,6 +2,13 @@
 ; analysis-request. Domain knowledge must still be derived.
 
 (asserted-fact
+  (fact-id domain-only-will-type)
+  (case-id case-domain-only)
+  (subject will-domain-only-01)
+  (predicate will-type)
+  (value written))
+
+(asserted-fact
   (fact-id domain-only-mental-state)
   (case-id case-domain-only)
   (subject will-domain-only-01)

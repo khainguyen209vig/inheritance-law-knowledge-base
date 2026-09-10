@@ -4,7 +4,7 @@ Thư mục này chứa tri thức mà CLIPS có thể thực thi, tách biệt v
 
 ## Vertical slice đầu tiên
 
-Mô-đun `will-validity` hiện triển khai các rules cơ bản R-B01–R-B04 từ `doc/Loc_Rulebase.md` và sinh:
+Mô-đun `will-validity` hiện triển khai R-B01–R-B09 từ `doc/Loc_Rulebase_v2.md` và sinh:
 
 - `asserted-fact`: dữ kiện nguyên tử của vụ việc;
 - `derived-fact`: tri thức mới cùng Rule ID và các facts hỗ trợ;
@@ -13,7 +13,7 @@ Mô-đun `will-validity` hiện triển khai các rules cơ bản R-B01–R-B04 
 - `missing-requirement`: dữ kiện bắt buộc còn thiếu;
 - kết quả `unknown` hoặc `conflict` thay vì tự chọn một kết luận.
 
-Các fixtures bao phủ trường hợp hợp lệ, không hợp lệ, chưa đủ dữ kiện, dữ kiện mâu thuẫn và domain inference không phụ thuộc vào yêu cầu từ UI. Đây là bản nháp phục vụ kỹ thuật, chưa được kiểm chứng pháp lý.
+Các fixtures bao phủ trường hợp hợp lệ, không hợp lệ, chưa đủ dữ kiện, dữ kiện mâu thuẫn, người lập di chúc chưa thành niên, người bị hạn chế thể chất, di chúc miệng và domain inference không phụ thuộc vào yêu cầu từ UI. Đây là bản nháp phục vụ kỹ thuật, chưa được kiểm chứng pháp lý.
 
 ## Phân lớp tri thức
 
@@ -40,7 +40,7 @@ Các con số trong tên tệp thể hiện tầng ưu tiên của kiến trúc,
 
 ### Giới hạn còn lại của vertical slice
 
-`prohibited-content` và `formal-defect` hiện là các observations ở mức khái quát vì R-B01–R-B04 trong rule catalog chưa mô tả các tiêu chí hình thức chi tiết. Chúng không phải kết luận cuối `valid-will`, nhưng vẫn cần tiếp tục được phân rã thành facts cụ thể như loại di chúc, số người làm chứng, chữ ký, công chứng/chứng thực và thời hạn khi triển khai R-B05–R-B09.
+`prohibited-content` vẫn là observation ở mức khái quát. Với di chúc bằng văn bản thông thường, `formal-defect=not-detected` được xử lý bởi adapter chuyển tiếp `FORM-ASSESSMENT-ACCEPTED`; adapter này phải được thay thế khi các Điều 627–636 được phân rã đầy đủ. Các trường hợp R-B05–R-B09 đã dùng facts cụ thể hơn như tuổi, sự đồng ý của người giám hộ, người làm chứng, chữ ký, công chứng/chứng thực và thời hạn.
 
 ## Cài đặt CLIPS
 

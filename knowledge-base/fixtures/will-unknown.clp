@@ -4,6 +4,13 @@
   (module will-validity))
 
 (asserted-fact
+  (fact-id unknown-will-type)
+  (case-id case-unknown)
+  (subject will-unknown-01)
+  (predicate will-type)
+  (value written))
+
+(asserted-fact
   (fact-id unknown-mental-state)
   (case-id case-unknown)
   (subject will-unknown-01)
