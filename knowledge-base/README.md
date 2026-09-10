@@ -15,6 +15,8 @@ Mô-đun `will-validity` hiện triển khai R-B01–R-B09 từ `doc/Loc_Rulebas
 
 Các fixtures bao phủ trường hợp hợp lệ, không hợp lệ, chưa đủ dữ kiện, dữ kiện mâu thuẫn, người lập di chúc chưa thành niên, người bị hạn chế thể chất, di chúc miệng và domain inference không phụ thuộc vào yêu cầu từ UI. Đây là bản nháp phục vụ kỹ thuật, chưa được kiểm chứng pháp lý.
 
+Nếu các observations đều có mặt nhưng chưa khớp đường suy luận dương hoặc exclusion rule đã được mô hình hóa, completeness layer tạo `unresolved-rule-path` và trả `UNKNOWN`. Cách xử lý này giữ open-world semantics cho đến khi team duyệt rule âm tương ứng.
+
 ## Phân lớp tri thức
 
 | Lớp | Tệp | Trách nhiệm |

@@ -71,6 +71,24 @@
     (printout t "FAIL will-conflict" crlf))
 
 (reset)
+(load-facts "knowledge-base/fixtures/will-unresolved.clp")
+(run)
+(if (and
+      (any-factp ((?result module-result))
+        (and
+          (eq ?result:case-id case-unresolved)
+          (eq ?result:predicate valid-will)
+          (eq ?result:value unknown)))
+      (any-factp ((?missing missing-requirement))
+        (and
+          (eq ?missing:case-id case-unresolved)
+          (eq ?missing:predicate unresolved-rule-path))))
+  then
+    (printout t "PASS will-unresolved-rule-path" crlf)
+  else
+    (printout t "FAIL will-unresolved-rule-path" crlf))
+
+(reset)
 (load-facts "knowledge-base/fixtures/will-minor-valid.clp")
 (run)
 (if (and

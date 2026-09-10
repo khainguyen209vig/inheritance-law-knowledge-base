@@ -231,6 +231,29 @@
   =>
   (assert (missing-requirement (case-id ?case-id) (subject ?will-id) (module will-validity) (predicate certified-within-days))))
 
+; All currently modeled observations can be present while none of the positive
+; or exclusion rules match (for example, a detected formal defect). Preserve
+; open-world semantics by returning UNKNOWN instead of silently emitting no
+; module result. A dedicated exclusion rule can replace this fallback after
+; legal review of that negative path.
+(defrule unresolved-will-validity-rule-path
+  (declare (salience 250))
+  (analysis-request (case-id ?case-id) (subject ?will-id) (module will-validity))
+  (not (derived-fact
+    (case-id ?case-id)
+    (subject ?will-id)
+    (predicate valid-will)))
+  (not (missing-requirement
+    (case-id ?case-id)
+    (subject ?will-id)
+    (module will-validity)))
+  =>
+  (assert (missing-requirement
+    (case-id ?case-id)
+    (subject ?will-id)
+    (module will-validity)
+    (predicate unresolved-rule-path))))
+
 ; Explicitly represent incompatible conclusions rather than silently choosing
 ; one using salience.
 (defrule detect-valid-will-conflict

@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "db:init": "node --import tsx scripts/init-db.ts",
     "test:kb": "clips -f2 knowledge-base/tests/will-validity.clp",
@@ -12,11 +12,11 @@
     "test": "npm run test:kb && npm run test:app"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-slot": "^1.3.3",
     "better-sqlite3": "12.4.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.44.0",
     "next": "16.3.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",

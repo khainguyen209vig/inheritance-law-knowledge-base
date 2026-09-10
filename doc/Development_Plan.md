@@ -254,11 +254,14 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 - Đã tách asserted facts, derived knowledge, legal metadata, completeness/conflict, explanation và result projection.
 - Domain rules không còn phụ thuộc vào `analysis-request`; yêu cầu từ UI chỉ chọn kết quả trình bày.
 - Đã loại bỏ trace counter khỏi luật pháp lý và thay bằng provenance/dependency trace.
-- Đã chạy đạt mười test, gồm các luồng cơ bản, người từ đủ 15 đến dưới 18 tuổi, người bị hạn chế thể chất, di chúc miệng, mốc 5 ngày, mặc nhiên hủy bỏ, `UNKNOWN`, `CONFLICT` và domain inference độc lập với UI.
+- Đã chạy đạt mười một test, gồm các luồng cơ bản, người từ đủ 15 đến dưới 18 tuổi, người bị hạn chế thể chất, di chúc miệng, mốc 5 ngày, mặc nhiên hủy bỏ, đường luật chưa được mô hình hóa, `UNKNOWN`, `CONFLICT` và domain inference độc lập với UI.
 - Đã chuẩn hóa line protocol CLIPS, xây CLIPS adapter TypeScript, khởi tạo Next.js và cung cấp `POST /api/inference/will-validity`.
 - Đã tích hợp SQLite, migration khởi tạo, repository và API cho case, asserted facts và inference runs.
 - Mỗi inference run lưu snapshot input, phiên bản knowledge base, module results, missing requirements và inference traces; sửa facts hiện tại không thay đổi lịch sử.
-- Đã kiểm thử integration qua native CLIPS process và smoke-test toàn bộ route HTTP; chưa triển khai giao diện nhập facts.
+- Đã triển khai reasoning workspace responsive bằng Tailwind CSS và shadcn/ui: question cards thích ứng, working memory, bốn trạng thái kết quả, missing facts và inference trace.
+- Explanation UI trình bày luồng dữ kiện → rule → kết luận bằng tiếng Việt; mỗi rule liên kết đúng điều, khoản, điểm và dialog toàn văn lấy từ `doc/Luat_ThuaKe.doc`.
+- Đã bổ sung legal catalog cùng test bảo đảm mọi R-B01–R-B09 có mô tả và không tham chiếu tới section không tồn tại.
+- Đã kiểm thử integration qua native CLIPS process, smoke-test toàn bộ route HTTP và kiểm tra trực quan giao diện desktop/mobile.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

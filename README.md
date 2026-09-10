@@ -56,7 +56,8 @@ Next.js + TypeScript
 - [x] Khởi tạo ứng dụng Next.js full-stack.
 - [x] Xây dựng TypeScript CLIPS adapter và API suy luận đầu tiên.
 - [x] Tích hợp SQLite và lưu snapshot của mỗi lần suy luận.
-- [ ] Xây dựng giao diện nhập facts và xem giải thích.
+- [x] Xây dựng prototype workspace nhập facts và xem giải thích.
+- [ ] Hoàn thiện danh sách vụ việc và lịch sử các lần suy luận.
 
 ## Phạm vi kết quả
 
@@ -103,6 +104,7 @@ PASS will-valid
 PASS will-invalid
 PASS will-unknown
 PASS will-conflict
+PASS will-unresolved-rule-path
 PASS will-minor-valid
 PASS will-minor-invalid
 PASS will-accessibility-valid
@@ -144,6 +146,20 @@ Facts đầu vào
 npm install
 npm run dev
 ```
+
+Giao diện tại `/` là một reasoning workspace responsive, gồm:
+
+- question flow dạng answer cards, thay đổi theo loại di chúc và facts đã nhập;
+- working memory bằng tiếng Việt, có thể bật chế độ kỹ thuật để xem predicate/value;
+- kết luận bốn trạng thái và danh sách dữ kiện còn thiếu;
+- luồng lập luận tiếng Việt theo cấu trúc dữ kiện → rule → kết luận;
+- mỗi bước chỉ rõ điều, khoản, điểm đang áp dụng và mở được toàn văn trong dialog;
+- chế độ kỹ thuật mới hiển thị predicate, value và supports;
+- lưu case, facts và inference snapshot vào SQLite khi chạy CLIPS.
+
+Nội dung Điều 627, 629 và 630 hiển thị trong dialog được lấy từ `doc/Luat_ThuaKe.doc`. Phần liên quan trực tiếp tới rule được đánh dấu “Rule đang sử dụng”, đồng thời dialog cung cấp liên kết đối chiếu văn bản trên Cổng Thông tin điện tử Chính phủ. Quy tắc chuyển tiếp nội bộ được ghi rõ là quy tắc kỹ thuật, không được trình bày như một điều luật.
+
+UI sử dụng Tailwind CSS và các shadcn source components trong `src/components/ui`. Hàm `cn()` kết hợp `clsx` với `tailwind-merge` để xử lý class variants.
 
 API đầu tiên nhận dữ kiện đã chuẩn hóa tại `POST /api/inference/will-validity`. Ví dụ request tối thiểu cho một di chúc bằng văn bản:
 
@@ -218,6 +234,7 @@ npm run build
 │   └── run-fixture.clp              # Điểm chạy ví dụ bằng CLI
 ├── src/
 │   ├── app/                          # Next.js App Router và Route Handlers
+│   ├── components/                   # Reasoning workspace và shadcn/ui
 │   ├── domain/                       # Input schema của miền nghiệp vụ
 │   └── server/
 │       ├── clips/                    # CLIPS adapter và output parser
@@ -275,8 +292,8 @@ Căn cứ và mô tả của R-B03 được tra từ `rule-metadata.clp`, không
 
 ## Roadmap gần nhất
 
-1. Xây dựng giao diện tạo vụ việc và nhập facts.
-2. Trình bày kết quả, dữ kiện thiếu và cây giải thích.
+1. Thêm trang danh sách vụ việc và lịch sử inference runs.
+2. Liên kết dữ kiện thiếu về đúng câu hỏi cần bổ sung.
 3. Bổ sung legal metadata vào response của API.
 4. Tạo hash/version tự động cho mỗi bản phát hành knowledge base.
 5. Mở rộng sang mô-đun xác định loại thừa kế.
