@@ -248,6 +248,7 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 
 ### Trạng thái triển khai hiện tại
 
+- Đã tạo `doc/Loc_Rulebase_v2.md` để chuẩn hóa toàn bộ rule catalog và làm tài liệu team review.
 - Đã tạo fact contracts dùng chung trong `knowledge-base/templates.clp`.
 - Đã tạo vertical slice đầu tiên cho mô-đun tính hợp pháp của di chúc với R-B01–R-B04.
 - Đã tách asserted facts, derived knowledge, legal metadata, completeness/conflict, explanation và result projection.

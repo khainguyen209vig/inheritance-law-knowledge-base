@@ -1,6 +1,6 @@
 # Knowledge base
 
-Thư mục này chứa tri thức mà CLIPS có thể thực thi, tách biệt với mã Next.js.
+Thư mục này chứa tri thức mà CLIPS có thể thực thi, tách biệt với mã Next.js. Các rules mới phải được chuẩn hóa theo `doc/Loc_Rulebase_v2.md` và được team duyệt trước khi triển khai.
 
 ## Vertical slice đầu tiên
 

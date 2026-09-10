@@ -188,6 +188,7 @@ Căn cứ và mô tả của R-B03 được tra từ `rule-metadata.clp`, không
 
 - [Kế hoạch phát triển](doc/Development_Plan.md)
 - [Rule-base dạng Markdown](doc/Loc_Rulebase.md)
+- [Rule-base V2 đề xuất để team review](doc/Loc_Rulebase_v2.md)
 - [Hướng dẫn knowledge base](knowledge-base/README.md)
 
 ## Roadmap gần nhất
