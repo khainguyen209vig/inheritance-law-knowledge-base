@@ -1,3 +1,5 @@
+import legalCatalog from "../../knowledge-base/legal-sources/civil-code-2015.inheritance.json";
+
 export interface LegalSection {
   id: string;
   label: string;
@@ -13,96 +15,21 @@ export interface LegalProvision {
   officialUrl: string;
 }
 
+export const legalProvisions = legalCatalog.provisions satisfies Record<string, LegalProvision>;
+export const legalCatalogMetadata = legalCatalog.document;
+
+export type LegalProvisionId = keyof typeof legalProvisions;
+
 export interface RuleExplanation {
   ruleId: string;
   title: string;
   reasoning: string;
   conclusion: string;
   citation: string;
-  provisionId?: keyof typeof legalProvisions;
+  provisionId?: LegalProvisionId;
   relevantSections: string[];
   kind: "legal" | "internal" | "system";
 }
-
-export const legalProvisions = {
-  "article-627": {
-    id: "article-627",
-    number: "Điều 627",
-    title: "Hình thức của di chúc",
-    sections: [
-      {
-        id: "main",
-        label: "Nội dung điều luật",
-        text: "Di chúc phải được lập thành văn bản; nếu không thể lập được di chúc bằng văn bản thì có thể di chúc miệng.",
-      },
-    ],
-    sourceDocument: "doc/Luat_ThuaKe.doc",
-    officialUrl: "https://vanban.chinhphu.vn/?pageid=27160&docid=183188",
-  },
-  "article-629": {
-    id: "article-629",
-    number: "Điều 629",
-    title: "Di chúc miệng",
-    sections: [
-      {
-        id: "clause-1",
-        label: "Khoản 1",
-        text: "Trường hợp tính mạng một người bị cái chết đe dọa và không thể lập di chúc bằng văn bản thì có thể lập di chúc miệng.",
-      },
-      {
-        id: "clause-2",
-        label: "Khoản 2",
-        text: "Sau 03 tháng, kể từ thời điểm di chúc miệng mà người lập di chúc còn sống, minh mẫn, sáng suốt thì di chúc miệng mặc nhiên bị huỷ bỏ.",
-      },
-    ],
-    sourceDocument: "doc/Luat_ThuaKe.doc",
-    officialUrl: "https://vanban.chinhphu.vn/?pageid=27160&docid=183188",
-  },
-  "article-630": {
-    id: "article-630",
-    number: "Điều 630",
-    title: "Di chúc hợp pháp",
-    sections: [
-      {
-        id: "clause-1-intro",
-        label: "Khoản 1",
-        text: "Di chúc hợp pháp phải có đủ các điều kiện sau đây:",
-      },
-      {
-        id: "clause-1-a",
-        label: "Khoản 1 điểm a",
-        text: "Người lập di chúc minh mẫn, sáng suốt trong khi lập di chúc; không bị lừa dối, đe doạ, cưỡng ép;",
-      },
-      {
-        id: "clause-1-b",
-        label: "Khoản 1 điểm b",
-        text: "Nội dung của di chúc không vi phạm điều cấm của luật, không trái đạo đức xã hội; hình thức di chúc không trái quy định của luật.",
-      },
-      {
-        id: "clause-2",
-        label: "Khoản 2",
-        text: "Di chúc của người từ đủ mười lăm tuổi đến chưa đủ mười tám tuổi phải được lập thành văn bản và phải được cha, mẹ hoặc người giám hộ đồng ý về việc lập di chúc.",
-      },
-      {
-        id: "clause-3",
-        label: "Khoản 3",
-        text: "Di chúc của người bị hạn chế về thể chất hoặc của người không biết chữ phải được người làm chứng lập thành văn bản và có công chứng hoặc chứng thực.",
-      },
-      {
-        id: "clause-4",
-        label: "Khoản 4",
-        text: "Di chúc bằng văn bản không có công chứng, chứng thực chỉ được coi là hợp pháp, nếu có đủ các điều kiện được quy định tại khoản 1 Điều này.",
-      },
-      {
-        id: "clause-5",
-        label: "Khoản 5",
-        text: "Di chúc miệng được coi là hợp pháp nếu người di chúc miệng thể hiện ý chí cuối cùng của mình trước mặt ít nhất hai người làm chứng và ngay sau khi người di chúc miệng thể hiện ý chí cuối cùng, người làm chứng ghi chép lại, cùng ký tên hoặc điểm chỉ. Trong thời hạn 05 ngày làm việc, kể từ ngày người di chúc miệng thể hiện ý chí cuối cùng thì di chúc phải được công chứng viên hoặc cơ quan có thẩm quyền chứng thực xác nhận chữ ký hoặc điểm chỉ của người làm chứng.",
-      },
-    ],
-    sourceDocument: "doc/Luat_ThuaKe.doc",
-    officialUrl: "https://vanban.chinhphu.vn/?pageid=27160&docid=183188",
-  },
-} as const satisfies Record<string, LegalProvision>;
 
 export const ruleExplanations: Record<string, RuleExplanation> = {
   "ARTICLE-627": {
@@ -228,4 +155,12 @@ export const ruleExplanations: Record<string, RuleExplanation> = {
 
 export function getRuleExplanation(ruleId: string): RuleExplanation | undefined {
   return ruleExplanations[ruleId];
+}
+
+export function getLegalProvision(provisionId: LegalProvisionId): LegalProvision {
+  return legalProvisions[provisionId];
+}
+
+export function getLegalSection(provisionId: LegalProvisionId, sectionId: string): LegalSection | undefined {
+  return getLegalProvision(provisionId).sections.find((section) => section.id === sectionId);
 }

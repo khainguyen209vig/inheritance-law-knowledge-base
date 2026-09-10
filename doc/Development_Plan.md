@@ -259,8 +259,9 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 - Đã tích hợp SQLite, migration khởi tạo, repository và API cho case, asserted facts và inference runs.
 - Mỗi inference run lưu snapshot input, phiên bản knowledge base, module results, missing requirements và inference traces; sửa facts hiện tại không thay đổi lịch sử.
 - Đã triển khai reasoning workspace responsive bằng Tailwind CSS và shadcn/ui: question cards thích ứng, working memory, bốn trạng thái kết quả, missing facts và inference trace.
-- Explanation UI trình bày luồng dữ kiện → rule → kết luận bằng tiếng Việt; mỗi rule liên kết đúng điều, khoản, điểm và dialog toàn văn lấy từ `doc/Luat_ThuaKe.doc`.
-- Đã bổ sung legal catalog cùng test bảo đảm mọi R-B01–R-B09 có mô tả và không tham chiếu tới section không tồn tại.
+- Explanation UI trình bày luồng dữ kiện → rule → kết luận bằng tiếng Việt; mỗi rule liên kết đúng điều, khoản, điểm và dialog toàn văn lấy từ legal catalog đã trích xuất từ `doc/Luat_ThuaKe.doc`.
+- Đã bổ sung legal catalog JSON cùng ID ổn định ở cấp điều/khoản/điểm; script `law:extract` tái tạo catalog từ file `.doc` và lưu fingerprint SHA-256 của nguồn.
+- Test bảo đảm mọi R-B01–R-B09 có mô tả và không tham chiếu tới section không tồn tại.
 - Đã kiểm thử integration qua native CLIPS process, smoke-test toàn bộ route HTTP và kiểm tra trực quan giao diện desktop/mobile.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức

@@ -1,6 +1,21 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import test from "node:test";
-import { legalProvisions, ruleExplanations } from "../src/domain/legal-knowledge";
+import {
+  legalCatalogMetadata,
+  getLegalProvision,
+  getLegalSection,
+  legalProvisions,
+  ruleExplanations,
+} from "../src/domain/legal-knowledge";
+
+test("legal catalog matches the current source document", () => {
+  const sourceHash = createHash("sha256")
+    .update(readFileSync(legalCatalogMetadata.sourceDocument))
+    .digest("hex");
+  assert.equal(sourceHash, legalCatalogMetadata.sourceSha256);
+});
 
 test("every legal rule references existing sections of a provision", () => {
   const legalRules = Object.values(ruleExplanations).filter((rule) => rule.kind === "legal");
@@ -15,6 +30,12 @@ test("every legal rule references existing sections of a provision", () => {
       assert.ok(sectionIds.has(relevantSection), `${rule.ruleId} references missing section ${relevantSection}`);
     }
   }
+});
+
+test("legal provisions and sections can be retrieved directly by stable IDs", () => {
+  assert.equal(getLegalProvision("article-630").title, "Di chúc hợp pháp");
+  assert.match(getLegalSection("article-630", "clause-1-a")?.text ?? "", /minh mẫn, sáng suốt/u);
+  assert.equal(getLegalSection("article-630", "missing-section"), undefined);
 });
 
 test("all implemented domain rule IDs have a human-readable explanation", () => {

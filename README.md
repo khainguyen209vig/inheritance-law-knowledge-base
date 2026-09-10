@@ -81,6 +81,7 @@ Phiên bản trình bày tối thiểu hướng tới mô-đun 1–4. Mức mụ
 - Ubuntu/Pop!_OS hoặc môi trường có thể chạy CLIPS.
 - Node.js 20.9 trở lên.
 - npm.
+- LibreOffice (chỉ cần khi chạy `npm run law:extract`).
 
 ## Cài đặt CLIPS
 
@@ -157,7 +158,21 @@ Giao diện tại `/` là một reasoning workspace responsive, gồm:
 - chế độ kỹ thuật mới hiển thị predicate, value và supports;
 - lưu case, facts và inference snapshot vào SQLite khi chạy CLIPS.
 
-Nội dung Điều 627, 629 và 630 hiển thị trong dialog được lấy từ `doc/Luat_ThuaKe.doc`. Phần liên quan trực tiếp tới rule được đánh dấu “Rule đang sử dụng”, đồng thời dialog cung cấp liên kết đối chiếu văn bản trên Cổng Thông tin điện tử Chính phủ. Quy tắc chuyển tiếp nội bộ được ghi rõ là quy tắc kỹ thuật, không được trình bày như một điều luật.
+Nội dung Điều 627, 629 và 630 hiển thị trong dialog được đọc từ catalog JSON đã trích xuất từ `doc/Luat_ThuaKe.doc`. Phần liên quan trực tiếp tới rule được đánh dấu “Rule đang sử dụng”, đồng thời dialog cung cấp liên kết đối chiếu văn bản trên Cổng Thông tin điện tử Chính phủ. Quy tắc chuyển tiếp nội bộ được ghi rõ là quy tắc kỹ thuật, không được trình bày như một điều luật.
+
+### Trích xuất và lưu trữ điều luật
+
+Văn bản đã chuẩn hóa được lưu tại `knowledge-base/legal-sources/civil-code-2015.inheritance.json`. Mỗi điều, khoản và điểm có một ID ổn định như `article-630` và `clause-1-a`; rule và UI chỉ tham chiếu các ID này nên không cần đọc lại file Word ở runtime.
+
+Để tái tạo catalog từ tài liệu nguồn sau khi `doc/Luat_ThuaKe.doc` thay đổi:
+
+```bash
+npm run law:extract
+```
+
+Lệnh sử dụng LibreOffice ở chế độ headless để chuyển `.doc` sang text, tách Điều 627, 629 và 630, chuẩn hóa các khoản/điểm rồi ghi lại JSON. Trường `sourceSha256` giúp nhận biết chính xác phiên bản tài liệu nguồn đã được trích xuất. Sau khi chạy, cần review diff của catalog và chạy `npm test` trước khi chấp nhận thay đổi pháp lý.
+
+Trong TypeScript có thể truy xuất trực tiếp bằng `getLegalProvision("article-630")` hoặc `getLegalSection("article-630", "clause-1-a")` từ `src/domain/legal-knowledge.ts`.
 
 UI sử dụng Tailwind CSS và các shadcn source components trong `src/components/ui`. Hàm `cn()` kết hợp `clsx` với `tailwind-merge` để xử lý class variants.
 
@@ -227,6 +242,7 @@ npm run build
 │   └── knowledge-based-architect.png
 ├── knowledge-base/
 │   ├── fixtures/                    # Facts mẫu cho từng trường hợp
+│   ├── legal-sources/               # Catalog điều/khoản/điểm đã chuẩn hóa
 │   ├── rules/                       # Production rules CLIPS
 │   ├── tests/                       # Regression tests của knowledge base
 │   ├── rule-metadata.clp            # Căn cứ và mô tả luật
@@ -241,6 +257,8 @@ npm run build
 │       ├── cases/                    # Application service
 │       └── db/                       # SQLite schema và repositories
 ├── tests/                            # CLIPS, adapter và persistence tests
+├── scripts/
+│   └── extract-legal-provisions.ts  # Trích xuất .doc thành legal catalog JSON
 ├── package.json
 ├── reference/                       # Tài liệu nghiên cứu tham khảo
 └── README.md
