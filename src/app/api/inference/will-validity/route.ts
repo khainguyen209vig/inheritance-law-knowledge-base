@@ -1,5 +1,6 @@
 import { willValidityRequestSchema } from "@/domain/will-validity";
 import { inferWillValidity } from "@/server/clips/adapter";
+import { readJson } from "@/server/http/json";
 
 export const runtime = "nodejs";
 
@@ -19,13 +20,5 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("CLIPS inference failed", error);
     return Response.json({ error: "INFERENCE_FAILED" }, { status: 500 });
-  }
-}
-
-async function readJson(request: Request): Promise<unknown> {
-  try {
-    return await request.json();
-  } catch {
-    return undefined;
   }
 }

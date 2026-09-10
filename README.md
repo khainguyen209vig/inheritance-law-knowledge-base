@@ -55,7 +55,8 @@ Next.js + TypeScript
 - [x] Kiểm thử các trường hợp đặc biệt R-B05–R-B09.
 - [x] Khởi tạo ứng dụng Next.js full-stack.
 - [x] Xây dựng TypeScript CLIPS adapter và API suy luận đầu tiên.
-- [ ] Tích hợp SQLite và giao diện nhập facts.
+- [x] Tích hợp SQLite và lưu snapshot của mỗi lần suy luận.
+- [ ] Xây dựng giao diện nhập facts và xem giải thích.
 
 ## Phạm vi kết quả
 
@@ -162,6 +163,36 @@ API đầu tiên nhận dữ kiện đã chuẩn hóa tại `POST /api/inference
 
 Response gồm `results`, `missing` và `traces`. Route chạy trên Node.js runtime, kiểm tra toàn bộ input bằng allow-list rồi gọi CLIPS bằng native process; dữ liệu người dùng không được chuyển qua shell.
 
+### API vụ việc và suy luận có lưu trữ
+
+| Method | Endpoint | Chức năng |
+|---|---|---|
+| `POST` | `/api/cases` | Tạo vụ việc |
+| `GET` | `/api/cases/:caseId` | Đọc vụ việc và facts hiện tại |
+| `PUT` | `/api/cases/:caseId/facts` | Thay toàn bộ facts hiện tại của vụ việc |
+| `POST` | `/api/cases/:caseId/inference/will-validity` | Chạy CLIPS và lưu một snapshot mới |
+| `GET` | `/api/cases/:caseId/inference-runs/:runId` | Đọc lại một lần suy luận |
+
+Mỗi inference run lưu bất biến:
+
+- snapshot facts đã đưa vào CLIPS;
+- phiên bản knowledge base;
+- kết quả mô-đun;
+- các dữ kiện còn thiếu;
+- inference trace.
+
+Mặc định SQLite được tạo tại `data/inheritance.db`. Có thể đổi vị trí bằng biến môi trường `DATABASE_PATH`, ví dụ:
+
+```bash
+npm run db:init
+```
+
+Database cũng tự được tạo khi API lưu trữ được gọi lần đầu. Để khởi tạo tại vị trí khác:
+
+```bash
+DATABASE_PATH=/var/lib/inheritance/inheritance.db npm run db:init
+```
+
 Chạy toàn bộ regression tests và production build:
 
 ```bash
@@ -188,8 +219,11 @@ npm run build
 ├── src/
 │   ├── app/                          # Next.js App Router và Route Handlers
 │   ├── domain/                       # Input schema của miền nghiệp vụ
-│   └── server/clips/                 # CLIPS adapter và output parser
-├── tests/                            # Integration tests CLIPS–TypeScript
+│   └── server/
+│       ├── clips/                    # CLIPS adapter và output parser
+│       ├── cases/                    # Application service
+│       └── db/                       # SQLite schema và repositories
+├── tests/                            # CLIPS, adapter và persistence tests
 ├── package.json
 ├── reference/                       # Tài liệu nghiên cứu tham khảo
 └── README.md
@@ -241,7 +275,8 @@ Căn cứ và mô tả của R-B03 được tra từ `rule-metadata.clp`, không
 
 ## Roadmap gần nhất
 
-1. Thêm SQLite để lưu case, asserted facts, derived facts và inference trace.
-2. Xây dựng giao diện nhập dữ kiện và xem cây giải thích.
+1. Xây dựng giao diện tạo vụ việc và nhập facts.
+2. Trình bày kết quả, dữ kiện thiếu và cây giải thích.
 3. Bổ sung legal metadata vào response của API.
-4. Mở rộng sang mô-đun xác định loại thừa kế.
+4. Tạo hash/version tự động cho mỗi bản phát hành knowledge base.
+5. Mở rộng sang mô-đun xác định loại thừa kế.

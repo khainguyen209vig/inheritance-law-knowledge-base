@@ -256,7 +256,9 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 - Đã loại bỏ trace counter khỏi luật pháp lý và thay bằng provenance/dependency trace.
 - Đã chạy đạt mười test, gồm các luồng cơ bản, người từ đủ 15 đến dưới 18 tuổi, người bị hạn chế thể chất, di chúc miệng, mốc 5 ngày, mặc nhiên hủy bỏ, `UNKNOWN`, `CONFLICT` và domain inference độc lập với UI.
 - Đã chuẩn hóa line protocol CLIPS, xây CLIPS adapter TypeScript, khởi tạo Next.js và cung cấp `POST /api/inference/will-validity`.
-- Đã kiểm thử integration qua native CLIPS process và smoke-test route HTTP; chưa tích hợp SQLite hoặc giao diện nhập facts.
+- Đã tích hợp SQLite, migration khởi tạo, repository và API cho case, asserted facts và inference runs.
+- Mỗi inference run lưu snapshot input, phiên bản knowledge base, module results, missing requirements và inference traces; sửa facts hiện tại không thay đổi lịch sử.
+- Đã kiểm thử integration qua native CLIPS process và smoke-test toàn bộ route HTTP; chưa triển khai giao diện nhập facts.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

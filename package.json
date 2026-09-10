@@ -6,21 +6,28 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "db:init": "node --import tsx scripts/init-db.ts",
     "test:kb": "clips -f2 knowledge-base/tests/will-validity.clp",
-    "test:adapter": "node --import tsx tests/clips-adapter.test.ts",
-    "test": "npm run test:kb && npm run test:adapter"
+    "test:app": "node --import tsx --test tests/*.test.ts",
+    "test": "npm run test:kb && npm run test:app"
   },
   "dependencies": {
+    "better-sqlite3": "12.4.1",
     "next": "16.3.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "4.6.1"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "9.6.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.4.1": true,
+    "esbuild@0.28.2": true
   }
 }
