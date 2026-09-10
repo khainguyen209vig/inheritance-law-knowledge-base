@@ -43,6 +43,10 @@ Next.js + TypeScript
 
 Ứng dụng dự kiến được self-host bằng Node.js hoặc Docker. Next.js Route Handlers đảm nhiệm backend API.
 
+Các nhóm luật được tổ chức thành mô-đun kết quả dùng chung working memory, không phải các chuỗi xử lý độc lập. Registry tại `src/domain/analysis-modules.ts` khai báo result predicate, kiểu interaction, dependency và runtime adapter. Dependency chưa review mang trạng thái `draft` và không được execution planner tự động chạy.
+
+`ModuleWorkspace` chọn presenter theo Module ID, vì vậy mô-đun tính hợp pháp có thể dùng questionnaire trong khi hàng thừa kế/thế vị dùng family tree và thời hiệu dùng timeline. Interaction rules chỉ điều khiển UI; kết luận pháp lý vẫn do CLIPS tạo ra.
+
 ## Trạng thái hiện tại
 
 Đã hoàn thành vertical slice đầu tiên cho mô-đun đánh giá tính hợp pháp cơ bản của di chúc:
@@ -251,8 +255,8 @@ npm run build
 │   └── run-fixture.clp              # Điểm chạy ví dụ bằng CLI
 ├── src/
 │   ├── app/                          # Next.js App Router và Route Handlers
-│   ├── components/                   # Reasoning workspace và shadcn/ui
-│   ├── domain/                       # Input schema của miền nghiệp vụ
+│   ├── components/                   # Module shell, presenters và shadcn/ui
+│   ├── domain/                       # Module registry và input schema nghiệp vụ
 │   └── server/
 │       ├── clips/                    # CLIPS adapter và output parser
 │       ├── cases/                    # Application service

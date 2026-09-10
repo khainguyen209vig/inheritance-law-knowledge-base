@@ -62,16 +62,55 @@ Next.js + TypeScript
 - Không dùng Fastify trong MVP. Chỉ tách Fastify thành service riêng nếu inference trở thành workload độc lập, cần hàng đợi hoặc cần scale khác với giao diện.
 - Không dùng custom Next.js server chỉ để gắn Fastify; Route Handlers đã đủ cho API nội bộ của đồ án.
 
+### 2.3. Kiến trúc mô-đun kết quả và dependency graph
+
+Các nhóm luật không phải những hệ chuyên gia tách biệt và cũng không hợp thành một pipeline cứng. Chúng là các mô-đun kết quả dùng chung working memory. Một mô-đun có thể tiêu thụ asserted facts của vụ việc và derived facts do mô-đun khác tạo ra.
+
+```text
+                         Shared working memory
+                                  │
+        ┌─────────────────────────┼────────────────────────┐
+        ▼                         ▼                        ▼
+ Tính hợp pháp              Loại thừa kế             Quyền hưởng
+    di chúc                       │                        │
+        └──────── derived facts ──┼────────────────────────┘
+                                  ▼
+                         Kết quả từng mô-đun
+```
+
+`src/domain/analysis-modules.ts` là registry kỹ thuật của mô-đun, định nghĩa:
+
+- ID và result predicate chính;
+- trạng thái `planned` hoặc `implemented`;
+- loại interaction phù hợp như questionnaire, family tree, people table hoặc timeline;
+- dependency bắt buộc hoặc có điều kiện;
+- trạng thái dependency `draft` hoặc `implemented`;
+- runtime adapter cho mô-đun đã triển khai.
+
+Dependency chỉ là quan hệ điều phối và sử dụng tri thức, không phải kết luận pháp lý. Quan hệ ở trạng thái `draft` được dùng để review kiến trúc nhưng không được execution planner tự động chạy. Chỉ dependency `required + implemented` mới được đưa vào execution plan. Dependency có điều kiện phải được kích hoạt từ facts có cấu trúc sau khi rule và điều kiện kích hoạt đã được review.
+
+UI sử dụng `ModuleWorkspace` làm shell chọn presenter theo Module ID. Không bắt buộc mọi mô-đun dùng cùng một form:
+
+| Interaction | Mô-đun phù hợp |
+|---|---|
+| Questionnaire | Tính hợp pháp của di chúc, loại thừa kế |
+| Family tree | Hàng thừa kế, thừa kế thế vị |
+| People table | Quyền hưởng, suất bắt buộc, từ chối nhận |
+| Timeline | Thời hiệu |
+
+Các điều kiện ẩn/hiện câu hỏi là interaction rules của UI, không phải production rules pháp lý. Mọi kết luận pháp lý vẫn phải do CLIPS dẫn xuất.
+
 ## 3. Luồng xử lý chính
 
 1. Người dùng tạo một vụ việc mới.
 2. User interface thu thập facts bằng biểu mẫu có cấu trúc.
 3. Dữ kiện được kiểm tra kiểu, tính đầy đủ và tính nhất quán trước khi lưu vào case-specific database.
-4. Người dùng chọn mô-đun phân tích; hệ thống thêm fact yêu cầu tương ứng và kiểm tra bộ dữ kiện đầu vào bắt buộc của mô-đun.
-5. Forward chaining áp dụng các luật lên tập facts đã có để tạo facts dẫn xuất cho đến khi agenda rỗng.
-6. Mỗi lần kích hoạt luật được ghi vào inference trace, gồm facts đầu vào, Rule ID, kết luận và thời điểm.
-7. Explanation subsystem biến inference trace thành cây giải thích cho người dùng.
-8. Nếu thiếu dữ kiện hoặc có xung đột, hệ thống không ép kết quả `TRUE/FALSE` mà trả về `UNKNOWN` hoặc `CONFLICT` cùng nguyên nhân.
+4. Người dùng chọn mô-đun phân tích; module registry xác định presenter và các dependency đã được triển khai.
+5. Hệ thống lập execution plan theo dependency graph, thêm analysis request tương ứng và kiểm tra dữ kiện đầu vào của từng mô-đun.
+6. Forward chaining áp dụng các luật lên working memory dùng chung để tạo facts dẫn xuất cho đến khi agenda rỗng.
+7. Mỗi lần kích hoạt luật được ghi vào inference trace, gồm facts đầu vào, Rule ID, kết luận và thời điểm.
+8. Explanation subsystem biến inference trace thành cây giải thích cho người dùng.
+9. Nếu thiếu dữ kiện hoặc có xung đột, hệ thống không ép kết quả `TRUE/FALSE` mà trả về `UNKNOWN` hoặc `CONFLICT` cùng nguyên nhân.
 
 ## 4. Biểu diễn tri thức
 
@@ -263,6 +302,8 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 - Đã bổ sung legal catalog JSON cùng ID ổn định ở cấp điều/khoản/điểm; script `law:extract` tái tạo catalog từ file `.doc` và lưu fingerprint SHA-256 của nguồn.
 - Đã hợp nhất metadata CLIPS và giải thích UI vào `rule-registry.json`; `rule-metadata.clp` được sinh tự động bằng `kb:generate`.
 - Test bảo đảm mọi R-B01–R-B09 có mô tả, mọi domain `defrule` thuộc đúng một Rule ID, các ID phát ra không thiếu/mồ côi và không có tham chiếu tới section không tồn tại.
+- Đã tạo module registry và dependency graph có kiểm soát trạng thái; `will-validity` là mô-đun thực thi đầu tiên, các dependency dự kiến không tham gia runtime khi chưa review.
+- Đã thêm `ModuleWorkspace` để chọn presenter theo mô-đun, cho phép family tree, people table hoặc timeline thay vì ép mọi bài toán vào form hiện tại.
 - Đã kiểm thử integration qua native CLIPS process, smoke-test toàn bộ route HTTP và kiểm tra trực quan giao diện desktop/mobile.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức

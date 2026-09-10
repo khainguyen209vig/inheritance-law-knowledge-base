@@ -1,5 +1,5 @@
-import { ReasoningWorkspace } from "@/components/reasoning-workspace";
+import { ModuleWorkspace } from "@/components/module-workspace";
 
 export default function HomePage() {
-  return <ReasoningWorkspace />;
+  return <ModuleWorkspace moduleId="will-validity" />;
 }

@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { resolveInferencePath, type AnalysisModuleDefinition } from "@/domain/analysis-modules";
 import { getRuleExplanation, legalProvisions } from "@/domain/legal-knowledge";
 import { cn } from "@/lib/utils";
 
@@ -269,10 +270,10 @@ const missingLabels: Record<string, string> = {
   "unresolved-rule-path": "Các dữ kiện hiện tại chưa khớp một đường suy luận đã được mô hình hóa",
 };
 
-export function ReasoningWorkspace() {
+export function ReasoningWorkspace({ module }: { module: AnalysisModuleDefinition }) {
   const [answers, setAnswers] = useState<Answers>({});
   const [activeIndex, setActiveIndex] = useState(0);
-  const [title, setTitle] = useState("Hồ sơ di chúc thử nghiệm");
+  const [title, setTitle] = useState(module.runtime?.defaultCaseTitle ?? module.title);
   const [run, setRun] = useState<InferenceRun>();
   const [error, setError] = useState<string>();
   const [technicalMode, setTechnicalMode] = useState(false);
@@ -287,7 +288,7 @@ export function ReasoningWorkspace() {
   const facts = useMemo(() => buildFacts(answers), [answers]);
   const answeredCount = questions.filter((question) => answers[question.id] !== undefined).length;
   const progress = questions.length === 0 ? 0 : (answeredCount / questions.length) * 100;
-  const result = run?.results.find((item) => item.predicate === "valid-will");
+  const result = run?.results.find((item) => item.predicate === module.primaryResultPredicate);
   const orderedTraces = useMemo(() => sortTraces(run?.traces ?? []), [run?.traces]);
   const currentRuleId = questionRuleId(currentQuestion.id, answers);
 
@@ -307,7 +308,7 @@ export function ReasoningWorkspace() {
         if (!caseId.current || !subject.current) {
           const token = crypto.randomUUID();
           caseId.current = `case-${token}`;
-          subject.current = `will-${token}`;
+          subject.current = `${module.runtime?.subjectPrefix ?? "subject"}-${token}`;
           await requestJson("/api/cases", {
             method: "POST",
             body: JSON.stringify({ id: caseId.current, title }),
@@ -319,7 +320,7 @@ export function ReasoningWorkspace() {
           body: JSON.stringify({ subject: subject.current, facts }),
         });
         const inferenceRun = await requestJson<InferenceRun>(
-          `/api/cases/${caseId.current}/inference/will-validity`,
+          resolveInferencePath(module, caseId.current),
           { method: "POST", body: JSON.stringify({ subject: subject.current }) },
         );
         setRun(inferenceRun);
@@ -337,7 +338,7 @@ export function ReasoningWorkspace() {
             <div className="grid size-9 place-items-center rounded-lg bg-primary font-serif text-lg text-primary-foreground">L</div>
             <div>
               <p className="text-sm font-semibold">Inheritance Reasoner</p>
-              <p className="text-xs text-muted-foreground">CLIPS · Forward chaining · R-B01–R-B09</p>
+              <p className="text-xs text-muted-foreground">{module.title} · CLIPS · Forward chaining</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -499,14 +500,14 @@ export function ReasoningWorkspace() {
               {result ? (
                 <div className={cn("rounded-xl border p-4", resultTone(result.value))}>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs font-semibold uppercase tracking-wider">Tính hợp pháp của di chúc</span>
+                    <span className="text-xs font-semibold uppercase tracking-wider">{module.title}</span>
                     <Badge variant={resultBadge(result.value)}>{resultStatusLabel(result.value)}</Badge>
                   </div>
                   <p className="mt-3 text-sm">Kết luận được dẫn xuất qua {result.derivations.join(", ")}.</p>
                   <Button className="mt-3 bg-white/50" variant="outline" size="sm" onClick={() => setSelectedRuleId(result.derivations[0])}>
                     Xem căn cứ của kết luận
                   </Button>
-                  {technicalMode ? <code className="mt-3 block text-[11px]">valid-will={result.value}</code> : null}
+                  {technicalMode ? <code className="mt-3 block text-[11px]">{module.primaryResultPredicate}={result.value}</code> : null}
                 </div>
               ) : (
                 <div className="grid min-h-32 place-items-center rounded-xl border border-dashed text-center text-sm text-muted-foreground">
