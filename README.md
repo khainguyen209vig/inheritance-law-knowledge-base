@@ -53,8 +53,8 @@ Next.js + TypeScript
 - [x] Sinh kết luận trung gian, kết quả mô-đun và inference trace.
 - [x] Kiểm thử trường hợp hợp lệ, không hợp lệ và thiếu dữ kiện.
 - [x] Kiểm thử các trường hợp đặc biệt R-B05–R-B09.
-- [ ] Khởi tạo ứng dụng Next.js.
-- [ ] Xây dựng TypeScript CLIPS adapter.
+- [x] Khởi tạo ứng dụng Next.js full-stack.
+- [x] Xây dựng TypeScript CLIPS adapter và API suy luận đầu tiên.
 - [ ] Tích hợp SQLite và giao diện nhập facts.
 
 ## Phạm vi kết quả
@@ -77,8 +77,8 @@ Phiên bản trình bày tối thiểu hướng tới mô-đun 1–4. Mức mụ
 - CLIPS 6.x.
 - Git.
 - Ubuntu/Pop!_OS hoặc môi trường có thể chạy CLIPS.
-
-Node.js, TypeScript và Next.js sẽ trở thành yêu cầu sau khi phần ứng dụng web được khởi tạo.
+- Node.js 20.9 trở lên.
+- npm.
 
 ## Cài đặt CLIPS
 
@@ -137,6 +137,38 @@ Facts đầu vào
 - `knowledge-base/fixtures/will-oral-valid.clp`;
 - `knowledge-base/fixtures/will-oral-revoked.clp`.
 
+## Chạy ứng dụng web
+
+```bash
+npm install
+npm run dev
+```
+
+API đầu tiên nhận dữ kiện đã chuẩn hóa tại `POST /api/inference/will-validity`. Ví dụ request tối thiểu cho một di chúc bằng văn bản:
+
+```json
+{
+  "caseId": "case-demo",
+  "subject": "will-demo",
+  "facts": [
+    { "id": "type", "predicate": "will-type", "value": "written" },
+    { "id": "mental", "predicate": "testator-mental-state", "value": "lucid" },
+    { "id": "influence", "predicate": "undue-influence", "value": "none" },
+    { "id": "content", "predicate": "prohibited-content", "value": "not-detected" },
+    { "id": "form", "predicate": "formal-defect", "value": "not-detected" }
+  ]
+}
+```
+
+Response gồm `results`, `missing` và `traces`. Route chạy trên Node.js runtime, kiểm tra toàn bộ input bằng allow-list rồi gọi CLIPS bằng native process; dữ liệu người dùng không được chuyển qua shell.
+
+Chạy toàn bộ regression tests và production build:
+
+```bash
+npm test
+npm run build
+```
+
 ## Cấu trúc repository
 
 ```text
@@ -153,6 +185,12 @@ Facts đầu vào
 │   ├── rule-metadata.clp            # Căn cứ và mô tả luật
 │   ├── templates.clp                # Fact contracts dùng chung
 │   └── run-fixture.clp              # Điểm chạy ví dụ bằng CLI
+├── src/
+│   ├── app/                          # Next.js App Router và Route Handlers
+│   ├── domain/                       # Input schema của miền nghiệp vụ
+│   └── server/clips/                 # CLIPS adapter và output parser
+├── tests/                            # Integration tests CLIPS–TypeScript
+├── package.json
 ├── reference/                       # Tài liệu nghiên cứu tham khảo
 └── README.md
 ```
@@ -203,8 +241,7 @@ Căn cứ và mô tả của R-B03 được tra từ `rule-metadata.clp`, không
 
 ## Roadmap gần nhất
 
-1. Chuẩn hóa output của CLIPS để TypeScript có thể đọc ổn định.
-2. Khởi tạo ứng dụng Next.js full-stack.
-3. Xây dựng TypeScript CLIPS adapter và `POST /api/inference/will-validity`.
-4. Thêm SQLite để lưu case, asserted facts, derived facts và inference trace.
-5. Xây dựng giao diện nhập dữ kiện và xem cây giải thích.
+1. Thêm SQLite để lưu case, asserted facts, derived facts và inference trace.
+2. Xây dựng giao diện nhập dữ kiện và xem cây giải thích.
+3. Bổ sung legal metadata vào response của API.
+4. Mở rộng sang mô-đun xác định loại thừa kế.

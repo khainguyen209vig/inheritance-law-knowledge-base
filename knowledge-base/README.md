@@ -25,6 +25,7 @@ Các fixtures bao phủ trường hợp hợp lệ, không hợp lệ, chưa đ�
 | Completeness/conflict | `rules/90-will-validity-completeness.clp` | Phát hiện facts thiếu và kết luận mâu thuẫn |
 | Explanation | `rules/98-explanation.clp` | Chuyển provenance của derived facts thành trace đồng nhất |
 | Result projection | `rules/99-result-projection.clp` | Chọn kết quả cần trả cho mô-đun mà UI yêu cầu |
+| Machine output | `machine-output.clp` | Xuất result, missing facts và trace bằng line protocol ổn định cho TypeScript |
 
 `analysis-request` không được sử dụng trong domain rules. Vì vậy tri thức vẫn được suy ra khi không có yêu cầu hiển thị từ UI; yêu cầu chỉ điều khiển projection của kết quả.
 
@@ -59,6 +60,7 @@ Sau khi cài CLIPS:
 
 ```bash
 clips -f2 knowledge-base/run-fixture.clp
+clips -f2 knowledge-base/run-machine-fixture.clp
 clips -f2 knowledge-base/tests/will-validity.clp
 ```
 
