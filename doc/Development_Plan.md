@@ -310,6 +310,31 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 - Repository và API hỗ trợ danh sách case/run theo contract tổng quát `module + predicate + value`, không khóa trang lịch sử vào một kết luận `valid-will` duy nhất.
 - Đã kiểm thử integration qua native CLIPS process, smoke-test toàn bộ route HTTP và kiểm tra trực quan giao diện desktop/mobile.
 
+### Backlog sau MVP — So sánh inference runs
+
+Tính năng so sánh hai inference runs của cùng một hồ sơ được hoãn đến sau khi hoàn thành các mô-đun `Must`. Đây là chức năng explanation/audit, không phải điều kiện để inference engine hoặc dependency graph hoạt động.
+
+Phạm vi dự kiến:
+
+- facts được thêm, xóa hoặc thay đổi giữa hai input snapshots;
+- module results thay đổi giữa `TRUE`, `FALSE`, `UNKNOWN` và `CONFLICT`;
+- Rule ID mới được kích hoạt hoặc không còn kích hoạt;
+- missing requirements đã được đáp ứng hoặc mới phát sinh;
+- không diễn giải quan hệ nhân quả nếu trace không chứng minh được dependency tương ứng.
+
+Không đưa logic so sánh vào CLIPS. Application layer sẽ so sánh hai snapshot bất biến, còn nội dung pháp lý của từng Rule ID tiếp tục được lấy từ rule registry.
+
+### Bước đang thực hiện tiếp theo — Mô-đun loại thừa kế
+
+Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_Rulebase_v2.md`. Trước khi viết CLIPS cần chốt contract ở cấp từng phần di sản, không dùng một Boolean toàn cục cho toàn bộ vụ việc:
+
+- chủ thể kết luận: `estate-portion`;
+- kết quả chính: `inheritance-regime(portion) = testamentary | statutory`;
+- đầu vào dùng chung: sự tồn tại của di chúc và derived fact `valid-will`;
+- đầu vào theo phần: disposition, beneficiary và trạng thái phần di sản đã được định đoạt;
+- completeness marker bắt buộc trước các kết luận dựa trên “tất cả” hoặc “không có”, ví dụ `disposition-set-complete=true`;
+- triển khai trước R-A01, R-A03, R-A05b và R-A06 đang ở mức `MODEL-READY`; các rule `TEAM-REVIEW` không được kích hoạt trong runtime.
+
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 
 - Chốt phạm vi câu hỏi mà MVP phải trả lời.

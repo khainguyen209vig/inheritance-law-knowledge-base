@@ -61,7 +61,8 @@ Các nhóm luật được tổ chức thành mô-đun kết quả dùng chung w
 - [x] Xây dựng TypeScript CLIPS adapter và API suy luận đầu tiên.
 - [x] Tích hợp SQLite và lưu snapshot của mỗi lần suy luận.
 - [x] Xây dựng prototype workspace nhập facts và xem giải thích.
-- [ ] Hoàn thiện danh sách vụ việc và lịch sử các lần suy luận.
+- [x] Hoàn thiện danh sách vụ việc và lịch sử các lần suy luận cơ bản.
+- [ ] So sánh hai inference runs của cùng hồ sơ (hạng mục hậu MVP).
 
 ## Phạm vi kết quả
 
@@ -338,8 +339,10 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 
 ## Roadmap gần nhất
 
-1. Thêm trang danh sách vụ việc và lịch sử inference runs.
-2. Liên kết dữ kiện thiếu về đúng câu hỏi cần bổ sung.
-3. Bổ sung legal metadata vào response của API.
-4. Tạo hash/version tự động cho mỗi bản phát hành knowledge base.
-5. Mở rộng sang mô-đun xác định loại thừa kế.
+1. Đặc tả facts, kết quả và dependency của mô-đun `inheritance-type` từ nhóm luật A.
+2. Triển khai các rule `MODEL-READY` của nhóm A bằng CLIPS cùng fixtures và regression tests.
+3. Xây API, question flow và result presenter cho `inheritance-type`.
+4. Kiểm chứng việc dùng derived fact `valid-will` giữa hai mô-đun trên shared working memory.
+5. Liên kết missing requirements về đúng câu hỏi cần bổ sung.
+
+Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.
