@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inferWillValidity } from "../src/server/clips/adapter";
+import { inferInheritanceType, inferWillValidity } from "../src/server/clips/adapter";
 
 test("CLIPS adapter returns a valid-will result and trace", async () => {
   const output = await inferWillValidity({
@@ -17,6 +17,22 @@ test("CLIPS adapter returns a valid-will result and trace", async () => {
 
   assert.ok(output.results.some((result) => result.predicate === "valid-will" && result.value === "true"));
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-B03"));
+});
+
+test("inheritance adapter derives one statutory result per estate portion", async () => {
+  const output = await inferInheritanceType({
+    caseId: "adapter-inheritance",
+    subject: "adapter-inheritance",
+    facts: [
+      { id: "has-will", subject: "adapter-inheritance", predicate: "has-will", value: false },
+      { id: "portion-one", subject: "portion-one", predicate: "estate-portion", value: true },
+      { id: "portion-two", subject: "portion-two", predicate: "estate-portion", value: true },
+    ],
+  });
+
+  assert.deepEqual(output.results.map((result) => result.subject).sort(), ["portion-one", "portion-two"]);
+  assert.ok(output.results.every((result) => result.value === "statutory"));
+  assert.ok(output.traces.every((trace) => trace.ruleId === "R-A01"));
 });
 
 test("CLIPS adapter preserves unknown and missing facts", async () => {

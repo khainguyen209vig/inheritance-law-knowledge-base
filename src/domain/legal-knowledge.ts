@@ -37,6 +37,7 @@ export interface RuleRegistryEntry extends RuleExplanation {
   status: "draft" | "reviewed" | "approved" | "deprecated";
   clipsMetadata: boolean;
   implementations: string[];
+  reviewState?: "MODEL_READY" | "TEAM_REVIEW";
 }
 
 export const ruleRegistryMetadata = {
@@ -46,7 +47,7 @@ export const ruleRegistryMetadata = {
 
 export const ruleExplanations = ruleRegistry.entries as Record<string, RuleRegistryEntry>;
 
-export function getRuleExplanation(ruleId: string): RuleExplanation | undefined {
+export function getRuleExplanation(ruleId: string): RuleRegistryEntry | undefined {
   return ruleExplanations[ruleId];
 }
 

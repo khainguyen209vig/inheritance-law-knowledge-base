@@ -31,7 +31,9 @@ test("rule registry has valid identities and controlled vocabulary", () => {
 });
 
 test("every domain production rule is owned by exactly one registry entry", () => {
-  const domainRules = readFileSync(join(projectRoot, "knowledge-base/rules/01-will-validity.clp"), "utf8");
+  const domainRules = ["01-will-validity.clp", "02-inheritance-type.clp"]
+    .map((filename) => readFileSync(join(projectRoot, "knowledge-base/rules", filename), "utf8"))
+    .join("\n");
   const implementedRuleNames = [...domainRules.matchAll(/^\(defrule\s+([^\s)]+)/gmu)].map((match) => match[1]);
   const registeredImplementations = Object.values(registryEntries)
     .filter((entry) => entry.kind !== "system")
@@ -51,7 +53,7 @@ test("every emitted explanation ID has CLIPS metadata and no metadata is orphane
     for (const match of contents.matchAll(/^\(defrule\s+([^\s)]+)/gmu)) {
       allProductionRules.add(match[1]);
     }
-    for (const match of contents.matchAll(/\((?:rule-id|derivations)\s+([A-Z][A-Z0-9-]*)\)/gu)) {
+    for (const match of contents.matchAll(/\((?:rule-id|derivations)\s+([A-Z][A-Za-z0-9-]*)\)/gu)) {
       emittedIds.add(match[1]);
     }
   }

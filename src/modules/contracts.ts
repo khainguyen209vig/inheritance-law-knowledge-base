@@ -23,18 +23,21 @@ export interface ApiFact {
   id: string;
   predicate: string;
   value: string | number | boolean;
+  subject?: string;
 }
 
 export type InferenceValue = "true" | "false" | "unknown" | "conflict";
+export type ModuleResultValue = InferenceValue | "statutory" | "testamentary";
 
 export interface InferenceRun {
   id: string;
   caseId: string;
   knowledgeBaseVersion: string;
   createdAt: string;
-  results: Array<{ predicate: string; value: InferenceValue; derivations: string[] }>;
-  missing: Array<{ predicate: string }>;
+  results: Array<{ subject: string; predicate: string; value: ModuleResultValue; derivations: string[] }>;
+  missing: Array<{ subject: string; predicate: string }>;
   traces: Array<{
+    subject: string;
     ruleId: string;
     conclusionPredicate: string;
     conclusionValue: string;

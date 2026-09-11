@@ -9,7 +9,7 @@ import { getDatabase } from "@/server/db/database";
 
 export const dynamic = "force-dynamic";
 
-const resultLabels = { true: "Đạt", false: "Không đạt", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn" };
+const resultLabels = { true: "Đạt", false: "Không đạt", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn", statutory: "Theo pháp luật", testamentary: "Theo di chúc" };
 
 export default function CasesPage() {
   const cases = new CaseRepository(getDatabase()).listCases();
@@ -48,7 +48,7 @@ export default function CasesPage() {
                     <div className="flex flex-wrap gap-2">
                       <Badge variant="outline">{item.factCount} facts</Badge>
                       <Badge variant="secondary">{item.runCount} lần suy luận</Badge>
-                      {primaryResult ? <Badge variant={primaryResult.value === "true" ? "success" : primaryResult.value === "false" ? "destructive" : "warning"}>{resultLabels[primaryResult.value]}</Badge> : null}
+                      {primaryResult ? <Badge variant={primaryResult.value === "true" || primaryResult.value === "testamentary" ? "success" : primaryResult.value === "false" ? "destructive" : "warning"}>{resultLabels[primaryResult.value]}</Badge> : null}
                     </div>
                     <span className="text-xs text-muted-foreground">{new Date(item.updatedAt).toLocaleString("vi-VN")}</span>
                   </div>

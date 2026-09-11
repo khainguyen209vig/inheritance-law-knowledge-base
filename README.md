@@ -62,6 +62,7 @@ Các nhóm luật được tổ chức thành mô-đun kết quả dùng chung w
 - [x] Tích hợp SQLite và lưu snapshot của mỗi lần suy luận.
 - [x] Xây dựng prototype workspace nhập facts và xem giải thích.
 - [x] Hoàn thiện danh sách vụ việc và lịch sử các lần suy luận cơ bản.
+- [x] Triển khai mô-đun loại thừa kế R-A01–R-A06 theo từng phần di sản, gồm cả các rule `TEAM_REVIEW` ở trạng thái draft.
 - [ ] So sánh hai inference runs của cùng hồ sơ (hạng mục hậu MVP).
 
 ## Phạm vi kết quả
@@ -100,7 +101,7 @@ sudo apt install clips
 Kiểm tra bằng bộ test hiện có:
 
 ```bash
-clips -f2 knowledge-base/tests/will-validity.clp
+npm test
 ```
 
 Kết quả mong đợi:
@@ -175,13 +176,13 @@ Văn bản đã chuẩn hóa được lưu tại `knowledge-base/legal-sources/c
 npm run law:extract
 ```
 
-Lệnh sử dụng LibreOffice ở chế độ headless để chuyển `.doc` sang text, tách Điều 627, 629 và 630, chuẩn hóa các khoản/điểm rồi ghi lại JSON. Trường `sourceSha256` giúp nhận biết chính xác phiên bản tài liệu nguồn đã được trích xuất. Sau khi chạy, cần review diff của catalog và chạy `npm test` trước khi chấp nhận thay đổi pháp lý.
+Lệnh sử dụng LibreOffice ở chế độ headless để chuyển `.doc` sang text, tách Điều 627, 629, 630, 649 và 650, chuẩn hóa các khoản/điểm rồi ghi lại JSON. Trường `sourceSha256` giúp nhận biết chính xác phiên bản tài liệu nguồn đã được trích xuất. Sau khi chạy, cần review diff của catalog và chạy `npm test` trước khi chấp nhận thay đổi pháp lý.
 
 Trong TypeScript có thể truy xuất trực tiếp bằng `getLegalProvision("article-630")` hoặc `getLegalSection("article-630", "clause-1-a")` từ `src/domain/legal-knowledge.ts`.
 
 UI sử dụng Tailwind CSS và các shadcn source components trong `src/components/ui`. Hàm `cn()` kết hợp `clsx` với `tailwind-merge` để xử lý class variants.
 
-Trang `/modules` đọc module registry và hiển thị các mục tiêu phân tích cùng kiểu interaction dự kiến. `/modules/will-validity` mở presenter đã triển khai; các mô-đun còn lại hiển thị trạng thái dự kiến mà không tái sử dụng nhầm form di chúc.
+Trang `/modules` đọc module registry và hiển thị các mục tiêu phân tích cùng kiểu interaction dự kiến. Hai presenter đã triển khai là `/modules/will-validity` và `/modules/inheritance-type`; mỗi mô-đun có cách nhập và trình bày kết quả riêng.
 
 Trang `/cases` quản lý các hồ sơ trong SQLite. `/cases/:caseId` hiển thị facts hiện tại, mô-đun có thể chạy và lịch sử inference runs; `/cases/:caseId/runs/:runId` mở snapshot bất biến cùng trace và căn cứ pháp lý. Khi mở lại `will-validity`, presenter khôi phục answers từ facts đã lưu thay vì tạo một case mới.
 
@@ -213,6 +214,7 @@ Response gồm `results`, `missing` và `traces`. Route chạy trên Node.js run
 | `PATCH` | `/api/cases/:caseId` | Đổi tên vụ việc |
 | `PUT` | `/api/cases/:caseId/facts` | Thay toàn bộ facts hiện tại của vụ việc |
 | `POST` | `/api/cases/:caseId/inference/will-validity` | Chạy CLIPS và lưu một snapshot mới |
+| `POST` | `/api/cases/:caseId/inference/inheritance-type` | Chạy nhóm luật A trên toàn bộ phần di sản và lưu snapshot |
 | `GET` | `/api/cases/:caseId/inference-runs` | Liệt kê lịch sử suy luận của vụ việc |
 | `GET` | `/api/cases/:caseId/inference-runs/:runId` | Đọc lại một lần suy luận |
 
@@ -269,6 +271,7 @@ npm run build
 │   ├── domain/                       # Module registry và input schema nghiệp vụ
 │   ├── modules/
 │   │   ├── contracts.ts             # Contract chung của answer, question, fact và result
+│   │   ├── inheritance-type/         # Presenter phân loại theo từng phần di sản
 │   │   └── will-validity/            # Question flow, fact mapper, presenter và presentation labels
 │   └── server/
 │       ├── clips/                    # CLIPS adapter và output parser
@@ -339,10 +342,12 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 
 ## Roadmap gần nhất
 
-1. Đặc tả facts, kết quả và dependency của mô-đun `inheritance-type` từ nhóm luật A.
-2. Triển khai các rule `MODEL-READY` của nhóm A bằng CLIPS cùng fixtures và regression tests.
-3. Xây API, question flow và result presenter cho `inheritance-type`.
-4. Kiểm chứng việc dùng derived fact `valid-will` giữa hai mô-đun trên shared working memory.
-5. Liên kết missing requirements về đúng câu hỏi cần bổ sung.
+1. [x] Đặc tả facts, kết quả và dependency của mô-đun `inheritance-type` theo từng phần di sản.
+2. [x] Triển khai R-A01–R-A06, gồm cả `TEAM_REVIEW`, cùng fixtures và regression tests.
+3. [x] Xây API, interaction flow và result presenter riêng cho `inheritance-type`.
+4. [x] Dùng derived fact `valid-will` giữa hai mô-đun trong cùng working memory.
+5. [x] Liên kết kết luận/trace với registry và nội dung Điều 649–650.
+6. [ ] Mở rộng presenter để thêm, sửa và xóa nhiều phần di sản trong cùng hồ sơ.
+7. [ ] Bắt đầu mô-đun `eligibility` sau khi team review nhóm luật A.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

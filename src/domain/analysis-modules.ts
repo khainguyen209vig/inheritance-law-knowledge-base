@@ -52,17 +52,22 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
     id: "inheritance-type",
     title: "Loại thừa kế",
     shortDescription: "Xác định phần di sản áp dụng thừa kế theo di chúc hoặc theo pháp luật.",
-    status: "planned",
+    status: "implemented",
     interactionMode: "questionnaire",
-    primaryResultPredicate: "inheritance-type",
+    primaryResultPredicate: "inheritance-regime",
     dependencies: [
       {
         moduleId: "will-validity",
         mode: "conditional",
-        status: "draft",
+        status: "implemented",
         reason: "Cần kết quả tính hợp pháp khi vụ việc có di chúc.",
       },
     ],
+    runtime: {
+      inferencePath: "/api/cases/:caseId/inference/inheritance-type",
+      subjectPrefix: "portion",
+      defaultCaseTitle: "Hồ sơ xác định loại thừa kế",
+    },
   },
   eligibility: {
     id: "eligibility",

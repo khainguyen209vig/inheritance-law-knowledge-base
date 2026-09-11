@@ -1,0 +1,5 @@
+(analysis-request (case-id case-undisposed) (subject case-undisposed) (module inheritance-type))
+(asserted-fact (fact-id portion) (case-id case-undisposed) (subject portion-one) (predicate estate-portion) (value true))
+(asserted-fact (fact-id has-will) (case-id case-undisposed) (subject case-undisposed) (predicate has-will) (value true))
+(asserted-fact (fact-id complete) (case-id case-undisposed) (subject portion-one) (predicate disposition-set-complete) (value true))
+(asserted-fact (fact-id disposed) (case-id case-undisposed) (subject portion-one) (predicate portion-disposed) (value false))

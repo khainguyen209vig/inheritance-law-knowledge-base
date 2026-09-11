@@ -42,20 +42,23 @@ CREATE INDEX IF NOT EXISTS inference_runs_case_idx
 CREATE TABLE IF NOT EXISTS module_results (
   id INTEGER PRIMARY KEY,
   run_id TEXT NOT NULL REFERENCES inference_runs(id) ON DELETE CASCADE,
+  subject TEXT NOT NULL,
   predicate TEXT NOT NULL,
-  value TEXT NOT NULL CHECK (value IN ('true', 'false', 'unknown', 'conflict')),
+  value TEXT NOT NULL,
   derivations_json TEXT NOT NULL
 ) STRICT;
 
 CREATE TABLE IF NOT EXISTS missing_requirements (
   id INTEGER PRIMARY KEY,
   run_id TEXT NOT NULL REFERENCES inference_runs(id) ON DELETE CASCADE,
+  subject TEXT NOT NULL,
   predicate TEXT NOT NULL
 ) STRICT;
 
 CREATE TABLE IF NOT EXISTS inference_traces (
   id INTEGER PRIMARY KEY,
   run_id TEXT NOT NULL REFERENCES inference_runs(id) ON DELETE CASCADE,
+  subject TEXT NOT NULL,
   rule_id TEXT NOT NULL,
   conclusion_predicate TEXT NOT NULL,
   conclusion_value TEXT NOT NULL,

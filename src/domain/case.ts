@@ -1,5 +1,8 @@
 import { z } from "zod";
+import { inheritanceTypeFactSchema } from "./inheritance-type";
 import { willFactSchema } from "./will-validity";
+
+export const caseFactSchema = z.union([willFactSchema, inheritanceTypeFactSchema]);
 
 export const caseIdSchema = z
   .string()
@@ -17,7 +20,7 @@ export const updateCaseSchema = z.object({
 export const replaceCaseFactsSchema = z
   .object({
     subject: caseIdSchema,
-    facts: z.array(willFactSchema).max(100),
+    facts: z.array(z.intersection(caseFactSchema, z.object({ subject: caseIdSchema.optional() }))).max(500),
   })
   .superRefine(({ facts }, context) => {
     const ids = new Set<string>();
@@ -36,6 +39,8 @@ export const replaceCaseFactsSchema = z
 export const runWillValiditySchema = z.object({
   subject: caseIdSchema,
 });
+
+export const runInheritanceTypeSchema = z.object({}).strict();
 
 export type CreateCaseInput = z.infer<typeof createCaseSchema>;
 export type ReplaceCaseFactsInput = z.infer<typeof replaceCaseFactsSchema>;

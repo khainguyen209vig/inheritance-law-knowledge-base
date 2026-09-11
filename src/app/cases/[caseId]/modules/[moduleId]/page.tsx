@@ -20,15 +20,15 @@ export default async function CaseModulePage({ params }: { params: Promise<{ cas
     throw error;
   }
 
-  const existingSubject = storedCase.facts.find((fact) => fact.predicate === "will-type")?.subject
-    ?? storedCase.facts[0]?.subject;
+  const existingSubject = module.id === "will-validity"
+    ? storedCase.facts.find((fact) => fact.predicate === "will-type")?.subject
+    : storedCase.facts.find((fact) => fact.predicate === "estate-portion")?.subject;
   const subject = existingSubject ?? `${module.runtime?.subjectPrefix ?? "subject"}-${randomUUID()}`;
-  const facts = storedCase.facts.filter((fact) => fact.subject === subject);
 
   return (
     <ModuleWorkspace
       moduleId={module.id}
-      initialCase={{ id: storedCase.id, title: storedCase.title, subject, facts }}
+      initialCase={{ id: storedCase.id, title: storedCase.title, subject, facts: storedCase.facts }}
     />
   );
 }

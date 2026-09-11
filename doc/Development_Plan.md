@@ -324,7 +324,7 @@ Phạm vi dự kiến:
 
 Không đưa logic so sánh vào CLIPS. Application layer sẽ so sánh hai snapshot bất biến, còn nội dung pháp lý của từng Rule ID tiếp tục được lấy từ rule registry.
 
-### Bước đang thực hiện tiếp theo — Mô-đun loại thừa kế
+### Mốc đã triển khai — Mô-đun loại thừa kế
 
 Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_Rulebase_v2.md`. Trước khi viết CLIPS cần chốt contract ở cấp từng phần di sản, không dùng một Boolean toàn cục cho toàn bộ vụ việc:
 
@@ -333,7 +333,17 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - đầu vào dùng chung: sự tồn tại của di chúc và derived fact `valid-will`;
 - đầu vào theo phần: disposition, beneficiary và trạng thái phần di sản đã được định đoạt;
 - completeness marker bắt buộc trước các kết luận dựa trên “tất cả” hoặc “không có”, ví dụ `disposition-set-complete=true`;
-- triển khai trước R-A01, R-A03, R-A05b và R-A06 đang ở mức `MODEL-READY`; các rule `TEAM-REVIEW` không được kích hoạt trong runtime.
+- đã triển khai R-A01–R-A06, gồm cả các rule `TEAM_REVIEW`, theo yêu cầu phục vụ demo và review;
+- `TEAM_REVIEW` vẫn giữ `status=draft`, có badge/cảnh báo trên UI và không được xem là đã phê duyệt pháp lý;
+- runtime nạp nhóm B và nhóm A trong cùng working memory để `valid-will` luôn là derived fact, không phải câu trả lời do người dùng tự khai;
+- SQLite lưu subject trên từng result, missing requirement và trace để một lần chạy có thể trả kết quả riêng cho nhiều phần di sản.
+
+### Bước tiếp theo — Hoàn thiện thao tác nhiều phần di sản
+
+- cho phép thêm, đổi tên và xóa nhiều `estate-portion` trong presenter;
+- hiển thị kết quả theo danh sách phần và tổng quan các chế độ cùng tồn tại;
+- bổ sung tình huống kiểm thử có cả `statutory` và `testamentary` nhưng ở hai phần khác nhau (không phải conflict);
+- sau khi ổn định UI, chuyển sang mô-đun `eligibility` và giữ hạng mục so sánh inference runs ở backlog hậu MVP.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

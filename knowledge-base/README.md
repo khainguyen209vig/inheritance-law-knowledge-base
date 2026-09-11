@@ -1,8 +1,8 @@
 # Knowledge base
 
-Thư mục này chứa tri thức mà CLIPS có thể thực thi, tách biệt với mã Next.js. Các rules mới phải được chuẩn hóa theo `doc/Loc_Rulebase_v2.md` và được team duyệt trước khi triển khai.
+Thư mục này chứa tri thức mà CLIPS có thể thực thi, tách biệt với mã Next.js. Các rules mới phải được chuẩn hóa theo `doc/Loc_Rulebase_v2.md`; rule chưa được duyệt chỉ được triển khai với trạng thái `draft`/`TEAM_REVIEW` và cảnh báo rõ trên UI.
 
-## Vertical slice đầu tiên
+## Các vertical slice hiện có
 
 Mô-đun `will-validity` hiện triển khai R-B01–R-B09 từ `doc/Loc_Rulebase_v2.md` và sinh:
 
@@ -15,6 +15,8 @@ Mô-đun `will-validity` hiện triển khai R-B01–R-B09 từ `doc/Loc_Rulebas
 
 Các fixtures bao phủ trường hợp hợp lệ, không hợp lệ, chưa đủ dữ kiện, dữ kiện mâu thuẫn, người lập di chúc chưa thành niên, người bị hạn chế thể chất, di chúc miệng và domain inference không phụ thuộc vào yêu cầu từ UI. Đây là bản nháp phục vụ kỹ thuật, chưa được kiểm chứng pháp lý.
 
+Mô-đun `inheritance-type` triển khai R-A01–R-A06 theo từng `estate-portion`. Một lần chạy có thể sinh nhiều `inheritance-regime(portion)=statutory|testamentary`; hai chế độ ở hai phần khác nhau không phải mâu thuẫn. Nhóm A nạp cùng nhóm B để dùng `valid-will` do CLIPS dẫn xuất. R-A02, R-A03, R-A04 và R-A05a vẫn mang nhãn `TEAM_REVIEW` dù đã được bật trong prototype theo yêu cầu của nhóm.
+
 Nếu các observations đều có mặt nhưng chưa khớp đường suy luận dương hoặc exclusion rule đã được mô hình hóa, completeness layer tạo `unresolved-rule-path` và trả `UNKNOWN`. Cách xử lý này giữ open-world semantics cho đến khi team duyệt rule âm tương ứng.
 
 ## Phân lớp tri thức
@@ -24,10 +26,10 @@ Nếu các observations đều có mặt nhưng chưa khớp đường suy luậ
 | Fact contracts | `templates.clp` | Định nghĩa hình dạng của dữ kiện, kết luận và provenance |
 | Rule registry | `rule-registry.json` | Nguồn duy nhất cho căn cứ, giải thích, implementation và trạng thái kiểm duyệt |
 | Legal metadata | `rule-metadata.clp` | Dữ liệu CLIPS được sinh tự động từ rule registry |
-| Domain knowledge | `rules/01-will-validity.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
-| Completeness/conflict | `rules/90-will-validity-completeness.clp` | Phát hiện facts thiếu và kết luận mâu thuẫn |
+| Domain knowledge | `rules/01-will-validity.clp`, `rules/02-inheritance-type.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
+| Completeness/conflict | `rules/90-will-validity-completeness.clp`, `rules/91-inheritance-type-completeness.clp` | Phát hiện facts thiếu và kết luận mâu thuẫn |
 | Explanation | `rules/98-explanation.clp` | Chuyển provenance của derived facts thành trace đồng nhất |
-| Result projection | `rules/99-result-projection.clp` | Chọn kết quả cần trả cho mô-đun mà UI yêu cầu |
+| Result projection | `rules/97-inheritance-type-projection.clp`, `rules/99-result-projection.clp` | Chọn kết quả cần trả cho mô-đun mà UI yêu cầu |
 | Machine output | `machine-output.clp` | Xuất result, missing facts và trace bằng line protocol ổn định cho TypeScript |
 
 `analysis-request` không được sử dụng trong domain rules. Vì vậy tri thức vẫn được suy ra khi không có yêu cầu hiển thị từ UI; yêu cầu chỉ điều khiển projection của kết quả.
@@ -76,6 +78,7 @@ Sau khi cài CLIPS:
 clips -f2 knowledge-base/run-fixture.clp
 clips -f2 knowledge-base/run-machine-fixture.clp
 clips -f2 knowledge-base/tests/will-validity.clp
+clips -f2 knowledge-base/tests/inheritance-type.clp
 ```
 
 Không đưa dữ liệu người dùng trực tiếp vào chuỗi lệnh CLIPS. Adapter TypeScript sau này phải kiểm tra schema và serialize facts bằng danh sách giá trị được phép.

@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import type { AnalysisModuleDefinition } from "@/domain/analysis-modules";
 import { getRuleExplanation } from "@/domain/legal-knowledge";
 import { cn } from "@/lib/utils";
-import type { Answer, Answers, ApiFact, InferenceRun } from "@/modules/contracts";
+import type { Answer, Answers, ApiFact, InferenceRun, InferenceValue } from "@/modules/contracts";
 import {
   buildWillValidityFacts,
   buildWillValidityQuestions,
@@ -40,7 +40,9 @@ interface InitialCase {
 }
 
 export function WillValidityWorkspace({ module, initialCase }: { module: AnalysisModuleDefinition; initialCase?: InitialCase }) {
-  const [answers, setAnswers] = useState<Answers>(() => restoreWillValidityAnswers(initialCase?.facts ?? []));
+  const [answers, setAnswers] = useState<Answers>(() => restoreWillValidityAnswers(
+    initialCase?.facts.filter((fact) => fact.subject === initialCase.subject || fact.subject === undefined) ?? [],
+  ));
   const [activeIndex, setActiveIndex] = useState(0);
   const [title, setTitle] = useState(initialCase?.title ?? module.runtime?.defaultCaseTitle ?? module.title);
   const [run, setRun] = useState<InferenceRun>();
@@ -57,7 +59,9 @@ export function WillValidityWorkspace({ module, initialCase }: { module: Analysi
   const facts = useMemo(() => buildWillValidityFacts(answers), [answers]);
   const answeredCount = questions.filter((question) => answers[question.id] !== undefined).length;
   const progress = questions.length === 0 ? 0 : (answeredCount / questions.length) * 100;
-  const result = run?.results.find((item) => item.predicate === module.primaryResultPredicate);
+  const result = run?.results.find((item): item is typeof item & { value: InferenceValue } =>
+    item.predicate === module.primaryResultPredicate && isInferenceValue(item.value),
+  );
   const orderedTraces = useMemo(() => sortWillValidityTraces(run?.traces ?? []), [run?.traces]);
   const currentRuleId = willValidityQuestionRuleId(currentQuestion.id, answers);
 
@@ -89,9 +93,12 @@ export function WillValidityWorkspace({ module, initialCase }: { module: Analysi
           });
         }
 
+        const retainedFacts = (initialCase?.facts ?? []).filter((fact) =>
+          fact.subject !== subject.current || !isWillValidityPredicate(fact.predicate),
+        );
         await requestJson(`/api/cases/${caseId.current}/facts`, {
           method: "PUT",
-          body: JSON.stringify({ subject: subject.current, facts }),
+          body: JSON.stringify({ subject: subject.current, facts: [...retainedFacts, ...facts] }),
         });
         if (!module.runtime) throw new Error(`Mô-đun ${module.id} chưa có runtime adapter.`);
         const inferencePath = module.runtime.inferencePath.replace(":caseId", encodeURIComponent(caseId.current));
@@ -373,6 +380,21 @@ export function WillValidityWorkspace({ module, initialCase }: { module: Analysi
       <LegalRuleDialog ruleId={selectedRuleId} onOpenChange={(open) => { if (!open) setSelectedRuleId(undefined); }} />
     </div>
   );
+}
+
+const WILL_VALIDITY_PREDICATES = new Set([
+  "will-type", "testator-age", "testator-mental-state", "undue-influence", "prohibited-content",
+  "formal-defect", "guardian-consent", "physical-limitation", "literacy", "prepared-by-witness",
+  "notarized-or-certified", "witness-count", "witnesses-recorded", "witnesses-signed",
+  "certified-within-days", "alive-after-three-months", "mental-state-after-three-months",
+]);
+
+function isWillValidityPredicate(predicate: string): boolean {
+  return WILL_VALIDITY_PREDICATES.has(predicate);
+}
+
+function isInferenceValue(value: string): value is InferenceValue {
+  return value === "true" || value === "false" || value === "unknown" || value === "conflict";
 }
 
 async function requestJson<T = unknown>(url: string, init: RequestInit): Promise<T> {

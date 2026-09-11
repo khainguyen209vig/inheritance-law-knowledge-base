@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
-import type { ReplaceCaseFactsInput } from "@/domain/case";
+import { caseFactSchema, type ReplaceCaseFactsInput } from "@/domain/case";
 import { willFactSchema, type WillValidityRequest } from "@/domain/will-validity";
-import type { InferenceOutput, InferenceValue } from "@/server/clips/types";
+import type { InferenceOutput, ModuleResultValue } from "@/server/clips/types";
 import type { AppDatabase } from "./database";
 
 export const KNOWLEDGE_BASE_VERSION = "will-validity-rb01-rb09-v1";
@@ -14,12 +14,12 @@ export interface StoredCase {
   title: string;
   createdAt: string;
   updatedAt: string;
-  facts: Array<WillValidityRequest["facts"][number] & { subject: string }>;
+  facts: Array<ReplaceCaseFactsInput["facts"][number] & { subject: string }>;
 }
 
 export interface StoredResultSummary {
   predicate: string;
-  value: InferenceValue;
+  value: ModuleResultValue;
 }
 
 export interface StoredInferenceRunSummary {
@@ -45,10 +45,10 @@ export interface StoredCaseSummary {
 export interface StoredInferenceRun extends InferenceOutput {
   id: string;
   caseId: string;
-  module: "will-validity";
+  module: string;
   subject: string;
   knowledgeBaseVersion: string;
-  inputSnapshot: WillValidityRequest["facts"];
+  inputSnapshot: Array<ReplaceCaseFactsInput["facts"][number] & { subject?: string }>;
   createdAt: string;
 }
 
@@ -78,7 +78,7 @@ interface RunRow {
 
 interface RunSummaryRow extends Omit<RunRow, "input_snapshot_json"> {
   result_predicate: string | null;
-  result_value: InferenceValue | null;
+  result_value: ModuleResultValue | null;
 }
 
 export class CaseRepository {
@@ -173,7 +173,7 @@ export class CaseRepository {
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       facts: facts.map((fact) => ({
-        ...willFactSchema.parse({
+        ...caseFactSchema.parse({
           id: fact.fact_id,
           predicate: fact.predicate,
           value: JSON.parse(fact.value_json) as unknown,
@@ -194,7 +194,7 @@ export class CaseRepository {
         VALUES (?, ?, ?, ?, ?, 'user', ?, ?)
       `);
       for (const fact of input.facts) {
-        insert.run(caseId, fact.id, input.subject, fact.predicate, JSON.stringify(fact.value), now, now);
+        insert.run(caseId, fact.id, fact.subject ?? input.subject, fact.predicate, JSON.stringify(fact.value), now, now);
       }
       this.database.prepare("UPDATE cases SET updated_at = ? WHERE id = ?").run(now, caseId);
     });
@@ -208,19 +208,27 @@ export class CaseRepository {
       .prepare("SELECT fact_id, subject, predicate, value_json FROM asserted_facts WHERE case_id = ? AND subject = ? ORDER BY fact_id")
       .all(caseId, subject) as FactRow[];
     return rows.map((row) =>
-      willFactSchema.parse({
+      caseFactSchema.parse({
         id: row.fact_id,
         predicate: row.predicate,
         value: JSON.parse(row.value_json) as unknown,
       }),
+    ).filter((fact): fact is WillValidityRequest["facts"][number] =>
+      willFactSchema.safeParse(fact).success,
     );
+  }
+
+  getAllFacts(caseId: string): StoredCase["facts"] {
+    return this.getCase(caseId).facts;
   }
 
   saveInferenceRun(input: {
     caseId: string;
     subject: string;
-    facts: WillValidityRequest["facts"];
+    facts: Array<ReplaceCaseFactsInput["facts"][number] & { subject?: string }>;
     output: InferenceOutput;
+    module?: string;
+    knowledgeBaseVersion?: string;
   }): StoredInferenceRun {
     const runId = `run-${randomUUID()}`;
     const createdAt = new Date().toISOString();
@@ -230,39 +238,41 @@ export class CaseRepository {
       this.database.prepare(`
         INSERT INTO inference_runs
           (id, case_id, module, subject, knowledge_base_version, input_snapshot_json, created_at)
-        VALUES (?, ?, 'will-validity', ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `).run(
         runId,
         input.caseId,
+        input.module ?? "will-validity",
         input.subject,
-        KNOWLEDGE_BASE_VERSION,
+        input.knowledgeBaseVersion ?? KNOWLEDGE_BASE_VERSION,
         JSON.stringify(input.facts),
         createdAt,
       );
 
       const insertResult = this.database.prepare(`
-        INSERT INTO module_results (run_id, predicate, value, derivations_json)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO module_results (run_id, subject, predicate, value, derivations_json)
+        VALUES (?, ?, ?, ?, ?)
       `);
       for (const result of input.output.results) {
-        insertResult.run(runId, result.predicate, result.value, JSON.stringify(result.derivations));
+        insertResult.run(runId, result.subject, result.predicate, result.value, JSON.stringify(result.derivations));
       }
 
       const insertMissing = this.database.prepare(`
-        INSERT INTO missing_requirements (run_id, predicate) VALUES (?, ?)
+        INSERT INTO missing_requirements (run_id, subject, predicate) VALUES (?, ?, ?)
       `);
       for (const missing of input.output.missing) {
-        insertMissing.run(runId, missing.predicate);
+        insertMissing.run(runId, missing.subject, missing.predicate);
       }
 
       const insertTrace = this.database.prepare(`
         INSERT INTO inference_traces
-          (run_id, rule_id, conclusion_predicate, conclusion_value, supports_json)
-        VALUES (?, ?, ?, ?, ?)
+          (run_id, subject, rule_id, conclusion_predicate, conclusion_value, supports_json)
+        VALUES (?, ?, ?, ?, ?, ?)
       `);
       for (const trace of input.output.traces) {
         insertTrace.run(
           runId,
+          trace.subject,
           trace.ruleId,
           trace.conclusionPredicate,
           trace.conclusionValue,
@@ -280,18 +290,19 @@ export class CaseRepository {
       SELECT id, case_id, module, subject, knowledge_base_version, input_snapshot_json, created_at
       FROM inference_runs WHERE id = ? AND case_id = ?
     `).get(runId, caseId) as RunRow | undefined;
-    if (!run || run.module !== "will-validity") throw new InferenceRunNotFoundError(runId);
+    if (!run) throw new InferenceRunNotFoundError(runId);
 
     const results = this.database.prepare(`
-      SELECT predicate, value, derivations_json FROM module_results WHERE run_id = ? ORDER BY id
-    `).all(runId) as Array<{ predicate: string; value: InferenceValue; derivations_json: string }>;
+      SELECT subject, predicate, value, derivations_json FROM module_results WHERE run_id = ? ORDER BY id
+    `).all(runId) as Array<{ subject: string; predicate: string; value: ModuleResultValue; derivations_json: string }>;
     const missing = this.database.prepare(`
-      SELECT predicate FROM missing_requirements WHERE run_id = ? ORDER BY id
-    `).all(runId) as Array<{ predicate: string }>;
+      SELECT subject, predicate FROM missing_requirements WHERE run_id = ? ORDER BY id
+    `).all(runId) as Array<{ subject: string; predicate: string }>;
     const traces = this.database.prepare(`
-      SELECT rule_id, conclusion_predicate, conclusion_value, supports_json
+      SELECT subject, rule_id, conclusion_predicate, conclusion_value, supports_json
       FROM inference_traces WHERE run_id = ? ORDER BY id
     `).all(runId) as Array<{
+      subject: string;
       rule_id: string;
       conclusion_predicate: string;
       conclusion_value: string;
@@ -301,28 +312,31 @@ export class CaseRepository {
     return {
       id: run.id,
       caseId: run.case_id,
-      module: "will-validity",
+      module: run.module,
       subject: run.subject,
       knowledgeBaseVersion: run.knowledge_base_version,
-      inputSnapshot: JSON.parse(run.input_snapshot_json) as WillValidityRequest["facts"],
+      inputSnapshot: (JSON.parse(run.input_snapshot_json) as Array<Record<string, unknown>>).map((fact) => ({
+        ...caseFactSchema.parse(fact),
+        ...(typeof fact.subject === "string" ? { subject: fact.subject } : {}),
+      })),
       createdAt: run.created_at,
       results: results.map((result) => ({
         caseId: run.case_id,
-        subject: run.subject,
-        module: "will-validity",
+        subject: result.subject || run.subject,
+        module: run.module,
         predicate: result.predicate,
         value: result.value,
         derivations: JSON.parse(result.derivations_json) as string[],
       })),
       missing: missing.map((item) => ({
         caseId: run.case_id,
-        subject: run.subject,
-        module: "will-validity",
+        subject: item.subject || run.subject,
+        module: run.module,
         predicate: item.predicate,
       })),
       traces: traces.map((trace) => ({
         caseId: run.case_id,
-        subject: run.subject,
+        subject: trace.subject || run.subject,
         ruleId: trace.rule_id,
         conclusionPredicate: trace.conclusion_predicate,
         conclusionValue: trace.conclusion_value,

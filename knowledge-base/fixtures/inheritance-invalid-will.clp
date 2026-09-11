@@ -1,0 +1,5 @@
+(analysis-request (case-id case-invalid-will) (subject case-invalid-will) (module inheritance-type))
+(asserted-fact (fact-id portion) (case-id case-invalid-will) (subject portion-one) (predicate estate-portion) (value true))
+(asserted-fact (fact-id has-will) (case-id case-invalid-will) (subject case-invalid-will) (predicate has-will) (value true))
+(asserted-fact (fact-id applicable) (case-id case-invalid-will) (subject portion-one) (predicate applicable-will) (value will-one))
+(asserted-fact (fact-id mental) (case-id case-invalid-will) (subject will-one) (predicate testator-mental-state) (value not-lucid))

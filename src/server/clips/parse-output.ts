@@ -1,4 +1,4 @@
-import type { InferenceOutput, InferenceValue } from "./types";
+import type { InferenceOutput, ModuleResultValue } from "./types";
 
 const BEGIN = "@@INFERENCE-BEGIN@@";
 const END = "@@INFERENCE-END@@";
@@ -20,7 +20,7 @@ export function parseClipsOutput(stdout: string): InferenceOutput {
 
     if (marker === "@@RESULT@@") {
       const [caseId, subject, module, predicate, value, ...derivations] = fields;
-      if (!caseId || !subject || !module || !predicate || !isInferenceValue(value)) {
+      if (!caseId || !subject || !module || !predicate || !isModuleResultValue(value)) {
         throw new Error(`Dòng RESULT không hợp lệ: ${line}`);
       }
       output.results.push({ caseId, subject, module, predicate, value, derivations });
@@ -44,6 +44,7 @@ export function parseClipsOutput(stdout: string): InferenceOutput {
   return output;
 }
 
-function isInferenceValue(value: string | undefined): value is InferenceValue {
-  return value === "true" || value === "false" || value === "unknown" || value === "conflict";
+function isModuleResultValue(value: string | undefined): value is ModuleResultValue {
+  return value === "true" || value === "false" || value === "unknown" || value === "conflict"
+    || value === "statutory" || value === "testamentary";
 }

@@ -49,7 +49,8 @@
   (slot subject (type SYMBOL))
   (slot module (type SYMBOL))
   (slot predicate (type SYMBOL))
-  (slot value (type SYMBOL) (allowed-symbols true false unknown conflict))
+  (slot value (type SYMBOL)
+    (allowed-symbols true false unknown conflict statutory testamentary))
   (multislot derivations))
 
 ; Generic explanation record copied from a derived fact. Sequence/order is
@@ -61,4 +62,3 @@
   (slot conclusion-predicate (type SYMBOL))
   (slot conclusion-value (type SYMBOL INTEGER FLOAT STRING))
   (multislot supports))
-

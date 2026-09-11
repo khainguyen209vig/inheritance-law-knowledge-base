@@ -1,11 +1,12 @@
 export type InferenceValue = "true" | "false" | "unknown" | "conflict";
+export type ModuleResultValue = InferenceValue | "statutory" | "testamentary";
 
 export interface ModuleResult {
   caseId: string;
   subject: string;
   module: string;
   predicate: string;
-  value: InferenceValue;
+  value: ModuleResultValue;
   derivations: string[];
 }
 

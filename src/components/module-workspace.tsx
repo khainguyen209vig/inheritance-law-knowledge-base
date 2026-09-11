@@ -3,6 +3,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { getAnalysisModule, type AnalysisModuleDefinition, type AnalysisModuleId } from "@/domain/analysis-modules";
 import type { ApiFact } from "@/modules/contracts";
 import { WillValidityWorkspace } from "@/modules/will-validity/workspace";
+import { InheritanceTypeWorkspace } from "@/modules/inheritance-type/workspace";
 
 interface ModuleInitialCase {
   id: string;
@@ -15,6 +16,7 @@ type WorkspacePresenter = ComponentType<{ module: AnalysisModuleDefinition; init
 
 const workspacePresenters: Partial<Record<AnalysisModuleId, WorkspacePresenter>> = {
   "will-validity": WillValidityWorkspace,
+  "inheritance-type": InheritanceTypeWorkspace,
 };
 
 export function ModuleWorkspace({ moduleId, initialCase }: { moduleId: AnalysisModuleId; initialCase?: ModuleInitialCase }) {

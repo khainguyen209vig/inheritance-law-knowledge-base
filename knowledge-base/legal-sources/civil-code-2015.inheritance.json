@@ -85,6 +85,74 @@
       ],
       "sourceDocument": "doc/Luat_ThuaKe.doc",
       "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
+    "article-649": {
+      "id": "article-649",
+      "number": "Điều 649",
+      "title": "Thừa kế theo pháp luật",
+      "sections": [
+        {
+          "id": "main",
+          "label": "Nội dung điều luật",
+          "text": "Thừa kế theo pháp luật là thừa kế theo hàng thừa kế, điều kiện và trình tự thừa kế do pháp luật quy định."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
+    "article-650": {
+      "id": "article-650",
+      "number": "Điều 650",
+      "title": "Những trường hợp thừa kế theo pháp luật",
+      "sections": [
+        {
+          "id": "clause-1-intro",
+          "label": "Khoản 1",
+          "text": "Thừa kế theo pháp luật được áp dụng trong trường hợp sau đây:"
+        },
+        {
+          "id": "clause-1-a",
+          "label": "Khoản 1 điểm a",
+          "text": "Không có di chúc;"
+        },
+        {
+          "id": "clause-1-b",
+          "label": "Khoản 1 điểm b",
+          "text": "Di chúc không hợp pháp;"
+        },
+        {
+          "id": "clause-1-c",
+          "label": "Khoản 1 điểm c",
+          "text": "Những người thừa kế theo di chúc chết trước hoặc chết cùng thời điểm với người lập di chúc; cơ quan, tổ chức được hưởng thừa kế theo di chúc không còn tồn tại vào thời điểm mở thừa kế;"
+        },
+        {
+          "id": "clause-1-d",
+          "label": "Khoản 1 điểm d",
+          "text": "Những người được chỉ định làm người thừa kế theo di chúc mà không có quyền hưởng di sản hoặc từ chối nhận di sản."
+        },
+        {
+          "id": "clause-2-intro",
+          "label": "Khoản 2",
+          "text": "Thừa kế theo pháp luật cũng được áp dụng đối với các phần di sản sau đây:"
+        },
+        {
+          "id": "clause-2-a",
+          "label": "Khoản 2 điểm a",
+          "text": "Phần di sản không được định đoạt trong di chúc;"
+        },
+        {
+          "id": "clause-2-b",
+          "label": "Khoản 2 điểm b",
+          "text": "Phần di sản có liên quan đến phần của di chúc không có hiệu lực pháp luật;"
+        },
+        {
+          "id": "clause-2-c",
+          "label": "Khoản 2 điểm c",
+          "text": "Phần di sản có liên quan đến người được thừa kế theo di chúc nhưng họ không có quyền hưởng di sản, từ chối nhận di sản, chết trước hoặc chết cùng thời điểm với người lập di chúc; liên quan đến cơ quan, tổ chức được hưởng di sản theo di chúc, nhưng không còn tồn tại vào thời điểm mở thừa kế."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
     }
   }
 }

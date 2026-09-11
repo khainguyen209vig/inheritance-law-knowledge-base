@@ -1,5 +1,5 @@
 import { getRuleExplanation } from "@/domain/legal-knowledge";
-import type { ApiFact, InferenceTrace, InferenceValue } from "@/modules/contracts";
+import type { ApiFact, InferenceTrace, InferenceValue, ModuleResultValue } from "@/modules/contracts";
 
 const tracePriorities: Record<string, number> = {
   "FORM-ASSESSMENT-ACCEPTED": 10,
@@ -96,8 +96,8 @@ export function willValidityResultDescription(value: InferenceValue): string {
   }[value];
 }
 
-export function resultStatusLabel(value: InferenceValue): string {
-  return { true: "Hợp pháp", false: "Không hợp pháp", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn" }[value];
+export function resultStatusLabel(value: ModuleResultValue): string {
+  return { true: "Hợp pháp", false: "Không hợp pháp", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn", statutory: "Theo pháp luật", testamentary: "Theo di chúc" }[value];
 }
 
 export function resultTone(value: InferenceValue): string {
@@ -109,8 +109,8 @@ export function resultTone(value: InferenceValue): string {
   }[value];
 }
 
-export function resultBadge(value: InferenceValue): "success" | "destructive" | "warning" | "secondary" {
-  return { true: "success", false: "destructive", unknown: "warning", conflict: "secondary" }[value] as
+export function resultBadge(value: ModuleResultValue): "success" | "destructive" | "warning" | "secondary" {
+  return { true: "success", false: "destructive", unknown: "warning", conflict: "secondary", statutory: "warning", testamentary: "success" }[value] as
     | "success"
     | "destructive"
     | "warning"

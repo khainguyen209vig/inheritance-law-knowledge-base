@@ -17,6 +17,7 @@ export function LegalRuleDialog({ ruleId, onOpenChange }: { ruleId?: string; onO
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant={explanation?.kind === "internal" ? "warning" : "outline"}>{ruleId === "ARTICLE-627" ? "Căn cứ câu hỏi" : ruleId}</Badge>
             {explanation ? <Badge variant="secondary">{explanation.citation}</Badge> : null}
+            {explanation?.reviewState ? <Badge variant={explanation.reviewState === "TEAM_REVIEW" ? "warning" : "success"}>{explanation.reviewState}</Badge> : null}
           </div>
           <DialogTitle>{explanation?.title ?? "Thông tin căn cứ"}</DialogTitle>
           <DialogDescription>{explanation?.reasoning ?? "Chưa có nội dung giải thích dành cho rule này."}</DialogDescription>
@@ -25,6 +26,12 @@ export function LegalRuleDialog({ ruleId, onOpenChange }: { ruleId?: string; onO
         {explanation?.kind === "internal" ? (
           <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
             Đây là quy tắc kỹ thuật chuyển tiếp của knowledge base, không phải một điều luật. Nó đang thay cho phần tiêu chí hình thức tại Điều 627–636 chưa được mô hình hóa đầy đủ.
+          </div>
+        ) : null}
+
+        {explanation?.reviewState === "TEAM_REVIEW" ? (
+          <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
+            Rule này đã được đưa vào prototype để kiểm thử luồng suy luận nhưng vẫn cần team rà soát điều kiện và căn cứ pháp lý trước khi đổi trạng thái.
           </div>
         ) : null}
 
