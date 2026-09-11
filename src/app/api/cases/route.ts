@@ -6,6 +6,17 @@ import { readJson } from "@/server/http/json";
 
 export const runtime = "nodejs";
 
+export async function GET() {
+  try {
+    return Response.json(new CaseRepository(getDatabase()).listCases());
+  } catch (error) {
+    const knownError = databaseErrorResponse(error);
+    if (knownError) return knownError;
+    console.error("Listing cases failed", error);
+    return Response.json({ error: "CASE_LIST_FAILED" }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   const parsed = createCaseSchema.safeParse(await readJson(request));
   if (!parsed.success) {

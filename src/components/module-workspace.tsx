@@ -1,21 +1,29 @@
 import type { ComponentType } from "react";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAnalysisModule, type AnalysisModuleDefinition, type AnalysisModuleId } from "@/domain/analysis-modules";
+import type { ApiFact } from "@/modules/contracts";
 import { WillValidityWorkspace } from "@/modules/will-validity/workspace";
 
-type WorkspacePresenter = ComponentType<{ module: AnalysisModuleDefinition }>;
+interface ModuleInitialCase {
+  id: string;
+  title: string;
+  subject: string;
+  facts: ApiFact[];
+}
+
+type WorkspacePresenter = ComponentType<{ module: AnalysisModuleDefinition; initialCase?: ModuleInitialCase }>;
 
 const workspacePresenters: Partial<Record<AnalysisModuleId, WorkspacePresenter>> = {
   "will-validity": WillValidityWorkspace,
 };
 
-export function ModuleWorkspace({ moduleId }: { moduleId: AnalysisModuleId }) {
+export function ModuleWorkspace({ moduleId, initialCase }: { moduleId: AnalysisModuleId; initialCase?: ModuleInitialCase }) {
   const module = getAnalysisModule(moduleId);
 
   if (!module) return null;
   const WorkspacePresenter = workspacePresenters[module.id];
   if (module.status === "implemented" && WorkspacePresenter && module.runtime) {
-    return <WorkspacePresenter module={module} />;
+    return <WorkspacePresenter module={module} initialCase={initialCase} />;
   }
 
   return (

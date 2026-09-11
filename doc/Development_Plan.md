@@ -306,6 +306,8 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 - Đã thêm `ModuleWorkspace` để chọn presenter theo mô-đun, cho phép family tree, people table hoặc timeline thay vì ép mọi bài toán vào form hiện tại.
 - Đã tách question flow, fact mapper và presentation labels của `will-validity` khỏi workspace; interaction rules được kiểm thử riêng và không nằm trong CLIPS rule base.
 - Đã tách dialog căn cứ pháp lý thành component explanation dùng chung và thêm trang `/modules` để lựa chọn mục tiêu phân tích.
+- Đã bổ sung `/cases`, trang chi tiết hồ sơ và trang inference snapshot; người dùng có thể mở lại facts hiện tại, chạy mô-đun và tra cứu lịch sử bất biến.
+- Repository và API hỗ trợ danh sách case/run theo contract tổng quát `module + predicate + value`, không khóa trang lịch sử vào một kết luận `valid-will` duy nhất.
 - Đã kiểm thử integration qua native CLIPS process, smoke-test toàn bộ route HTTP và kiểm tra trực quan giao diện desktop/mobile.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức

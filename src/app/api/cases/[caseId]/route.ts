@@ -1,7 +1,8 @@
-import { caseIdSchema } from "@/domain/case";
+import { caseIdSchema, updateCaseSchema } from "@/domain/case";
 import { CaseRepository } from "@/server/db/case-repository";
 import { getDatabase } from "@/server/db/database";
 import { databaseErrorResponse } from "@/server/http/errors";
+import { readJson } from "@/server/http/json";
 
 export const runtime = "nodejs";
 
@@ -21,5 +22,25 @@ export async function GET(
     if (knownError) return knownError;
     console.error("Reading case failed", error);
     return Response.json({ error: "CASE_READ_FAILED" }, { status: 500 });
+  }
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ caseId: string }> },
+) {
+  const parsedCaseId = caseIdSchema.safeParse((await params).caseId);
+  const parsedBody = updateCaseSchema.safeParse(await readJson(request));
+  if (!parsedCaseId.success || !parsedBody.success) {
+    return Response.json({ error: "INVALID_REQUEST" }, { status: 400 });
+  }
+
+  try {
+    return Response.json(new CaseRepository(getDatabase()).updateCaseTitle(parsedCaseId.data, parsedBody.data.title));
+  } catch (error) {
+    const knownError = databaseErrorResponse(error);
+    if (knownError) return knownError;
+    console.error("Updating case failed", error);
+    return Response.json({ error: "CASE_UPDATE_FAILED" }, { status: 500 });
   }
 }

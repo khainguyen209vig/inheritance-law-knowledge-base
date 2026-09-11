@@ -182,6 +182,8 @@ UI sử dụng Tailwind CSS và các shadcn source components trong `src/compone
 
 Trang `/modules` đọc module registry và hiển thị các mục tiêu phân tích cùng kiểu interaction dự kiến. `/modules/will-validity` mở presenter đã triển khai; các mô-đun còn lại hiển thị trạng thái dự kiến mà không tái sử dụng nhầm form di chúc.
 
+Trang `/cases` quản lý các hồ sơ trong SQLite. `/cases/:caseId` hiển thị facts hiện tại, mô-đun có thể chạy và lịch sử inference runs; `/cases/:caseId/runs/:runId` mở snapshot bất biến cùng trace và căn cứ pháp lý. Khi mở lại `will-validity`, presenter khôi phục answers từ facts đã lưu thay vì tạo một case mới.
+
 API đầu tiên nhận dữ kiện đã chuẩn hóa tại `POST /api/inference/will-validity`. Ví dụ request tối thiểu cho một di chúc bằng văn bản:
 
 ```json
@@ -205,9 +207,12 @@ Response gồm `results`, `missing` và `traces`. Route chạy trên Node.js run
 | Method | Endpoint | Chức năng |
 |---|---|---|
 | `POST` | `/api/cases` | Tạo vụ việc |
+| `GET` | `/api/cases` | Liệt kê vụ việc cùng kết quả gần nhất |
 | `GET` | `/api/cases/:caseId` | Đọc vụ việc và facts hiện tại |
+| `PATCH` | `/api/cases/:caseId` | Đổi tên vụ việc |
 | `PUT` | `/api/cases/:caseId/facts` | Thay toàn bộ facts hiện tại của vụ việc |
 | `POST` | `/api/cases/:caseId/inference/will-validity` | Chạy CLIPS và lưu một snapshot mới |
+| `GET` | `/api/cases/:caseId/inference-runs` | Liệt kê lịch sử suy luận của vụ việc |
 | `GET` | `/api/cases/:caseId/inference-runs/:runId` | Đọc lại một lần suy luận |
 
 Mỗi inference run lưu bất biến:
@@ -258,6 +263,8 @@ npm run build
 ├── src/
 │   ├── app/                          # Next.js App Router và Route Handlers
 │   ├── components/                   # Module shell, presenters và shadcn/ui
+│   │   ├── cases/                    # Tạo case và xem inference snapshot
+│   │   └── inference/                # Thành phần giải thích dùng chung
 │   ├── domain/                       # Module registry và input schema nghiệp vụ
 │   ├── modules/
 │   │   ├── contracts.ts             # Contract chung của answer, question, fact và result

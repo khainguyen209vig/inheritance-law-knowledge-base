@@ -12,10 +12,11 @@ import { Separator } from "@/components/ui/separator";
 import type { AnalysisModuleDefinition } from "@/domain/analysis-modules";
 import { getRuleExplanation } from "@/domain/legal-knowledge";
 import { cn } from "@/lib/utils";
-import type { Answer, Answers, InferenceRun } from "@/modules/contracts";
+import type { Answer, Answers, ApiFact, InferenceRun } from "@/modules/contracts";
 import {
   buildWillValidityFacts,
   buildWillValidityQuestions,
+  restoreWillValidityAnswers,
   willValidityMissingLabels,
   willValidityQuestionRuleId,
 } from "@/modules/will-validity/definition";
@@ -31,17 +32,24 @@ import {
   willValiditySupportLabel,
 } from "@/modules/will-validity/presentation";
 
-export function WillValidityWorkspace({ module }: { module: AnalysisModuleDefinition }) {
-  const [answers, setAnswers] = useState<Answers>({});
+interface InitialCase {
+  id: string;
+  title: string;
+  subject: string;
+  facts: ApiFact[];
+}
+
+export function WillValidityWorkspace({ module, initialCase }: { module: AnalysisModuleDefinition; initialCase?: InitialCase }) {
+  const [answers, setAnswers] = useState<Answers>(() => restoreWillValidityAnswers(initialCase?.facts ?? []));
   const [activeIndex, setActiveIndex] = useState(0);
-  const [title, setTitle] = useState(module.runtime?.defaultCaseTitle ?? module.title);
+  const [title, setTitle] = useState(initialCase?.title ?? module.runtime?.defaultCaseTitle ?? module.title);
   const [run, setRun] = useState<InferenceRun>();
   const [error, setError] = useState<string>();
   const [technicalMode, setTechnicalMode] = useState(false);
   const [selectedRuleId, setSelectedRuleId] = useState<string>();
   const [isPending, startTransition] = useTransition();
-  const caseId = useRef<string | undefined>(undefined);
-  const subject = useRef<string | undefined>(undefined);
+  const caseId = useRef<string | undefined>(initialCase?.id);
+  const subject = useRef<string | undefined>(initialCase?.subject);
 
   const questions = useMemo(() => buildWillValidityQuestions(answers), [answers]);
   const currentIndex = Math.min(activeIndex, questions.length - 1);
@@ -74,6 +82,11 @@ export function WillValidityWorkspace({ module }: { module: AnalysisModuleDefini
             method: "POST",
             body: JSON.stringify({ id: caseId.current, title }),
           });
+        } else {
+          await requestJson(`/api/cases/${caseId.current}`, {
+            method: "PATCH",
+            body: JSON.stringify({ title }),
+          });
         }
 
         await requestJson(`/api/cases/${caseId.current}/facts`, {
@@ -105,6 +118,9 @@ export function WillValidityWorkspace({ module }: { module: AnalysisModuleDefini
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button asChild variant="ghost" size="sm">
+              <Link href={initialCase ? `/cases/${initialCase.id}` : "/cases"}>Hồ sơ</Link>
+            </Button>
             <Button asChild variant="ghost" size="sm">
               <Link href="/modules">Các mô-đun</Link>
             </Button>

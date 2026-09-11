@@ -267,6 +267,35 @@ export function buildWillValidityFacts(answers: Answers): ApiFact[] {
   return facts;
 }
 
+const answerKeyByPredicate: Record<string, string> = {
+  "will-type": "willType",
+  "testator-age": "age",
+  "testator-mental-state": "mentalState",
+  "undue-influence": "influence",
+  "prohibited-content": "prohibitedContent",
+  "formal-defect": "formalDefect",
+  "guardian-consent": "guardianConsent",
+  "physical-limitation": "physicalLimitation",
+  "testator-literacy": "literacy",
+  "prepared-by-witness": "preparedByWitness",
+  "notarized-or-certified": "notarized",
+  "witness-count": "witnessCount",
+  "witnesses-recorded": "witnessesRecorded",
+  "witnesses-signed": "witnessesSigned",
+  "certified-within-days": "certifiedDays",
+  "testator-alive-after-three-months": "aliveAfterThreeMonths",
+  "testator-mental-state-after-three-months": "mentalAfterThreeMonths",
+};
+
+export function restoreWillValidityAnswers(facts: ApiFact[]): Answers {
+  const answers: Answers = {};
+  for (const fact of facts) {
+    const answerKey = answerKeyByPredicate[fact.predicate];
+    if (answerKey) answers[answerKey] = fact.value;
+  }
+  return answers;
+}
+
 export function willValidityQuestionRuleId(questionId: string, answers: Answers): string {
   if (questionId === "mentalState" && answers.mentalState === "not-lucid") return "R-B04";
   if (questionId === "influence" && (answers.influence === "deception" || answers.influence === "threat")) return "R-B04";

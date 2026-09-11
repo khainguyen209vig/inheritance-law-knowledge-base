@@ -17,6 +17,31 @@ export interface StoredCase {
   facts: Array<WillValidityRequest["facts"][number] & { subject: string }>;
 }
 
+export interface StoredResultSummary {
+  predicate: string;
+  value: InferenceValue;
+}
+
+export interface StoredInferenceRunSummary {
+  id: string;
+  caseId: string;
+  module: string;
+  subject: string;
+  knowledgeBaseVersion: string;
+  createdAt: string;
+  results: StoredResultSummary[];
+}
+
+export interface StoredCaseSummary {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  factCount: number;
+  runCount: number;
+  latestRun?: StoredInferenceRunSummary;
+}
+
 export interface StoredInferenceRun extends InferenceOutput {
   id: string;
   caseId: string;
@@ -51,6 +76,11 @@ interface RunRow {
   created_at: string;
 }
 
+interface RunSummaryRow extends Omit<RunRow, "input_snapshot_json"> {
+  result_predicate: string | null;
+  result_value: InferenceValue | null;
+}
+
 export class CaseRepository {
   constructor(private readonly database: AppDatabase) {}
 
@@ -61,6 +91,70 @@ export class CaseRepository {
       .prepare("INSERT INTO cases (id, title, created_at, updated_at) VALUES (?, ?, ?, ?)")
       .run(id, input.title, now, now);
     return { id, title: input.title, createdAt: now, updatedAt: now, facts: [] };
+  }
+
+  listCases(): StoredCaseSummary[] {
+    const rows = this.database.prepare(`
+      SELECT
+        c.id,
+        c.title,
+        c.created_at,
+        c.updated_at,
+        (SELECT COUNT(*) FROM asserted_facts af WHERE af.case_id = c.id) AS fact_count,
+        (SELECT COUNT(*) FROM inference_runs ir_count WHERE ir_count.case_id = c.id) AS run_count,
+        ir.id AS run_id,
+        ir.module AS run_module,
+        ir.subject AS run_subject,
+        ir.knowledge_base_version AS run_knowledge_base_version,
+        ir.created_at AS run_created_at
+      FROM cases c
+      LEFT JOIN inference_runs ir ON ir.id = (
+        SELECT latest.id
+        FROM inference_runs latest
+        WHERE latest.case_id = c.id
+        ORDER BY latest.created_at DESC, latest.id DESC
+        LIMIT 1
+      )
+      ORDER BY c.updated_at DESC, c.id
+    `).all() as Array<CaseRow & {
+      fact_count: number;
+      run_count: number;
+      run_id: string | null;
+      run_module: string | null;
+      run_subject: string | null;
+      run_knowledge_base_version: string | null;
+      run_created_at: string | null;
+    }>;
+
+    return rows.map((row) => {
+      const latestRun = row.run_id && row.run_module && row.run_subject && row.run_knowledge_base_version && row.run_created_at
+        ? {
+            id: row.run_id,
+            caseId: row.id,
+            module: row.run_module,
+            subject: row.run_subject,
+            knowledgeBaseVersion: row.run_knowledge_base_version,
+            createdAt: row.run_created_at,
+            results: this.getResultSummaries(row.run_id),
+          }
+        : undefined;
+      return {
+        id: row.id,
+        title: row.title,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+        factCount: row.fact_count,
+        runCount: row.run_count,
+        latestRun,
+      };
+    });
+  }
+
+  updateCaseTitle(caseId: string, title: string): StoredCase {
+    this.assertCaseExists(caseId);
+    const now = new Date().toISOString();
+    this.database.prepare("UPDATE cases SET title = ?, updated_at = ? WHERE id = ?").run(title, now, caseId);
+    return this.getCase(caseId);
   }
 
   getCase(caseId: string): StoredCase {
@@ -175,6 +269,7 @@ export class CaseRepository {
           JSON.stringify(trace.supports),
         );
       }
+      this.database.prepare("UPDATE cases SET updated_at = ? WHERE id = ?").run(createdAt, input.caseId);
     });
     save();
     return this.getInferenceRun(input.caseId, runId);
@@ -234,6 +329,52 @@ export class CaseRepository {
         supports: JSON.parse(trace.supports_json) as string[],
       })),
     };
+  }
+
+  listInferenceRuns(caseId: string): StoredInferenceRunSummary[] {
+    this.assertCaseExists(caseId);
+    const rows = this.database.prepare(`
+      SELECT
+        ir.id,
+        ir.case_id,
+        ir.module,
+        ir.subject,
+        ir.knowledge_base_version,
+        ir.created_at,
+        mr.predicate AS result_predicate,
+        mr.value AS result_value
+      FROM inference_runs ir
+      LEFT JOIN module_results mr ON mr.run_id = ir.id
+      WHERE ir.case_id = ?
+      ORDER BY ir.created_at DESC, ir.id DESC, mr.id
+    `).all(caseId) as RunSummaryRow[];
+
+    const summaries = new Map<string, StoredInferenceRunSummary>();
+    for (const row of rows) {
+      let summary = summaries.get(row.id);
+      if (!summary) {
+        summary = {
+          id: row.id,
+          caseId: row.case_id,
+          module: row.module,
+          subject: row.subject,
+          knowledgeBaseVersion: row.knowledge_base_version,
+          createdAt: row.created_at,
+          results: [],
+        };
+        summaries.set(row.id, summary);
+      }
+      if (row.result_predicate && row.result_value) {
+        summary.results.push({ predicate: row.result_predicate, value: row.result_value });
+      }
+    }
+    return [...summaries.values()];
+  }
+
+  private getResultSummaries(runId: string): StoredResultSummary[] {
+    return this.database.prepare(`
+      SELECT predicate, value FROM module_results WHERE run_id = ? ORDER BY id
+    `).all(runId) as StoredResultSummary[];
   }
 
   private assertCaseExists(caseId: string): void {

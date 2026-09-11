@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   buildWillValidityFacts,
   buildWillValidityQuestions,
+  restoreWillValidityAnswers,
   willValidityQuestionRuleId,
 } from "../src/modules/will-validity/definition";
 
@@ -57,4 +58,10 @@ test("fact mapper omits unanswered and hidden observations", () => {
 test("question citations select the exclusion rule after a negative answer", () => {
   assert.equal(willValidityQuestionRuleId("mentalState", { mentalState: "not-lucid" }), "R-B04");
   assert.equal(willValidityQuestionRuleId("guardianConsent", { guardianConsent: false }), "R-B06");
+});
+
+test("stored facts can restore the module answers", () => {
+  const source = { willType: "oral", witnessCount: 2, witnessesRecorded: true };
+  const restored = restoreWillValidityAnswers(buildWillValidityFacts(source));
+  assert.deepEqual(restored, source);
 });

@@ -10,6 +10,10 @@ export const createCaseSchema = z.object({
   title: z.string().trim().min(1).max(200),
 });
 
+export const updateCaseSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+});
+
 export const replaceCaseFactsSchema = z
   .object({
     subject: caseIdSchema,
