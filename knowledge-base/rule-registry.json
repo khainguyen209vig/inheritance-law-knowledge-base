@@ -169,7 +169,7 @@
       "provisionId": "article-651",
       "relevantSections": ["clause-1-intro", "clause-1-a"],
       "clipsMetadata": true,
-      "implementations": ["R-C01-spouse", "R-C01-biological-parent", "R-C01-adoptive-parent", "R-C01-biological-child", "R-C01-adoptive-child"]
+      "implementations": ["R-C01-spouse", "R-C01-spouse-reverse", "R-C01-biological-parent", "R-C01-adoptive-parent", "R-C01-biological-child", "R-C01-adoptive-child"]
     },
     "R-C02": {
       "ruleId": "R-C02", "module": "heir-rank", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",

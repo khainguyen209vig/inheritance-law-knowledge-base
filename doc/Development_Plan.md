@@ -387,9 +387,10 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 
 ### UX debt trước bản trình bày cuối
 
-- [ ] thay bộ chọn nhãn quan hệ hiện tại bằng trình biên tập cây/graph quan hệ trực quan;
-- [ ] hợp nhất việc nhập người và cạnh giữa `heir-rank` với `representation`;
-- [ ] hiển thị preview facts nguyên tử và cảnh báo graph không nhất quán trước khi suy luận;
+- [x] thay bộ chọn nhãn quan hệ hiện tại bằng trình biên tập cây/graph với node người và cạnh trực tiếp;
+- [x] để `heir-rank` ghi graph dùng chung và `representation` đọc lại chính graph đó, không tạo cây riêng;
+- [x] hiển thị preview facts nguyên tử và cảnh báo cạnh trùng, tự nối, xung đột loại cha/mẹ hoặc chu trình trước khi suy luận;
+- [ ] bổ sung thao tác kéo/thả hoặc nối cạnh trực tiếp trên canvas nếu kiểm thử usability cho thấy luồng chọn ba bước vẫn chậm;
 - [ ] kiểm thử usability nội bộ với ít nhất hai thành viên không viết rules CLIPS.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
