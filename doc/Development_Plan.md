@@ -457,7 +457,10 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] thêm completeness cho loại yêu cầu, loại tài sản có điều kiện và ngày mở thừa kế; thiếu dữ kiện trả `unknown`;
 - [x] thêm API, snapshot, timeline presenter và legal dialog Điều 623 cho nhiều yêu cầu trong cùng hồ sơ;
 - [x] không tự suy diễn `limitation-expired`: chưa mô hình hóa gián đoạn, bắt đầu lại, quy định chuyển tiếp hoặc dữ kiện ngày đánh giá;
-- [ ] thiết kế R-J05–R-J07 sau khi chốt facts/completeness về người thừa kế quản lý, người chiếm hữu đáp ứng Điều 236 và phạm vi tài sản.
+- [x] triển khai R-J05–R-J07 theo từng phần di sản; chỉ chạy khi `limitation-expiry-confirmed=true`;
+- [x] yêu cầu completeness tường minh trước khi dùng absence của người thừa kế quản lý hoặc người chiếm hữu đủ Điều 236;
+- [x] tái sử dụng person nodes của graph để chọn chủ thể, hiển thị ba nhánh kết quả và trace tới khoản 1 Điều 623;
+- [x] giữ R-J05/R-J06 ở `TEAM_REVIEW`; `article-236-qualified-possessor` là fact đã được kiểm chứng bên ngoài, không phải kết luận do mô-đun tự đánh giá.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

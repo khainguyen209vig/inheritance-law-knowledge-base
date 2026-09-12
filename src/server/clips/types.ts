@@ -1,7 +1,7 @@
 export type InferenceValue = "true" | "false" | "unknown" | "conflict";
 export type NumericResultValue = `${number}`;
 export type IsoDateResultValue = `${number}-${number}-${number}`;
-export type ModuleResultValue = InferenceValue | "statutory" | "testamentary" | "excluded" | "not-excluded" | "exception-under-will" | "rank-1" | "rank-2" | "rank-3" | "valid" | "state" | NumericResultValue | IsoDateResultValue;
+export type ModuleResultValue = InferenceValue | "statutory" | "testamentary" | "excluded" | "not-excluded" | "exception-under-will" | "rank-1" | "rank-2" | "rank-3" | "valid" | "state" | "managing-heir" | "qualified-possessor" | NumericResultValue | IsoDateResultValue;
 
 export interface ModuleResult {
   caseId: string;

@@ -56,7 +56,7 @@ export async function runStoredEstateSettlement(repository: CaseRepository, case
 export async function runStoredLimitation(repository: CaseRepository, caseId: string): Promise<StoredInferenceRun> {
   const facts = repository.getAllFacts(caseId);
   const output = await inferLimitation({ caseId, subject: caseId, facts });
-  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "limitation", knowledgeBaseVersion: "limitation-rj01-rj04-draft-v1" });
+  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "limitation", knowledgeBaseVersion: "limitation-rj01-rj07-draft-v2" });
 }
 
 export async function runStoredInheritanceType(

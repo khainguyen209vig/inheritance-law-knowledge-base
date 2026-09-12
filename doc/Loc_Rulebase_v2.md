@@ -301,9 +301,9 @@ Thứ tự thanh toán được giữ dưới dạng knowledge facts của R-I01
 | R-J02 | Động sản → thời hiệu chia 10 năm | TEMPORAL | `request-type=divide-estate`, `asset-type=movable` | `limitation-period=10 years` | Đã gắn với request và asset cụ thể | MODEL-READY |
 | R-J03 | Xác nhận/bác bỏ quyền thừa kế → 10 năm | TEMPORAL | `request-type=confirm-or-deny-inheritance-right` | `limitation-period=10 years` | Không phụ thuộc loại tài sản | MODEL-READY |
 | R-J04 | Yêu cầu thực hiện nghĩa vụ tài sản → 3 năm | TEMPORAL | `request-type=perform-estate-obligation` | `limitation-period=3 years` | Gắn với yêu cầu cụ thể | MODEL-READY |
-| R-J05 | Hết thời hiệu, có người thừa kế quản lý → thuộc người quản lý | CLASSIFICATION | Thời hiệu chia đã hết và người thừa kế đang quản lý di sản | `post-limitation-recipient=managing-heir` | Chỉ chạy sau khi temporal subsystem xác nhận hết thời hiệu | TEAM-REVIEW |
-| R-J06 | Không có người thừa kế quản lý, có người chiếm hữu → thuộc người chiếm hữu | CLASSIFICATION | Không có người thừa kế quản lý; có người chiếm hữu đáp ứng Điều 236 | `post-limitation-recipient=qualified-possessor` | Không tự đánh giá điều kiện Điều 236 nếu chưa có rules tương ứng | TEAM-REVIEW |
-| R-J07 | Không có người quản lý/chiếm hữu → thuộc Nhà nước | CLASSIFICATION | Không có người quản lý hoặc người chiếm hữu đủ điều kiện; việc xác minh đã đầy đủ | `post-limitation-recipient=state` | Thêm completeness để tránh suy luận từ absence | MODEL-READY |
+| R-J05 | Hết thời hiệu, có người thừa kế quản lý → thuộc người quản lý | CLASSIFICATION | `limitation-expiry-confirmed=true` và có `estate-managing-heir` | `post-limitation-recipient=managing-heir` | Đã triển khai; xác nhận hết thời hiệu là fact bên ngoài | TEAM-REVIEW |
+| R-J06 | Không có người thừa kế quản lý, có người chiếm hữu → thuộc người chiếm hữu | CLASSIFICATION | Đã tìm đủ người quản lý và không có; có `article-236-qualified-possessor` | `post-limitation-recipient=qualified-possessor` | Đã triển khai; không tự đánh giá Điều 236 | TEAM-REVIEW |
+| R-J07 | Không có người quản lý/chiếm hữu → thuộc Nhà nước | CLASSIFICATION | Cả hai phạm vi tìm kiếm đã được xác nhận đầy đủ và không có chủ thể | `post-limitation-recipient=state` | Đã có completeness để tránh suy luận từ absence | MODEL-READY |
 
 ## 7. Những thay đổi cần team duyệt trước tiên
 
@@ -343,7 +343,7 @@ UI phải cho nhóm xác nhận danh sách người hoặc disposition đã khai
 
 ### Quyết định 5 — Phần ngoài MVP
 
-R-I01–R-I05 đã được triển khai theo từng lát cắt độc lập, không ghép thành phép chia end-to-end. Phần tính deadline của Nhóm J tiếp tục được giữ trong catalog để triển khai ở bước kế tiếp.
+R-I01–R-I05 và R-J01–R-J07 đã được triển khai theo từng lát cắt độc lập, không ghép thành phép chia end-to-end. Các rule `TEAM_REVIEW` vẫn cần nhóm kiểm chứng trước khi đổi trạng thái.
 
 ## 8. Mapping từ V2 sang CLIPS
 
@@ -403,8 +403,7 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-I02 | Đã triển khai nhận diện nguyên tắc Điều 659 khoản 1 theo từng nhóm định đoạt; có completeness và không tính phần end-to-end |
 | R-I03a–R-I03b | Đã triển khai từ graph và hàng đang hoạt động; R-I03b giữ `TEAM_REVIEW`, chưa tính lại giá trị các suất |
 | R-I04–R-I05 | Đã triển khai mốc ngày và quyền yêu cầu Tòa; R-I05 giữ `TEAM_REVIEW`, không suy diễn quyết định tư pháp |
-| R-J01–R-J04 | Đã triển khai: CLIPS chọn số năm, temporal helper tính deadline, presenter hiển thị timeline; chưa kết luận hết thời hiệu |
-| R-J05–R-J07 | Chưa triển khai; cần chốt mô hình quản lý/chiếm hữu và completeness |
+| R-J01–R-J07 | Đã triển khai timeline và ba nhánh hậu quả; R-J05/R-J06 giữ `TEAM_REVIEW`, Điều 236 là fact đã xác nhận bên ngoài |
 | Legal validation | Chưa thực hiện đầy đủ |
 
 ## 10. Câu hỏi dành cho buổi review team

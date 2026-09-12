@@ -358,6 +358,24 @@
     (description "Yêu cầu đang xét là yêu cầu người thừa kế thực hiện nghĩa vụ về tài sản của người chết để lại, nên CLIPS chọn thời hạn ba năm kể từ thời điểm mở thừa kế.")
     (status draft))
   (rule-metadata
+    (rule-id R-J05)
+    (module limitation)
+    (legal-source "Điều 623 khoản 1 Bộ luật Dân sự 2015")
+    (description "Khi việc hết thời hiệu chia di sản đã được xác nhận và hồ sơ ghi nhận một người thừa kế đang quản lý phần di sản, hệ thống phân loại người nhận sau thời hiệu là người thừa kế đang quản lý.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-J06)
+    (module limitation)
+    (legal-source "Điều 623 khoản 1 điểm a Bộ luật Dân sự 2015")
+    (description "Sau khi đã xác nhận hết thời hiệu và hoàn tất việc tìm kiếm mà không có người thừa kế quản lý, một người đã được đánh giá bên ngoài mô-đun là đáp ứng Điều 236 được phân loại là người nhận. Rule này không tự đánh giá điều kiện chiếm hữu tại Điều 236.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-J07)
+    (module limitation)
+    (legal-source "Điều 623 khoản 1 điểm b Bộ luật Dân sự 2015")
+    (description "Sau khi đã xác nhận hết thời hiệu, việc tìm người thừa kế quản lý và người chiếm hữu đủ Điều 236 đều đã hoàn tất mà không ghi nhận ai, hệ thống mới dùng phép phủ định có kiểm soát để phân loại người nhận là Nhà nước.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

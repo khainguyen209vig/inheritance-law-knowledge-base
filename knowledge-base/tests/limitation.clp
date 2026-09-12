@@ -21,4 +21,20 @@
     (any-factp ((?missing missing-requirement)) (and (eq ?missing:subject unknown-request) (eq ?missing:predicate asset-type)))
     (any-factp ((?missing missing-requirement)) (and (eq ?missing:subject unknown-request) (eq ?missing:predicate inheritance-opening-date))))
   then (printout t "PASS limitation-open-world" crlf) else (printout t "FAIL limitation-open-world" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject managed-asset) (eq ?result:predicate post-limitation-recipient) (eq ?result:value managing-heir)))
+    (any-factp ((?trace inference-trace)) (and (eq ?trace:subject managed-asset) (eq ?trace:rule-id R-J05))))
+  then (printout t "PASS limitation-managing-heir" crlf) else (printout t "FAIL limitation-managing-heir" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject possessed-asset) (eq ?result:value qualified-possessor)))
+    (any-factp ((?trace inference-trace)) (and (eq ?trace:subject possessed-asset) (eq ?trace:rule-id R-J06))))
+  then (printout t "PASS limitation-qualified-possessor" crlf) else (printout t "FAIL limitation-qualified-possessor" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject state-asset) (eq ?result:value state)))
+    (any-factp ((?trace inference-trace)) (and (eq ?trace:subject state-asset) (eq ?trace:rule-id R-J07))))
+  then (printout t "PASS limitation-state-after-complete-search" crlf) else (printout t "FAIL limitation-state-after-complete-search" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject outcome-unknown-asset) (eq ?result:value unknown)))
+    (any-factp ((?missing missing-requirement)) (and (eq ?missing:subject outcome-unknown-asset) (eq ?missing:predicate managing-heir-search-complete))))
+  then (printout t "PASS limitation-outcome-open-world" crlf) else (printout t "FAIL limitation-outcome-open-world" crlf))
 (exit)

@@ -23,4 +23,11 @@ export const limitationFactSchema = z.discriminatedUnion("predicate", [
   z.object({ id: symbolSchema, predicate: z.literal("request-type"), value: z.enum(limitationRequestTypes) }),
   z.object({ id: symbolSchema, predicate: z.literal("asset-type"), value: z.enum(["immovable", "movable"]) }),
   z.object({ id: symbolSchema, predicate: z.literal("inheritance-opening-date"), value: isoDateSchema }),
+  z.object({ id: symbolSchema, predicate: z.literal("post-limitation-assessment-subject"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("estate-asset-label"), value: z.string().trim().min(1).max(200) }),
+  z.object({ id: symbolSchema, predicate: z.literal("limitation-expiry-confirmed"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("managing-heir-search-complete"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("estate-managing-heir"), value: symbolSchema }),
+  z.object({ id: symbolSchema, predicate: z.literal("qualified-possessor-search-complete"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("article-236-qualified-possessor"), value: symbolSchema }),
 ]);

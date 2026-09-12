@@ -20,3 +20,20 @@
 
 (asserted-fact (fact-id unknown-scope) (case-id limitation-fixture) (subject unknown-request) (predicate limitation-assessment-subject) (value true))
 (asserted-fact (fact-id unknown-type) (case-id limitation-fixture) (subject unknown-request) (predicate request-type) (value divide-estate))
+
+(asserted-fact (fact-id managed-scope) (case-id limitation-fixture) (subject managed-asset) (predicate post-limitation-assessment-subject) (value true))
+(asserted-fact (fact-id managed-expired) (case-id limitation-fixture) (subject managed-asset) (predicate limitation-expiry-confirmed) (value true))
+(asserted-fact (fact-id managed-heir) (case-id limitation-fixture) (subject managed-asset) (predicate estate-managing-heir) (value heir-one))
+
+(asserted-fact (fact-id possessed-scope) (case-id limitation-fixture) (subject possessed-asset) (predicate post-limitation-assessment-subject) (value true))
+(asserted-fact (fact-id possessed-expired) (case-id limitation-fixture) (subject possessed-asset) (predicate limitation-expiry-confirmed) (value true))
+(asserted-fact (fact-id possessed-heir-search) (case-id limitation-fixture) (subject possessed-asset) (predicate managing-heir-search-complete) (value true))
+(asserted-fact (fact-id possessed-person) (case-id limitation-fixture) (subject possessed-asset) (predicate article-236-qualified-possessor) (value possessor-one))
+
+(asserted-fact (fact-id state-scope) (case-id limitation-fixture) (subject state-asset) (predicate post-limitation-assessment-subject) (value true))
+(asserted-fact (fact-id state-expired) (case-id limitation-fixture) (subject state-asset) (predicate limitation-expiry-confirmed) (value true))
+(asserted-fact (fact-id state-heir-search) (case-id limitation-fixture) (subject state-asset) (predicate managing-heir-search-complete) (value true))
+(asserted-fact (fact-id state-possessor-search) (case-id limitation-fixture) (subject state-asset) (predicate qualified-possessor-search-complete) (value true))
+
+(asserted-fact (fact-id outcome-unknown-scope) (case-id limitation-fixture) (subject outcome-unknown-asset) (predicate post-limitation-assessment-subject) (value true))
+(asserted-fact (fact-id outcome-unknown-expired) (case-id limitation-fixture) (subject outcome-unknown-asset) (predicate limitation-expiry-confirmed) (value true))

@@ -138,7 +138,7 @@ function serializeCaseFacts(input: { caseId: string; subject: string; module: st
 }
 
 function serializeCaseFactValue(fact: StoredCase["facts"][number]): string {
-  if (fact.predicate === "estate-portion-label" || fact.predicate === "person-label" || fact.predicate === "heir-person-label" || fact.predicate === "obligation-label" || fact.predicate === "distribution-group-label" || fact.predicate === "distribution-beneficiary-label" || fact.predicate === "specified-division-date" || fact.predicate === "limitation-request-label" || fact.predicate === "inheritance-opening-date") {
+  if (fact.predicate === "estate-portion-label" || fact.predicate === "person-label" || fact.predicate === "heir-person-label" || fact.predicate === "obligation-label" || fact.predicate === "distribution-group-label" || fact.predicate === "distribution-beneficiary-label" || fact.predicate === "specified-division-date" || fact.predicate === "limitation-request-label" || fact.predicate === "inheritance-opening-date" || fact.predicate === "estate-asset-label") {
     return `"${String(fact.value).replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
   }
   return String(fact.value);

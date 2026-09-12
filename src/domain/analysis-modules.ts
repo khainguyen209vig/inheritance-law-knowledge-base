@@ -213,7 +213,7 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
   limitation: {
     id: "limitation",
     title: "Thời hiệu thừa kế",
-    shortDescription: "Đánh giá các mốc thời gian liên quan tới yêu cầu về thừa kế.",
+    shortDescription: "Đánh giá mốc thời hiệu và chủ thể nhận di sản sau thời hiệu theo Điều 623.",
     status: "implemented",
     interactionMode: "timeline",
     primaryResultPredicate: "limitation-deadline",

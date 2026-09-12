@@ -357,6 +357,28 @@ test("limitation adapter selects Article 623 periods and calculates calendar dea
   assert.ok(output.traces.some((item) => item.subject === "obligation-request" && item.ruleId === "R-J04"));
 });
 
+test("limitation adapter keeps post-limitation recipient branches mutually ordered", async () => {
+  const output = await inferLimitation({ caseId: "adapter-post-limitation", subject: "adapter-post-limitation", facts: [
+    { id: "managed-scope", subject: "managed-asset", predicate: "post-limitation-assessment-subject", value: true },
+    { id: "managed-expired", subject: "managed-asset", predicate: "limitation-expiry-confirmed", value: true },
+    { id: "managed-person", subject: "managed-asset", predicate: "estate-managing-heir", value: "heir-one" },
+    { id: "possessed-scope", subject: "possessed-asset", predicate: "post-limitation-assessment-subject", value: true },
+    { id: "possessed-expired", subject: "possessed-asset", predicate: "limitation-expiry-confirmed", value: true },
+    { id: "possessed-heir-search", subject: "possessed-asset", predicate: "managing-heir-search-complete", value: true },
+    { id: "possessed-person", subject: "possessed-asset", predicate: "article-236-qualified-possessor", value: "possessor-one" },
+    { id: "state-scope", subject: "state-asset", predicate: "post-limitation-assessment-subject", value: true },
+    { id: "state-expired", subject: "state-asset", predicate: "limitation-expiry-confirmed", value: true },
+    { id: "state-heir-search", subject: "state-asset", predicate: "managing-heir-search-complete", value: true },
+    { id: "state-possessor-search", subject: "state-asset", predicate: "qualified-possessor-search-complete", value: true },
+  ] });
+  assert.deepEqual(Object.fromEntries(output.results.filter((item) => item.predicate === "post-limitation-recipient").map((item) => [item.subject, item.value])), {
+    "managed-asset": "managing-heir", "possessed-asset": "qualified-possessor", "state-asset": "state",
+  });
+  assert.ok(output.traces.some((item) => item.subject === "managed-asset" && item.ruleId === "R-J05"));
+  assert.ok(output.traces.some((item) => item.subject === "possessed-asset" && item.ruleId === "R-J06"));
+  assert.ok(output.traces.some((item) => item.subject === "state-asset" && item.ruleId === "R-J07"));
+});
+
 test("CLIPS adapter preserves unknown and missing facts", async () => {
   const output = await inferWillValidity({
     caseId: "adapter-unknown",
