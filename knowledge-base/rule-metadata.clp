@@ -154,6 +154,18 @@
     (description "Graph thể hiện cả người con và người cháu trong nhánh đã chết trước hoặc cùng thời điểm, còn người chắt đủ điều kiện hưởng phần thế vị.")
     (status draft))
   (rule-metadata
+    (rule-id R-E03a)
+    (module representation)
+    (legal-source "Điều 653 Bộ luật Dân sự 2015")
+    (description "Cạnh cha/mẹ nuôi–con nuôi hợp pháp tạo căn cứ quan hệ thừa kế theo cả hai chiều. Đây chưa phải kết luận người đó thực tế được hưởng trong vụ việc.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-E03b)
+    (module representation)
+    (legal-source "Điều 653 Bộ luật Dân sự 2015; đối chiếu Điều 651–652")
+    (description "Khi graph có cả cạnh cha/mẹ nuôi và cha/mẹ đẻ tới cùng một người con, hệ thống giữ hai căn cứ độc lập thay vì gộp hoặc loại bỏ một quan hệ.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

@@ -1,3 +1,18 @@
+(defrule project-adoption-inheritance-basis
+  (declare (salience 50))
+  (analysis-request (case-id ?case-id) (module representation))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate adoption-inheritance-basis) (value ?relative) (rule-id ?rule))
+  (not (module-result (case-id ?case-id) (subject ?person) (module representation) (predicate adoption-inheritance-basis)))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?person) (module representation) (predicate adoption-inheritance-basis) (value true) (derivations ?rule))))
+
+(defrule project-dual-parentage-inheritance-basis
+  (declare (salience 50))
+  (analysis-request (case-id ?case-id) (module representation))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate dual-parentage-inheritance-basis) (value true) (rule-id ?rule))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?person) (module representation) (predicate dual-parentage-inheritance-basis) (value true) (derivations ?rule))))
+
 (defrule project-representation-result
   (declare (salience 50))
   (analysis-request (case-id ?case-id) (module representation))

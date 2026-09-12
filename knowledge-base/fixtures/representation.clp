@@ -31,3 +31,7 @@
 
 ; Unknown candidate keeps an open-world result.
 (asserted-fact (fact-id rep-unknown-candidate) (case-id case-representation) (subject unknown-one) (predicate representation-candidate) (value true))
+
+; Article 653 keeps adoptive and biological relationship bases distinct.
+(asserted-fact (fact-id rep-adoptive-edge) (case-id case-representation) (subject adoptive-parent-one) (predicate adoptive-parent-of) (value adopted-child-one))
+(asserted-fact (fact-id rep-biological-edge) (case-id case-representation) (subject biological-parent-one) (predicate biological-parent-of) (value adopted-child-one))

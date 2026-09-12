@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v6",
+  "knowledgeBaseVersion": "inheritance-kb-v7",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -270,6 +270,20 @@
       "title": "Chắt thừa kế thế vị cho cha hoặc mẹ", "reasoning": "Graph thể hiện cả người con và người cháu trong nhánh đã chết trước hoặc cùng thời điểm, còn người chắt đủ điều kiện hưởng phần thế vị.",
       "conclusion": "Chắt được xác định là người thừa kế thế vị", "citation": "Điều 652 Bộ luật Dân sự 2015", "provisionId": "article-652", "relevantSections": ["main"], "clipsMetadata": true,
       "implementations": ["R-E02-great-grandchild-represents-grandchild"]
+    },
+    "R-E03a": {
+      "ruleId": "R-E03a", "module": "representation", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Quan hệ thừa kế giữa con nuôi và cha mẹ nuôi",
+      "reasoning": "Cạnh cha/mẹ nuôi–con nuôi hợp pháp tạo căn cứ quan hệ thừa kế theo cả hai chiều. Đây chưa phải kết luận người đó thực tế được hưởng trong vụ việc.",
+      "conclusion": "Tồn tại căn cứ quan hệ thừa kế do nuôi con nuôi", "citation": "Điều 653 Bộ luật Dân sự 2015", "provisionId": "article-653", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["R-E03a-adopted-child-to-adoptive-parent-basis", "R-E03a-adoptive-parent-to-adopted-child-basis"]
+    },
+    "R-E03b": {
+      "ruleId": "R-E03b", "module": "representation", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Giữ đồng thời căn cứ cha mẹ nuôi và cha mẹ đẻ",
+      "reasoning": "Khi graph có cả cạnh cha/mẹ nuôi và cha/mẹ đẻ tới cùng một người con, hệ thống giữ hai căn cứ độc lập thay vì gộp hoặc loại bỏ một quan hệ.",
+      "conclusion": "Người con có đồng thời hai nhóm căn cứ quan hệ", "citation": "Điều 653 Bộ luật Dân sự 2015; đối chiếu Điều 651–652", "provisionId": "article-653", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["R-E03b-dual-parentage-basis"]
     },
     "REPRESENTATION-CANDIDATE-INACTIVE": {
       "ruleId": "REPRESENTATION-CANDIDATE-INACTIVE", "module": "representation", "kind": "internal", "status": "draft",

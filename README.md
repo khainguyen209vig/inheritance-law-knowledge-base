@@ -361,7 +361,8 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 8. [x] Thiết kế graph quan hệ và triển khai R-C01–R-C03 để phân loại ba hàng thừa kế.
 9. [x] Triển khai R-C04–R-C06, kết nối kết quả Điều 621 và chỉ chọn hàng hoạt động khi có `heir-search-complete=true`.
 10. [x] Triển khai lát cắt `representation` R-E01/R-E02, tái sử dụng graph gia đình, Điều 621 và trạng thái sống/từ chối.
-11. [x] Thay UI chọn nhãn quan hệ tạm thời bằng trình biên tập node/cạnh dùng chung, có fact preview và kiểm tra graph; kéo/thả vẫn là cải tiến tùy kết quả usability test.
-12. [ ] Review và triển khai các quan hệ đặc biệt R-E03–R-E05 sau khi fact model về quan hệ nuôi/con riêng được team chấp thuận.
+11. [ ] Graph editor vòng 1 đã có node/cạnh, fact preview và diagnostics; UI/UX vẫn phải tiếp tục cải thiện và usability test trước bản trình bày cuối.
+12. [x] Triển khai R-E03a/R-E03b cho căn cứ quan hệ con nuôi, không gộp với quan hệ cha mẹ đẻ và không kết luận quyền hưởng cuối cùng.
+13. [ ] Review R-E04/R-E05 và bổ sung fact model có chứng cứ cho quan hệ chăm sóc giữa con riêng–bố dượng/mẹ kế.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

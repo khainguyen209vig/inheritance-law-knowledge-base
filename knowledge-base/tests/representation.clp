@@ -18,4 +18,12 @@
   then (printout t "PASS representation-unknown" crlf) else (printout t "FAIL representation-unknown" crlf))
 (if (and (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-E01)) (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-E02)))
   then (printout t "PASS representation-traces" crlf) else (printout t "FAIL representation-traces" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject adopted-child-one) (eq ?result:predicate adoption-inheritance-basis) (eq ?result:value true)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject adoptive-parent-one) (eq ?result:predicate adoption-inheritance-basis) (eq ?result:value true))))
+  then (printout t "PASS adoption-reciprocal-basis" crlf) else (printout t "FAIL adoption-reciprocal-basis" crlf))
+(if (any-factp ((?result module-result)) (and (eq ?result:subject adopted-child-one) (eq ?result:predicate dual-parentage-inheritance-basis) (eq ?result:value true)))
+  then (printout t "PASS adoption-dual-basis" crlf) else (printout t "FAIL adoption-dual-basis" crlf))
+(if (and (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-E03a)) (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-E03b)))
+  then (printout t "PASS adoption-traces" crlf) else (printout t "FAIL adoption-traces" crlf))
 (exit)

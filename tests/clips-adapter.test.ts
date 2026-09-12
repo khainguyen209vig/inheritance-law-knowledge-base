@@ -152,6 +152,18 @@ test("representation adapter derives a grandchild result from a multi-step famil
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-E01"));
 });
 
+test("representation adapter keeps adoptive and biological relationship bases without asserting final entitlement", async () => {
+  const output = await inferRepresentation({ caseId: "adapter-adoption", subject: "adapter-adoption", facts: [
+    { id: "adoptive-edge", subject: "adoptive-parent", predicate: "adoptive-parent-of", value: "adopted-child" },
+    { id: "biological-edge", subject: "biological-parent", predicate: "biological-parent-of", value: "adopted-child" },
+  ] });
+  assert.ok(output.results.some((result) => result.subject === "adopted-child" && result.predicate === "adoption-inheritance-basis" && result.value === "true"));
+  assert.ok(output.results.some((result) => result.subject === "adopted-child" && result.predicate === "dual-parentage-inheritance-basis" && result.value === "true"));
+  assert.ok(!output.results.some((result) => result.predicate === "inherits-by-representation"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-E03a"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-E03b"));
+});
+
 test("CLIPS adapter preserves unknown and missing facts", async () => {
   const output = await inferWillValidity({
     caseId: "adapter-unknown",

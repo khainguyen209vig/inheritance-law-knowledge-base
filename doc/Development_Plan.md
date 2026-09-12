@@ -382,15 +382,21 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] triển khai R-E01/R-E02 để thể hiện suy luận nhiều bước trên graph;
 - [x] nạp rules Điều 621 trong cùng working memory, thêm completeness/projection, API, snapshot, presenter rà soát nhánh và regression tests;
 - [x] trích Điều 652–654 từ tài liệu luật cục bộ vào legal catalog;
+- [x] triển khai R-E03a/R-E03b để giữ căn cứ thừa kế hai chiều giữa con nuôi–cha mẹ nuôi và đồng thời bảo toàn quan hệ cha mẹ đẻ; không chiếu thành quyền hưởng cuối cùng;
 - review R-E04/R-E05 về quan hệ con riêng–bố dượng/mẹ kế trước khi bật kết luận;
 - tái sử dụng trạng thái sống, Điều 621 và graph hiện có thay vì hỏi lại kết luận tổng hợp.
 
 ### UX debt trước bản trình bày cuối
 
+> **Trạng thái:** graph editor hiện tại chỉ là vòng cải thiện thứ nhất và **chưa được xem là UI/UX hoàn tất**. Việc đã thay nhãn quan hệ tổng hợp bằng node/cạnh thật giải quyết vấn đề representation, nhưng chưa chứng minh luồng thao tác đã dễ dùng.
+
 - [x] thay bộ chọn nhãn quan hệ hiện tại bằng trình biên tập cây/graph với node người và cạnh trực tiếp;
 - [x] để `heir-rank` ghi graph dùng chung và `representation` đọc lại chính graph đó, không tạo cây riêng;
 - [x] hiển thị preview facts nguyên tử và cảnh báo cạnh trùng, tự nối, xung đột loại cha/mẹ hoặc chu trình trước khi suy luận;
 - [ ] bổ sung thao tác kéo/thả hoặc nối cạnh trực tiếp trên canvas nếu kiểm thử usability cho thấy luồng chọn ba bước vẫn chậm;
+- [ ] cải thiện đường nối trực quan giữa các node, pan/zoom, bố cục cây lớn và khả năng nhận biết cha/mẹ–con mà không cần đọc danh sách cạnh;
+- [ ] bổ sung undo/redo, xác nhận khi xóa node có nhiều cạnh và hướng dẫn sửa từng loại cảnh báo;
+- [ ] review responsive/mobile, keyboard navigation, focus order và độ tương phản của trạng thái selected;
 - [ ] kiểm thử usability nội bộ với ít nhất hai thành viên không viết rules CLIPS.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức

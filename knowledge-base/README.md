@@ -23,7 +23,7 @@ Mô-đun `heir-rank` triển khai R-C01–R-C06. Ba hàng được suy ra từ c
 
 Presenter dùng mô hình `people + edges`: mỗi node người và mỗi cạnh nguyên tử đều có thể xem, sửa hoặc xóa. UI không còn lưu các lựa chọn tổng hợp như “cháu” hay “hàng 2”; các node trung gian của hồ sơ cũ được khôi phục thành người có thể chỉnh sửa. Fact preview và graph diagnostics chạy trước khi gọi CLIPS.
 
-Mô-đun `representation` triển khai lát cắt R-E01/R-E02 theo Điều 652. CLIPS suy ra `would-be-entitled-if-alive` từ graph và kết quả Điều 621, sau đó đối sánh nhánh cháu/chắt; UI chỉ chọn phạm vi ứng viên. Hai rule này vẫn là `TEAM_REVIEW`; R-E03–R-E05 chưa được triển khai.
+Mô-đun `representation` triển khai R-E01/R-E02 theo Điều 652 và R-E03a/R-E03b theo Điều 653. CLIPS suy ra `would-be-entitled-if-alive` rồi đối sánh nhánh cháu/chắt; quan hệ con nuôi được lưu thành căn cứ hai chiều và có thể đồng thời tồn tại với quan hệ cha mẹ đẻ. R-E03 không tự kết luận quyền hưởng cuối cùng. R-E01/R-E02 vẫn là `TEAM_REVIEW`; R-E04–R-E05 chưa được triển khai.
 
 Nếu các observations đều có mặt nhưng chưa khớp đường suy luận dương hoặc exclusion rule đã được mô hình hóa, completeness layer tạo `unresolved-rule-path` và trả `UNKNOWN`. Cách xử lý này giữ open-world semantics cho đến khi team duyệt rule âm tương ứng.
 

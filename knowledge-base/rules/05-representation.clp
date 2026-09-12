@@ -1,5 +1,30 @@
 ; Article 652: representation is derived from graph paths and eligibility facts.
 
+; Article 653 creates reciprocal inheritance relationship bases. These are not
+; final entitlement conclusions and remain available to downstream rules.
+(defrule R-E03a-adopted-child-to-adoptive-parent-basis
+  (declare (salience 460))
+  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?parent) (predicate adoptive-parent-of) (value ?child))
+  (not (derived-fact (case-id ?case-id) (subject ?child) (predicate adoption-inheritance-basis) (value ?parent)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?child) (predicate adoption-inheritance-basis) (value ?parent) (rule-id R-E03a) (supports ?edge))))
+
+(defrule R-E03a-adoptive-parent-to-adopted-child-basis
+  (declare (salience 460))
+  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?parent) (predicate adoptive-parent-of) (value ?child))
+  (not (derived-fact (case-id ?case-id) (subject ?parent) (predicate adoption-inheritance-basis) (value ?child)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?parent) (predicate adoption-inheritance-basis) (value ?child) (rule-id R-E03a) (supports ?edge))))
+
+(defrule R-E03b-dual-parentage-basis
+  (declare (salience 450))
+  (asserted-fact (fact-id ?adoptive-edge) (case-id ?case-id) (subject ?adoptive-parent) (predicate adoptive-parent-of) (value ?child))
+  (asserted-fact (fact-id ?biological-edge) (case-id ?case-id) (subject ?biological-parent) (predicate biological-parent-of) (value ?child))
+  (test (neq ?adoptive-parent ?biological-parent))
+  (not (derived-fact (case-id ?case-id) (subject ?child) (predicate dual-parentage-inheritance-basis) (value true)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?child) (predicate dual-parentage-inheritance-basis) (value true) (rule-id R-E03b) (supports ?adoptive-edge ?biological-edge))))
+
 (defrule REPRESENTED-CHILD-WOULD-BE-ENTITLED
   (declare (salience 420))
   (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))
