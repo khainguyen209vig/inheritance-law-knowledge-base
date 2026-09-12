@@ -235,8 +235,8 @@ Quan hệ cháu/chắt không nên nhập bằng một nhãn text duy nhất; en
 | R-E02 | Cháu cũng chết trước/cùng lúc, chắt còn sống → chắt thế vị | DERIVATION | Chuỗi quan hệ deceased → child → grandchild đã chết trước/cùng thời điểm → great-grandchild còn sống | `representation-heir(great-grandchild,represented-person,case)=true` | Biểu diễn bằng graph, không dùng `cha_me_da_chet` toàn cục | TEAM-REVIEW |
 | R-E03a | Con nuôi được thừa kế cha/mẹ nuôi và cha/mẹ đẻ | DERIVATION | `parent-of(adoptive-parent,adopted-child,adoptive)` | Tạo quan hệ ứng viên thừa kế giữa con nuôi và cha/mẹ nuôi | Không kết luận quyền hưởng cuối cùng trước khi áp dụng D/H/C | MODEL-READY |
 | R-E03b | Cùng V1 R-E03 | DERIVATION | Có quan hệ con nuôi hợp pháp đồng thời có quan hệ cha/mẹ đẻ | Giữ cả hai căn cứ quan hệ để xét Điều 651/652 | Tách hai quan hệ, không ghi một kết luận gộp | MODEL-READY |
-| R-E04 | Con riêng có chăm sóc như cha/mẹ con → hưởng và thế vị | DERIVATION | Con riêng và bố dượng/mẹ kế có quan hệ chăm sóc như cha con/mẹ con | Tạo `statutory-relationship-basis` và cho phép áp dụng rules thế vị liên quan | Không kết luận trực tiếp “được hưởng” nếu còn exclusion/refusal | TEAM-REVIEW |
-| R-E05 | Không có quan hệ chăm sóc → không hưởng bố dượng/mẹ kế | EXCLUSION | Quan hệ con riêng–bố dượng/mẹ kế nhưng không có quan hệ chăm sóc tương ứng | `eligible-by-step-relationship=false` | Chỉ phủ định căn cứ này; X vẫn có thể hưởng theo di chúc hoặc căn cứ khác | TEAM-REVIEW |
+| R-E04 | Con riêng có chăm sóc như cha/mẹ con → hưởng và thế vị | DERIVATION | `step-parent-of(P,C)` và `step-care-status(edge-id,established)` gắn đúng vào fact quan hệ | Tạo `step-relationship-inheritance-basis` theo hai chiều | Đã triển khai draft; không kết luận quyền hưởng cuối cùng nếu còn exclusion/refusal | TEAM-REVIEW |
+| R-E05 | Không có quan hệ chăm sóc → không hưởng bố dượng/mẹ kế | EXCLUSION | `step-parent-of(P,C)` và đánh giá tường minh `step-care-status(edge-id,not-established)` | `eligible-by-step-relationship=false` theo hai chiều | Đã triển khai draft; thiếu đánh giá là UNKNOWN, chỉ phủ định căn cứ này | TEAM-REVIEW |
 
 ### Nhóm F — Người thừa kế không phụ thuộc nội dung di chúc
 
@@ -395,7 +395,8 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-D01–R-D05 | Đã triển khai theo từng người; R-D01 và R-D05 chờ team review |
 | R-E01–R-E02 | Đã triển khai lát cắt thế vị trên graph; vẫn ở trạng thái `TEAM_REVIEW` |
 | R-E03a–R-E03b | Đã triển khai căn cứ quan hệ con nuôi ở trạng thái `MODEL_READY`; chưa kết luận quyền hưởng cuối cùng |
-| R-E04–R-E05, nhóm F–J | Đặc tả đề xuất để team review, chưa triển khai |
+| R-E04–R-E05 | Đã triển khai với đánh giá chăm sóc gắn theo cạnh; giữ `TEAM_REVIEW`, open-world và không phủ định căn cứ khác |
+| Nhóm F–J | Đặc tả đề xuất để team review, chưa triển khai |
 | Legal validation | Chưa thực hiện đầy đủ |
 
 ## 10. Câu hỏi dành cho buổi review team

@@ -1,3 +1,13 @@
+(defrule SYSTEM-STEP-CARE-CONFLICT
+  (declare (salience 490))
+  (analysis-request (case-id ?case-id) (module representation))
+  (asserted-fact (fact-id ?edge) (case-id ?case-id) (predicate step-parent-of) (value ?step-child))
+  (asserted-fact (fact-id ?positive) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value established))
+  (asserted-fact (fact-id ?negative) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value not-established))
+  (not (derived-fact (case-id ?case-id) (subject ?step-child) (predicate step-care-assessment) (value conflict)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?step-child) (predicate step-care-assessment) (value conflict) (rule-id SYSTEM-STEP-CARE-CONFLICT) (supports ?edge ?positive ?negative))))
+
 (defrule missing-representation-path
   (declare (salience 200))
   (analysis-request (case-id ?case-id) (module representation))
@@ -63,3 +73,11 @@
   (not (asserted-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal)))
   =>
   (assert (missing-requirement (case-id ?case-id) (subject ?person) (module representation) (predicate valid-refusal))))
+
+(defrule missing-step-care-assessment
+  (declare (salience 220))
+  (analysis-request (case-id ?case-id) (module representation))
+  (asserted-fact (fact-id ?edge) (case-id ?case-id) (predicate step-parent-of) (value ?step-child))
+  (not (asserted-fact (case-id ?case-id) (subject ?edge) (predicate step-care-status)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?step-child) (module representation) (predicate step-care-status))))

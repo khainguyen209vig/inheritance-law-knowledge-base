@@ -25,6 +25,44 @@
   =>
   (assert (derived-fact (case-id ?case-id) (subject ?child) (predicate dual-parentage-inheritance-basis) (value true) (rule-id R-E03b) (supports ?adoptive-edge ?biological-edge))))
 
+; Article 654 is modeled as a relationship plus an explicit assessment attached
+; to that relationship fact. Absence of an assessment never means "no care".
+(defrule R-E04-step-child-to-step-parent-basis
+  (declare (salience 440))
+  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?step-child))
+  (asserted-fact (fact-id ?assessment) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value established))
+  (not (asserted-fact (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value not-established)))
+  (not (derived-fact (case-id ?case-id) (subject ?step-child) (predicate step-relationship-inheritance-basis) (value ?step-parent)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?step-child) (predicate step-relationship-inheritance-basis) (value ?step-parent) (rule-id R-E04) (supports ?edge ?assessment))))
+
+(defrule R-E04-step-parent-to-step-child-basis
+  (declare (salience 440))
+  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?step-child))
+  (asserted-fact (fact-id ?assessment) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value established))
+  (not (asserted-fact (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value not-established)))
+  (not (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-relationship-inheritance-basis) (value ?step-child)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-relationship-inheritance-basis) (value ?step-child) (rule-id R-E04) (supports ?edge ?assessment))))
+
+(defrule R-E05-step-child-without-care-basis
+  (declare (salience 440))
+  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?step-child))
+  (asserted-fact (fact-id ?assessment) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value not-established))
+  (not (asserted-fact (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value established)))
+  (not (derived-fact (case-id ?case-id) (subject ?step-child) (predicate eligible-by-step-relationship)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?step-child) (predicate eligible-by-step-relationship) (value false) (rule-id R-E05) (supports ?edge ?assessment))))
+
+(defrule R-E05-step-parent-without-care-basis
+  (declare (salience 440))
+  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?step-child))
+  (asserted-fact (fact-id ?assessment) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value not-established))
+  (not (asserted-fact (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value established)))
+  (not (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate eligible-by-step-relationship)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate eligible-by-step-relationship) (value false) (rule-id R-E05) (supports ?edge ?assessment))))
+
 (defrule REPRESENTED-CHILD-WOULD-BE-ENTITLED
   (declare (salience 420))
   (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))

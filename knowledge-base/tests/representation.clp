@@ -26,4 +26,18 @@
   then (printout t "PASS adoption-dual-basis" crlf) else (printout t "FAIL adoption-dual-basis" crlf))
 (if (and (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-E03a)) (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-E03b)))
   then (printout t "PASS adoption-traces" crlf) else (printout t "FAIL adoption-traces" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject step-child-positive) (eq ?result:predicate step-relationship-inheritance-basis) (eq ?result:value true)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject step-parent-positive) (eq ?result:predicate step-relationship-inheritance-basis) (eq ?result:value true))))
+  then (printout t "PASS step-reciprocal-basis" crlf) else (printout t "FAIL step-reciprocal-basis" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject step-child-negative) (eq ?result:predicate eligible-by-step-relationship) (eq ?result:value false)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject step-parent-negative) (eq ?result:predicate eligible-by-step-relationship) (eq ?result:value false))))
+  then (printout t "PASS step-explicit-negative" crlf) else (printout t "FAIL step-explicit-negative" crlf))
+(if (and
+    (any-factp ((?missing missing-requirement)) (and (eq ?missing:subject step-child-unknown) (eq ?missing:predicate step-care-status)))
+    (not (any-factp ((?result module-result)) (eq ?result:subject step-child-unknown))))
+  then (printout t "PASS step-open-world-missing" crlf) else (printout t "FAIL step-open-world-missing" crlf))
+(if (and (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-E04)) (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-E05)))
+  then (printout t "PASS step-traces" crlf) else (printout t "FAIL step-traces" crlf))
 (exit)

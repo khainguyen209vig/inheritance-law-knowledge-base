@@ -26,7 +26,7 @@ export async function runStoredHeirRank(repository: CaseRepository, caseId: stri
 export async function runStoredRepresentation(repository: CaseRepository, caseId: string): Promise<StoredInferenceRun> {
   const facts = repository.getAllFacts(caseId);
   const output = await inferRepresentation({ caseId, subject: caseId, facts });
-  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "representation", knowledgeBaseVersion: "representation-re01-re03-draft-v1" });
+  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "representation", knowledgeBaseVersion: "representation-re01-re05-draft-v1" });
 }
 
 export async function runStoredInheritanceType(

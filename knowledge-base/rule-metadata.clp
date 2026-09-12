@@ -166,6 +166,24 @@
     (description "Khi graph có cả cạnh cha/mẹ nuôi và cha/mẹ đẻ tới cùng một người con, hệ thống giữ hai căn cứ độc lập thay vì gộp hoặc loại bỏ một quan hệ.")
     (status draft))
   (rule-metadata
+    (rule-id R-E04)
+    (module representation)
+    (legal-source "Điều 654 Bộ luật Dân sự 2015")
+    (description "Quan hệ con riêng–bố dượng hoặc mẹ kế chỉ tạo căn cứ thừa kế hai chiều khi đánh giá gắn với chính quan hệ đó xác nhận có chăm sóc, nuôi dưỡng nhau như cha con, mẹ con. Kết luận này chưa tự động xác định quyền hưởng cuối cùng.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-E05)
+    (module representation)
+    (legal-source "Suy luận loại trừ cần team review từ Điều 654 Bộ luật Dân sự 2015")
+    (description "Chỉ khi có đánh giá tường minh rằng quan hệ con riêng–bố dượng hoặc mẹ kế không có việc chăm sóc, nuôi dưỡng như cha con, mẹ con, hệ thống mới phủ định căn cứ hưởng theo riêng quan hệ đặc biệt này. Thiếu đánh giá không được xem là kết luận phủ định.")
+    (status draft))
+  (rule-metadata
+    (rule-id SYSTEM-STEP-CARE-CONFLICT)
+    (module representation)
+    (legal-source "Quy tắc kiểm soát nhất quán của hệ thống")
+    (description "Cùng một cạnh quan hệ con riêng–bố dượng hoặc mẹ kế vừa được đánh giá có, vừa được đánh giá không có chăm sóc như cha con, mẹ con.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

@@ -11,6 +11,8 @@ export const heirRankFactSchema = z.discriminatedUnion("predicate", [
   z.object({ id: symbolSchema, predicate: z.literal("heir-life-status"), value: z.enum(["alive", "dead-before-or-same"]) }),
   relationFact("biological-parent-of"),
   relationFact("adoptive-parent-of"),
+  relationFact("step-parent-of"),
+  z.object({ id: symbolSchema, predicate: z.literal("step-care-status"), value: z.enum(["established", "not-established"]) }),
   relationFact("spouse-at-opening"),
   z.object({ id: symbolSchema, predicate: z.literal("heir-person-label"), value: z.string().trim().min(1).max(80) }),
 ]);

@@ -164,6 +164,33 @@ test("representation adapter keeps adoptive and biological relationship bases wi
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-E03b"));
 });
 
+test("representation adapter requires explicit step-family care assessment", async () => {
+  const output = await inferRepresentation({ caseId: "adapter-step-family", subject: "adapter-step-family", facts: [
+    { id: "positive-edge", subject: "step-parent-positive", predicate: "step-parent-of", value: "step-child-positive" },
+    { id: "positive-care", subject: "positive-edge", predicate: "step-care-status", value: "established" },
+    { id: "negative-edge", subject: "step-parent-negative", predicate: "step-parent-of", value: "step-child-negative" },
+    { id: "negative-care", subject: "negative-edge", predicate: "step-care-status", value: "not-established" },
+    { id: "unknown-edge", subject: "step-parent-unknown", predicate: "step-parent-of", value: "step-child-unknown" },
+  ] });
+  assert.ok(output.results.some((result) => result.subject === "step-child-positive" && result.predicate === "step-relationship-inheritance-basis" && result.value === "true"));
+  assert.ok(output.results.some((result) => result.subject === "step-child-negative" && result.predicate === "eligible-by-step-relationship" && result.value === "false"));
+  assert.ok(output.missing.some((item) => item.subject === "step-child-unknown" && item.predicate === "step-care-status"));
+  assert.ok(!output.results.some((result) => result.subject === "step-child-unknown"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-E04"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-E05"));
+});
+
+test("representation adapter blocks contradictory step-family care assessments", async () => {
+  const output = await inferRepresentation({ caseId: "adapter-step-conflict", subject: "adapter-step-conflict", facts: [
+    { id: "conflict-edge", subject: "step-parent", predicate: "step-parent-of", value: "step-child" },
+    { id: "conflict-positive", subject: "conflict-edge", predicate: "step-care-status", value: "established" },
+    { id: "conflict-negative", subject: "conflict-edge", predicate: "step-care-status", value: "not-established" },
+  ] });
+  assert.ok(output.results.some((result) => result.subject === "step-child" && result.predicate === "step-care-assessment" && result.value === "conflict"));
+  assert.ok(!output.results.some((result) => result.predicate === "step-relationship-inheritance-basis" || result.predicate === "eligible-by-step-relationship"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "SYSTEM-STEP-CARE-CONFLICT"));
+});
+
 test("CLIPS adapter preserves unknown and missing facts", async () => {
   const output = await inferWillValidity({
     caseId: "adapter-unknown",

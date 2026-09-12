@@ -363,6 +363,7 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 10. [x] Triển khai lát cắt `representation` R-E01/R-E02, tái sử dụng graph gia đình, Điều 621 và trạng thái sống/từ chối.
 11. [ ] Graph editor vòng 1 đã có node/cạnh, fact preview và diagnostics; UI/UX vẫn phải tiếp tục cải thiện và usability test trước bản trình bày cuối.
 12. [x] Triển khai R-E03a/R-E03b cho căn cứ quan hệ con nuôi, không gộp với quan hệ cha mẹ đẻ và không kết luận quyền hưởng cuối cùng.
-13. [ ] Review R-E04/R-E05 và bổ sung fact model có chứng cứ cho quan hệ chăm sóc giữa con riêng–bố dượng/mẹ kế.
+13. [x] Triển khai draft R-E04/R-E05 bằng đánh giá chăm sóc gắn với từng cạnh con riêng–bố dượng/mẹ kế; thiếu đánh giá không bị diễn giải thành phủ định.
+14. [ ] Chuẩn hóa mô hình dữ kiện và phép tính cho nhóm F — người thừa kế không phụ thuộc nội dung di chúc — trước khi triển khai R-F01–R-F03.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

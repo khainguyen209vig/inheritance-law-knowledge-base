@@ -35,3 +35,10 @@
 ; Article 653 keeps adoptive and biological relationship bases distinct.
 (asserted-fact (fact-id rep-adoptive-edge) (case-id case-representation) (subject adoptive-parent-one) (predicate adoptive-parent-of) (value adopted-child-one))
 (asserted-fact (fact-id rep-biological-edge) (case-id case-representation) (subject biological-parent-one) (predicate biological-parent-of) (value adopted-child-one))
+
+; Article 654 assessments are attached to relation fact IDs, not inferred from absence.
+(asserted-fact (fact-id rep-step-positive-edge) (case-id case-representation) (subject step-parent-positive) (predicate step-parent-of) (value step-child-positive))
+(asserted-fact (fact-id rep-step-positive-care) (case-id case-representation) (subject rep-step-positive-edge) (predicate step-care-status) (value established))
+(asserted-fact (fact-id rep-step-negative-edge) (case-id case-representation) (subject step-parent-negative) (predicate step-parent-of) (value step-child-negative))
+(asserted-fact (fact-id rep-step-negative-care) (case-id case-representation) (subject rep-step-negative-edge) (predicate step-care-status) (value not-established))
+(asserted-fact (fact-id rep-step-unknown-edge) (case-id case-representation) (subject step-parent-unknown) (predicate step-parent-of) (value step-child-unknown))

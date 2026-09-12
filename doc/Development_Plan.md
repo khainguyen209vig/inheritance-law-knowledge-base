@@ -383,7 +383,9 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] nạp rules Điều 621 trong cùng working memory, thêm completeness/projection, API, snapshot, presenter rà soát nhánh và regression tests;
 - [x] trích Điều 652–654 từ tài liệu luật cục bộ vào legal catalog;
 - [x] triển khai R-E03a/R-E03b để giữ căn cứ thừa kế hai chiều giữa con nuôi–cha mẹ nuôi và đồng thời bảo toàn quan hệ cha mẹ đẻ; không chiếu thành quyền hưởng cuối cùng;
-- review R-E04/R-E05 về quan hệ con riêng–bố dượng/mẹ kế trước khi bật kết luận;
+- [x] triển khai R-E04/R-E05 ở trạng thái `TEAM_REVIEW` bằng cặp facts `step-parent-of` và `step-care-status(edge-id, established|not-established)`; đánh giá gắn với cạnh quan hệ, thiếu đánh giá sinh missing requirement thay vì bị hiểu là phủ định;
+- [x] chỉ tạo căn cứ thừa kế hai chiều khi trạng thái chăm sóc là `established`; R-E05 chỉ phủ định căn cứ theo riêng Điều 654 khi có fact `not-established` tường minh và không phủ định căn cứ di chúc/quan hệ khác;
+- [x] thêm kiểm soát xung đột nếu một cạnh đồng thời có cả hai đánh giá và presenter dẫn tới nội dung Điều 654;
 - tái sử dụng trạng thái sống, Điều 621 và graph hiện có thay vì hỏi lại kết luận tổng hợp.
 
 ### UX debt trước bản trình bày cuối
@@ -398,6 +400,13 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [ ] bổ sung undo/redo, xác nhận khi xóa node có nhiều cạnh và hướng dẫn sửa từng loại cảnh báo;
 - [ ] review responsive/mobile, keyboard navigation, focus order và độ tương phản của trạng thái selected;
 - [ ] kiểm thử usability nội bộ với ít nhất hai thành viên không viết rules CLIPS.
+
+### Mốc tiếp theo — Người thừa kế không phụ thuộc nội dung di chúc
+
+- chuẩn hóa R-F01a/R-F01b thành các loại ứng viên bắt buộc độc lập, không nhập kết luận “được hưởng 2/3” trực tiếp;
+- mô hình hóa suất thừa kế theo pháp luật giả định và giá trị phần được chỉ định trước khi triển khai phép so sánh 2/3;
+- giữ riêng bước xác định đối tượng, bước tính ngưỡng và bước bù thiếu để presenter có thể giải thích từng kết luận;
+- review R-F02/R-F03 về ngoại lệ và phạm vi phần di sản trước khi bật kết quả.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v7",
+  "knowledgeBaseVersion": "inheritance-kb-v8",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -284,6 +284,26 @@
       "reasoning": "Khi graph có cả cạnh cha/mẹ nuôi và cha/mẹ đẻ tới cùng một người con, hệ thống giữ hai căn cứ độc lập thay vì gộp hoặc loại bỏ một quan hệ.",
       "conclusion": "Người con có đồng thời hai nhóm căn cứ quan hệ", "citation": "Điều 653 Bộ luật Dân sự 2015; đối chiếu Điều 651–652", "provisionId": "article-653", "relevantSections": ["main"], "clipsMetadata": true,
       "implementations": ["R-E03b-dual-parentage-basis"]
+    },
+    "R-E04": {
+      "ruleId": "R-E04", "module": "representation", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Căn cứ thừa kế giữa con riêng và bố dượng, mẹ kế khi có chăm sóc",
+      "reasoning": "Quan hệ con riêng–bố dượng hoặc mẹ kế chỉ tạo căn cứ thừa kế hai chiều khi đánh giá gắn với chính quan hệ đó xác nhận có chăm sóc, nuôi dưỡng nhau như cha con, mẹ con. Kết luận này chưa tự động xác định quyền hưởng cuối cùng.",
+      "conclusion": "Tồn tại căn cứ quan hệ thừa kế đặc biệt theo Điều 654", "citation": "Điều 654 Bộ luật Dân sự 2015", "provisionId": "article-654", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["R-E04-step-child-to-step-parent-basis", "R-E04-step-parent-to-step-child-basis"]
+    },
+    "R-E05": {
+      "ruleId": "R-E05", "module": "representation", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Không phát sinh căn cứ Điều 654 khi đã xác nhận không có chăm sóc",
+      "reasoning": "Chỉ khi có đánh giá tường minh rằng quan hệ con riêng–bố dượng hoặc mẹ kế không có việc chăm sóc, nuôi dưỡng như cha con, mẹ con, hệ thống mới phủ định căn cứ hưởng theo riêng quan hệ đặc biệt này. Thiếu đánh giá không được xem là kết luận phủ định.",
+      "conclusion": "Không có căn cứ hưởng theo riêng quan hệ Điều 654", "citation": "Suy luận loại trừ cần team review từ Điều 654 Bộ luật Dân sự 2015", "provisionId": "article-654", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["R-E05-step-child-without-care-basis", "R-E05-step-parent-without-care-basis"]
+    },
+    "SYSTEM-STEP-CARE-CONFLICT": {
+      "ruleId": "SYSTEM-STEP-CARE-CONFLICT", "module": "representation", "kind": "system", "status": "draft",
+      "title": "Phát hiện đánh giá chăm sóc mâu thuẫn", "reasoning": "Cùng một cạnh quan hệ con riêng–bố dượng hoặc mẹ kế vừa được đánh giá có, vừa được đánh giá không có chăm sóc như cha con, mẹ con.",
+      "conclusion": "Cần sửa dữ kiện đánh giá quan hệ", "citation": "Quy tắc kiểm soát nhất quán của hệ thống", "relevantSections": [], "clipsMetadata": true,
+      "implementations": ["SYSTEM-STEP-CARE-CONFLICT"]
     },
     "REPRESENTATION-CANDIDATE-INACTIVE": {
       "ruleId": "REPRESENTATION-CANDIDATE-INACTIVE", "module": "representation", "kind": "internal", "status": "draft",

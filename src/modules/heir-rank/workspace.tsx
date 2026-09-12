@@ -65,7 +65,7 @@ export function HeirRankWorkspace({ module, initialCase }: { module: AnalysisMod
     const currentIds = new Set(graph.people.map((person) => person.id));
     const deletedIds = new Set([...initialOwnedIds.current].filter((id) => !currentIds.has(id)));
     const retained = (initialCase?.facts ?? []).filter((fact) => !deletedIds.has(fact.subject ?? "")
-      && !(typeof fact.value === "string" && deletedIds.has(fact.value) && (fact.predicate === "biological-parent-of" || fact.predicate === "adoptive-parent-of" || fact.predicate === "spouse-at-opening"))
+      && !(typeof fact.value === "string" && deletedIds.has(fact.value) && (fact.predicate === "biological-parent-of" || fact.predicate === "adoptive-parent-of" || fact.predicate === "step-parent-of" || fact.predicate === "spouse-at-opening"))
       && !familyGraphPredicates.has(fact.predicate)
       && !(ownedIds.has(fact.subject ?? "") && (fact.predicate === "eligibility-candidate" || fact.predicate === "valid-refusal")));
     await requestJson(`/api/cases/${caseId.current}/facts`, { method: "PUT", body: JSON.stringify({ subject: caseId.current, facts: [...retained, ...facts] }) });

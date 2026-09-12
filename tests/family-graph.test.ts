@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { graphDiagnostics, restoreFamilyGraph, serializeFamilyGraph, type FamilyGraph } from "../src/modules/family-graph/model";
+import { graphDiagnostics, graphWarnings, restoreFamilyGraph, serializeFamilyGraph, type FamilyGraph } from "../src/modules/family-graph/model";
 
 test("family graph restores formerly hidden intermediate people as editable nodes", () => {
   const graph = restoreFamilyGraph([
@@ -58,4 +58,28 @@ test("family graph treats reverse spouse edges as duplicates", () => {
     ],
   };
   assert.ok(graphDiagnostics(graph).some((message) => message.includes("trùng")));
+});
+
+test("family graph stores an explicit care assessment on a step-parent relation", () => {
+  const graph: FamilyGraph = {
+    deceasedId: "person-a",
+    people: [{ id: "person-a", name: "A", eligibilityReviewed: false }, { id: "person-b", name: "B", eligibilityReviewed: false }],
+    edges: [{ id: "step-edge", from: "person-a", to: "person-b", type: "step-parent-of", careStatus: "established" }],
+  };
+  const facts = serializeFamilyGraph("case-step", graph);
+  const relation = facts.find((fact) => fact.predicate === "step-parent-of");
+  const assessment = facts.find((fact) => fact.predicate === "step-care-status");
+  assert.equal(assessment?.subject, relation?.id);
+  assert.equal(assessment?.value, "established");
+  assert.equal(restoreFamilyGraph(facts, "test").edges[0]?.careStatus, "established");
+});
+
+test("family graph reports a missing step-family care assessment", () => {
+  const graph: FamilyGraph = {
+    deceasedId: "person-a",
+    people: [{ id: "person-a", name: "A", eligibilityReviewed: false }, { id: "person-b", name: "B", eligibilityReviewed: false }],
+    edges: [{ id: "step-edge", from: "person-a", to: "person-b", type: "step-parent-of" }],
+  };
+  assert.ok(graphWarnings(graph).some((message) => message.includes("chưa được đánh giá chăm sóc")));
+  assert.equal(graphDiagnostics(graph).length, 0);
 });

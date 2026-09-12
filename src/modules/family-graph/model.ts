@@ -1,6 +1,7 @@
 import type { ApiFact } from "@/modules/contracts";
 
-export type FamilyEdgeType = "biological-parent-of" | "adoptive-parent-of" | "spouse-at-opening";
+export type FamilyEdgeType = "biological-parent-of" | "adoptive-parent-of" | "step-parent-of" | "spouse-at-opening";
+export type StepCareStatus = "established" | "not-established";
 export type FamilyLifeStatus = "alive" | "dead-before-or-same";
 
 export interface FamilyPerson {
@@ -16,6 +17,7 @@ export interface FamilyEdge {
   from: string;
   to: string;
   type: FamilyEdgeType;
+  careStatus?: StepCareStatus;
 }
 
 export interface FamilyGraph {
@@ -24,8 +26,8 @@ export interface FamilyGraph {
   edges: FamilyEdge[];
 }
 
-const edgePredicates = new Set<FamilyEdgeType>(["biological-parent-of", "adoptive-parent-of", "spouse-at-opening"]);
-export const familyGraphPredicates = new Set(["deceased-person", "heir-rank-candidate", "heir-search-complete", "heir-life-status", "biological-parent-of", "adoptive-parent-of", "spouse-at-opening", "heir-person-label"]);
+const edgePredicates = new Set<FamilyEdgeType>(["biological-parent-of", "adoptive-parent-of", "step-parent-of", "spouse-at-opening"]);
+export const familyGraphPredicates = new Set(["deceased-person", "heir-rank-candidate", "heir-search-complete", "heir-life-status", "biological-parent-of", "adoptive-parent-of", "step-parent-of", "step-care-status", "spouse-at-opening", "heir-person-label"]);
 
 export function restoreFamilyGraph(facts: ApiFact[], token: string): FamilyGraph {
   const deceasedId = facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject ?? `deceased-${token}`;
@@ -41,8 +43,9 @@ export function restoreFamilyGraph(facts: ApiFact[], token: string): FamilyGraph
     refusal: facts.find((fact) => fact.subject === id && fact.predicate === "valid-refusal")?.value as boolean | undefined,
     eligibilityReviewed: facts.some((fact) => fact.subject === id && fact.predicate === "eligibility-review-complete" && fact.value === true),
   }));
+  const careByEdgeId = new Map(facts.filter((fact) => fact.predicate === "step-care-status" && typeof fact.value === "string").map((fact) => [fact.subject, fact.value as StepCareStatus]));
   const edges = facts.flatMap((fact): FamilyEdge[] => edgePredicates.has(fact.predicate as FamilyEdgeType) && fact.subject && typeof fact.value === "string"
-    ? [{ id: fact.id, from: fact.subject, to: fact.value, type: fact.predicate as FamilyEdgeType }]
+    ? [{ id: fact.id, from: fact.subject, to: fact.value, type: fact.predicate as FamilyEdgeType, careStatus: careByEdgeId.get(fact.id) }]
     : []);
   return { deceasedId, people, edges: deduplicateEdges(edges) };
 }
@@ -61,7 +64,11 @@ export function serializeFamilyGraph(caseId: string, graph: FamilyGraph, searchC
       if (person.refusal !== undefined) facts.push({ id: `fg-person-${index + 1}-refusal`, subject: person.id, predicate: "valid-refusal", value: person.refusal });
     }
   });
-  graph.edges.forEach((edge, index) => facts.push({ id: `fg-edge-${index + 1}`, subject: edge.from, predicate: edge.type, value: edge.to }));
+  graph.edges.forEach((edge, index) => {
+    const edgeId = `fg-edge-${index + 1}`;
+    facts.push({ id: edgeId, subject: edge.from, predicate: edge.type, value: edge.to });
+    if (edge.type === "step-parent-of" && edge.careStatus) facts.push({ id: `${edgeId}-care`, subject: edgeId, predicate: "step-care-status", value: edge.careStatus });
+  });
   if (searchComplete !== undefined) facts.push({ id: "fg-search-complete", subject: caseId, predicate: "heir-search-complete", value: searchComplete });
   return facts;
 }
@@ -79,7 +86,7 @@ export function graphDiagnostics(graph: FamilyGraph): string[] {
     if (edge.type !== "spouse-at-opening") {
       const pair = `${edge.from}:${edge.to}`;
       const existing = parentTypes.get(pair);
-      if (existing && existing !== edge.type) diagnostics.push("Cùng một cặp người đang vừa có quan hệ cha/mẹ đẻ vừa có quan hệ cha/mẹ nuôi.");
+      if (existing && existing !== edge.type) diagnostics.push("Cùng một cặp người đang có nhiều loại quan hệ cha/mẹ–con không tương thích.");
       parentTypes.set(pair, edge.type);
     }
   }
@@ -92,6 +99,12 @@ export function graphDiagnostics(graph: FamilyGraph): string[] {
   })) diagnostics.push("Một hoặc nhiều cạnh tạo ra thế hệ không nhất quán trong graph.");
   if (graph.people.some((person) => !person.name.trim())) diagnostics.push("Mỗi người cần có tên hiển thị.");
   return [...new Set(diagnostics)];
+}
+
+export function graphWarnings(graph: FamilyGraph): string[] {
+  const warnings: string[] = [];
+  if (graph.edges.some((edge) => edge.type === "step-parent-of" && !edge.careStatus)) warnings.push("Có quan hệ con riêng–bố dượng/mẹ kế chưa được đánh giá chăm sóc; CLIPS sẽ giữ kết quả ở trạng thái thiếu dữ kiện.");
+  return warnings;
 }
 
 export function graphLevels(graph: FamilyGraph): Map<string, number | undefined> {
@@ -115,6 +128,7 @@ export function edgeLabel(edge: FamilyEdge, people: Map<string, FamilyPerson>): 
   const to = people.get(edge.to)?.name ?? edge.to;
   if (edge.type === "biological-parent-of") return `${from} là cha/mẹ đẻ của ${to}`;
   if (edge.type === "adoptive-parent-of") return `${from} là cha/mẹ nuôi của ${to}`;
+  if (edge.type === "step-parent-of") return `${from} là bố dượng/mẹ kế của ${to}`;
   return `${from} là vợ/chồng của ${to} tại thời điểm mở thừa kế`;
 }
 
