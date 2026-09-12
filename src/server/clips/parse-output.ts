@@ -49,5 +49,5 @@ function isModuleResultValue(value: string | undefined): value is ModuleResultVa
   return value === "true" || value === "false" || value === "unknown" || value === "conflict"
     || value === "statutory" || value === "testamentary"
     || value === "excluded" || value === "not-excluded" || value === "exception-under-will"
-    || value === "rank-1" || value === "rank-2" || value === "rank-3";
+    || value === "rank-1" || value === "rank-2" || value === "rank-3" || value === "valid";
 }

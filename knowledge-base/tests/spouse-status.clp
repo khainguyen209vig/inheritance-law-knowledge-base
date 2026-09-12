@@ -1,0 +1,28 @@
+(load "knowledge-base/templates.clp")
+(load "knowledge-base/rule-metadata.clp")
+(load "knowledge-base/rules/07-spouse-status.clp")
+(load "knowledge-base/rules/97-spouse-status-completeness.clp")
+(load "knowledge-base/rules/98-spouse-status-projection.clp")
+(load "knowledge-base/rules/98-explanation.clp")
+(reset)
+(load-facts "knowledge-base/fixtures/spouse-status.clp")
+(run)
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject spouse-g01) (eq ?result:predicate spouse-status-at-opening) (eq ?result:value valid)))
+    (any-factp ((?trace inference-trace)) (and (eq ?trace:subject spouse-g01) (eq ?trace:rule-id R-G01))))
+  then (printout t "PASS spouse-g01" crlf) else (printout t "FAIL spouse-g01" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject spouse-g02) (eq ?result:value valid)))
+    (any-factp ((?trace inference-trace)) (and (eq ?trace:subject spouse-g02) (eq ?trace:rule-id R-G02))))
+  then (printout t "PASS spouse-g02" crlf) else (printout t "FAIL spouse-g02" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject spouse-g03) (eq ?result:value valid)))
+    (any-factp ((?trace inference-trace)) (and (eq ?trace:subject spouse-g03) (eq ?trace:rule-id R-G03))))
+  then (printout t "PASS spouse-g03" crlf) else (printout t "FAIL spouse-g03" crlf))
+(if (any-factp ((?result module-result)) (and (eq ?result:subject spouse-none) (eq ?result:value unknown)))
+  then (printout t "PASS spouse-no-special-basis" crlf) else (printout t "FAIL spouse-no-special-basis" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject spouse-missing) (eq ?result:value unknown)))
+    (any-factp ((?missing missing-requirement)) (and (eq ?missing:subject spouse-missing) (eq ?missing:predicate divorce-decision-effective-at-opening))))
+  then (printout t "PASS spouse-missing-decision" crlf) else (printout t "FAIL spouse-missing-decision" crlf))
+(exit)

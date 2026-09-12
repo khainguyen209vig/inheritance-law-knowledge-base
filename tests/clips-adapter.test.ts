@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inferCompulsoryShare, inferEligibility, inferHeirRank, inferInheritanceType, inferRepresentation, inferWillValidity } from "../src/server/clips/adapter";
+import { inferCompulsoryShare, inferEligibility, inferHeirRank, inferInheritanceType, inferRepresentation, inferSpouseStatus, inferWillValidity } from "../src/server/clips/adapter";
 
 test("CLIPS adapter returns a valid-will result and trace", async () => {
   const output = await inferWillValidity({
@@ -213,6 +213,20 @@ test("compulsory-share adapter separates protected-class classification from act
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-F01a"));
   assert.ok(output.results.some((result) => result.subject === "calc-one" && result.predicate === "minimum-compulsory-share" && Number(result.value) === 200));
   assert.ok(output.results.some((result) => result.subject === "calc-one" && result.predicate === "compulsory-share-shortfall" && Number(result.value) === 100));
+});
+
+test("spouse-status adapter preserves marital status for a pending non-effective divorce", async () => {
+  const output = await inferSpouseStatus({ caseId: "adapter-spouse", subject: "adapter-spouse", facts: [
+    { id: "deceased", subject: "deceased-one", predicate: "deceased-person", value: true },
+    { id: "scope", subject: "spouse-one", predicate: "spouse-status-assessment-subject", value: true },
+    { id: "marriage", subject: "deceased-one", predicate: "spouse-at-opening", value: "spouse-one" },
+    { id: "property", subject: "spouse-one", predicate: "joint-property-divided", value: false },
+    { id: "petition", subject: "spouse-one", predicate: "divorce-petition-pending-at-opening", value: true },
+    { id: "decision", subject: "spouse-one", predicate: "divorce-decision-effective-at-opening", value: false },
+    { id: "remarriage", subject: "spouse-one", predicate: "remarried-after-opening", value: false },
+  ] });
+  assert.ok(output.results.some((result) => result.subject === "spouse-one" && result.predicate === "spouse-status-at-opening" && result.value === "valid"));
+  assert.ok(output.traces.some((trace) => trace.subject === "spouse-one" && trace.ruleId === "R-G02"));
 });
 
 test("CLIPS adapter preserves unknown and missing facts", async () => {

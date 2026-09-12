@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v10",
+  "knowledgeBaseVersion": "inheritance-kb-v11",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -352,6 +352,30 @@
       "title": "Không thuộc nhóm đối tượng được bảo vệ", "reasoning": "Sau khi graph gia đình đã được xác nhận đầy đủ và các thuộc tính cần thiết đã được đánh giá, người đang xét không khớp nhóm đối tượng tại khoản 1 Điều 644.",
       "conclusion": "Không phải ứng viên suất bắt buộc", "citation": "Quy tắc completeness phục vụ Điều 644", "provisionId": "article-644", "relevantSections": ["clause-1-a", "clause-1-b"], "clipsMetadata": true,
       "implementations": ["COMPULSORY-CANDIDATE-NOT-IN-PROTECTED-CLASS"]
+    },
+    "R-G01": {
+      "ruleId": "R-G01", "module": "spouse-status", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Chia tài sản chung không làm mất quyền thừa kế của vợ chồng", "reasoning": "Người đang xét là vợ hoặc chồng tại thời điểm mở thừa kế; việc vợ chồng đã chia tài sản chung trong thời kỳ hôn nhân không tự làm mất căn cứ thừa kế của người còn sống.",
+      "conclusion": "Giữ nguyên trạng thái vợ chồng tại thời điểm mở thừa kế", "citation": "Điều 655 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-655", "relevantSections": ["clause-1"], "clipsMetadata": true,
+      "implementations": ["R-G01-common-property-divided-forward", "R-G01-common-property-divided-reverse"]
+    },
+    "R-G02": {
+      "ruleId": "R-G02", "module": "spouse-status", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Đang xin ly hôn nhưng quyết định chưa có hiệu lực", "reasoning": "Tại thời điểm một bên chết, vụ việc ly hôn đang được giải quyết nhưng bản án hoặc quyết định chưa có hiệu lực pháp luật nên người còn sống vẫn được xem xét với tư cách vợ hoặc chồng.",
+      "conclusion": "Giữ nguyên trạng thái vợ chồng tại thời điểm mở thừa kế", "citation": "Điều 655 khoản 2 Bộ luật Dân sự 2015", "provisionId": "article-655", "relevantSections": ["clause-2"], "clipsMetadata": true,
+      "implementations": ["R-G02-pending-divorce-forward", "R-G02-pending-divorce-reverse"]
+    },
+    "R-G03": {
+      "ruleId": "R-G03", "module": "spouse-status", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Kết hôn sau thời điểm mở thừa kế không làm mất quyền đã phát sinh", "reasoning": "Người đang xét là vợ hoặc chồng tại thời điểm mở thừa kế; việc người đó kết hôn với người khác sau thời điểm này không làm mất căn cứ hưởng di sản đã phát sinh.",
+      "conclusion": "Giữ nguyên trạng thái vợ chồng tại thời điểm mở thừa kế", "citation": "Điều 655 khoản 3 Bộ luật Dân sự 2015", "provisionId": "article-655", "relevantSections": ["clause-3"], "clipsMetadata": true,
+      "implementations": ["R-G03-remarried-after-opening-forward", "R-G03-remarried-after-opening-reverse"]
+    },
+    "SPOUSE-STATUS-PRESERVED": {
+      "ruleId": "SPOUSE-STATUS-PRESERVED", "module": "spouse-status", "kind": "internal", "status": "draft",
+      "title": "Hợp nhất căn cứ bảo toàn trạng thái vợ chồng", "reasoning": "Ít nhất một hoàn cảnh đặc biệt tại Điều 655 đã được dẫn xuất cho người đang xét.",
+      "conclusion": "Trạng thái vợ chồng tại thời điểm mở thừa kế được giữ là hợp lệ", "citation": "Quy tắc kết nối nội bộ Điều 655", "provisionId": "article-655", "relevantSections": ["clause-1", "clause-2", "clause-3"], "clipsMetadata": true,
+      "implementations": ["SPOUSE-STATUS-PRESERVED"]
     },
     "REPRESENTATION-CANDIDATE-INACTIVE": {
       "ruleId": "REPRESENTATION-CANDIDATE-INACTIVE", "module": "representation", "kind": "internal", "status": "draft",

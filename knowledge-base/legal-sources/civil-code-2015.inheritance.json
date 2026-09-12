@@ -302,6 +302,30 @@
       ],
       "sourceDocument": "doc/Luat_ThuaKe.doc",
       "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
+    "article-655": {
+      "id": "article-655",
+      "number": "Điều 655",
+      "title": "Việc thừa kế trong trường hợp vợ, chồng đã chia tài sản chung; vợ, chồng đang xin ly hôn hoặc đã kết hôn với người khác",
+      "sections": [
+        {
+          "id": "clause-1",
+          "label": "Khoản 1",
+          "text": "Trường hợp vợ, chồng đã chia tài sản chung khi hôn nhân còn tồn tại mà sau đó một người chết thì người còn sống vẫn được thừa kế di sản."
+        },
+        {
+          "id": "clause-2",
+          "label": "Khoản 2",
+          "text": "Trường hợp vợ, chồng xin ly hôn mà chưa được hoặc đã được Tòa án cho ly hôn bằng bản án hoặc quyết định chưa có hiệu lực pháp luật, nếu một người chết thì người còn sống vẫn được thừa kế di sản."
+        },
+        {
+          "id": "clause-3",
+          "label": "Khoản 3",
+          "text": "Người đang là vợ hoặc chồng của một người tại thời điểm người đó chết thì dù sau đó đã kết hôn với người khác vẫn được thừa kế di sản."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
     }
   }
 }

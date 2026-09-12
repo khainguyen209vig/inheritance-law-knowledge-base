@@ -39,6 +39,10 @@ export async function inferCompulsoryShare(input: { caseId: string; subject: str
   return inferWithClips(serializeCaseFacts({ ...input, module: "compulsory-share" }), createCompulsoryShareDriver);
 }
 
+export async function inferSpouseStatus(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
+  return inferWithClips(serializeCaseFacts({ ...input, module: "spouse-status" }), createSpouseStatusDriver);
+}
+
 async function inferWithClips(
   serializedFacts: string,
   createDriverFile: (factsPath: string) => string,
@@ -199,6 +203,17 @@ function createCompulsoryShareDriver(factsPath: string): string {
     `(load ${clipsPath("rules/96-compulsory-share-completeness.clp")})`, `(load ${clipsPath("rules/97-compulsory-share-projection.clp")})`,
     `(load ${clipsPath("rules/98-explanation.clp")})`, `(load ${clipsPath("machine-output.clp")})`,
     "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`, "(run)", "(emit-machine-output)", "(exit)", "",
+  ].join("\n");
+}
+
+function createSpouseStatusDriver(factsPath: string): string {
+  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
+  return [
+    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
+    `(load ${clipsPath("rules/07-spouse-status.clp")})`, `(load ${clipsPath("rules/97-spouse-status-completeness.clp")})`,
+    `(load ${clipsPath("rules/98-spouse-status-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
+    `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
+    "(run)", "(emit-machine-output)", "(exit)", "",
   ].join("\n");
 }
 

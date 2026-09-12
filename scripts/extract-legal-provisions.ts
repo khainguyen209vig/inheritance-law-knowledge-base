@@ -11,7 +11,7 @@ const outputPath = resolve(
   projectRoot,
   process.argv[3] ?? "knowledge-base/legal-sources/civil-code-2015.inheritance.json",
 );
-const selectedArticleNumbers = new Set([621, 627, 629, 630, 644, 649, 650, 651, 652, 653, 654]);
+const selectedArticleNumbers = new Set([621, 627, 629, 630, 644, 649, 650, 651, 652, 653, 654, 655]);
 const officialUrl = "https://vanban.chinhphu.vn/?pageid=27160&docid=183188";
 
 interface ExtractedSection {
@@ -104,7 +104,9 @@ function parseSections(lines: string[]): ExtractedSection[] {
   const sections: ExtractedSection[] = [];
   let currentClause: number | undefined;
 
-  for (const line of lines) {
+  for (const rawLine of lines) {
+    const line = normalizeText(rawLine.replace(/\s+Chương\s+[IVXLCDM]+\b.*$/iu, ""));
+    if (!line || /^Chương\s+[IVXLCDM]+\b/iu.test(line)) break;
     const clause = line.match(/^(\d+)\.\s*(.*)$/u);
     if (clause) {
       currentClause = Number(clause[1]);

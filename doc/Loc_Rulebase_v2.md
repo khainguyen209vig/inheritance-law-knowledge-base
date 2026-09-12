@@ -253,9 +253,9 @@ Quan hệ cháu/chắt không nên nhập bằng một nhãn text duy nhất; en
 
 | Rule | V1 tóm tắt | Loại | Điều kiện chuẩn hóa V2 | Kết luận chuẩn hóa V2 | Thay đổi/điểm review | Trạng thái |
 |---|---|---|---|---|---|---|
-| R-G01 | Đã chia tài sản chung nhưng hôn nhân còn → vẫn thừa kế | DERIVATION | Hôn nhân còn tồn tại dù đã chia tài sản chung; một bên chết | `spouse-status-at-opening(survivor)=valid` | Chỉ duy trì căn cứ quan hệ, chưa kết luận quyền hưởng cuối cùng | MODEL-READY |
-| R-G02 | Đang xin ly hôn, chưa có quyết định hiệu lực → vẫn thừa kế | DERIVATION | Đang xin ly hôn nhưng chưa có bản án/quyết định có hiệu lực khi một bên chết | `spouse-status-at-opening(survivor)=valid` | Mô hình hóa hiệu lực quyết định theo thời gian | MODEL-READY |
-| R-G03 | Là vợ/chồng lúc mở thừa kế, sau đó kết hôn khác → vẫn thừa kế | DERIVATION | X là vợ/chồng tại thời điểm mở thừa kế và kết hôn người khác sau đó | Quan hệ tại thời điểm mở thừa kế không bị mất | Quan hệ sau thời điểm mở thừa kế không thay đổi status đã xác lập | MODEL-READY |
+| R-G01 | Đã chia tài sản chung nhưng hôn nhân còn → vẫn thừa kế | DERIVATION | Có cạnh vợ/chồng tại thời điểm mở thừa kế và `joint-property-divided=true` | `spouse-preservation-basis(X)=g01` rồi hợp nhất thành `spouse-status-at-opening(X)=valid` | Đã triển khai; chỉ duy trì căn cứ quan hệ, chưa kết luận quyền hưởng cuối cùng | MODEL-READY |
+| R-G02 | Đang xin ly hôn, chưa có quyết định hiệu lực → vẫn thừa kế | DERIVATION | `divorce-petition-pending-at-opening=true` và `divorce-decision-effective-at-opening=false` | `spouse-preservation-basis(X)=g02` rồi hợp nhất thành trạng thái hợp lệ | Đã triển khai; hiệu lực quyết định là fact riêng, thiếu thì trả UNKNOWN | MODEL-READY |
+| R-G03 | Là vợ/chồng lúc mở thừa kế, sau đó kết hôn khác → vẫn thừa kế | DERIVATION | Có cạnh vợ/chồng tại thời điểm mở thừa kế và `remarried-after-opening=true` | `spouse-preservation-basis(X)=g03` rồi hợp nhất thành trạng thái hợp lệ | Đã triển khai; sự kiện sau mở thừa kế không thay đổi status đã xác lập | MODEL-READY |
 
 ### Nhóm H — Từ chối nhận di sản và tài sản không có người nhận
 
@@ -397,7 +397,8 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-E03a–R-E03b | Đã triển khai căn cứ quan hệ con nuôi ở trạng thái `MODEL_READY`; chưa kết luận quyền hưởng cuối cùng |
 | R-E04–R-E05 | Đã triển khai với đánh giá chăm sóc gắn theo cạnh; giữ `TEAM_REVIEW`, open-world và không phủ định căn cứ khác |
 | R-F01a–R-F04 | Đã triển khai phân loại, loại trừ và R-F01c tính ngưỡng/phần thiếu theo từng cặp người–phần di sản; R-F01c chưa tự xác định suất pháp luật giả định; R-F01c/R-F02 giữ `TEAM_REVIEW` |
-| Nhóm G–J | Đặc tả đề xuất để team review, chưa triển khai |
+| R-G01–R-G03 | Đã triển khai theo từng người phối ngẫu từ graph, có completeness và trace tới ba khoản Điều 655; không kết luận quyền hưởng cuối cùng |
+| Nhóm H–J | Đặc tả đề xuất để team review, chưa triển khai |
 | Legal validation | Chưa thực hiện đầy đủ |
 
 ## 10. Câu hỏi dành cho buổi review team

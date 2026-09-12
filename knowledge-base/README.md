@@ -27,6 +27,8 @@ Mô-đun `representation` triển khai R-E01/R-E02 theo Điều 652, R-E03a/R-E0
 
 Mô-đun `compulsory-share` triển khai phân loại R-F01a/R-F01b/R-F02, loại trừ R-F03/R-F04 và phép tính R-F01c theo Điều 644. Quan hệ được dùng lại từ graph; tuổi, khả năng lao động, từ chối và kết quả Điều 621 là facts/derived facts độc lập. `compulsory-heir-candidate` chỉ biểu thị thuộc nhóm được bảo vệ, còn `compulsory-heir` biểu thị đã qua điều kiện cá nhân. Mỗi calculation gắn một người với một phần di sản; CLIPS tính ngưỡng hai phần ba và phần thiếu từ suất pháp luật giả định cùng phần đã nhận theo di chúc. Suất pháp luật giả định vẫn do người dùng cung cấp, vì vậy lát cắt này không tự chia toàn bộ di sản end-to-end. R-F01c và R-F02 vẫn mang nhãn `TEAM_REVIEW`.
 
+Mô-đun `spouse-status` triển khai R-G01–R-G03 theo Điều 655. Presenter lấy người phối ngẫu từ graph, còn các sự kiện chia tài sản chung, yêu cầu ly hôn, hiệu lực quyết định và kết hôn sau thời điểm mở thừa kế được lưu thành observations riêng. Rules trước hết sinh `spouse-preservation-basis`, sau đó quy tắc kết nối nội bộ mới sinh `spouse-status-at-opening=valid`; kết luận này chỉ bảo toàn căn cứ quan hệ và không đồng nghĩa chắc chắn được nhận di sản. Khi không có hoàn cảnh đặc biệt phù hợp, kết quả là `unknown`, không phải phủ định tư cách vợ/chồng.
+
 Nếu các observations đều có mặt nhưng chưa khớp đường suy luận dương hoặc exclusion rule đã được mô hình hóa, completeness layer tạo `unresolved-rule-path` và trả `UNKNOWN`. Cách xử lý này giữ open-world semantics cho đến khi team duyệt rule âm tương ứng.
 
 ## Phân lớp tri thức
@@ -36,8 +38,8 @@ Nếu các observations đều có mặt nhưng chưa khớp đường suy luậ
 | Fact contracts | `templates.clp` | Định nghĩa hình dạng của dữ kiện, kết luận và provenance |
 | Rule registry | `rule-registry.json` | Nguồn duy nhất cho căn cứ, giải thích, implementation và trạng thái kiểm duyệt |
 | Legal metadata | `rule-metadata.clp` | Dữ liệu CLIPS được sinh tự động từ rule registry |
-| Domain knowledge | `rules/01-will-validity.clp` đến `rules/06-compulsory-share.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
-| Completeness/conflict | `rules/90-*` đến `rules/96-*` | Phát hiện facts thiếu và kết luận mâu thuẫn |
+| Domain knowledge | `rules/01-will-validity.clp` đến `rules/07-spouse-status.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
+| Completeness/conflict | `rules/90-*` đến `rules/97-spouse-status-completeness.clp` | Phát hiện facts thiếu và kết luận mâu thuẫn |
 | Explanation | `rules/98-explanation.clp` | Chuyển provenance của derived facts thành trace đồng nhất |
 | Result projection | `rules/95-*` đến `rules/99-*` | Chọn kết quả cần trả cho mô-đun mà UI yêu cầu |
 | Machine output | `machine-output.clp` | Xuất result, missing facts và trace bằng line protocol ổn định cho TypeScript |

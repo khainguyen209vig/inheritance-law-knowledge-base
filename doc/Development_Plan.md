@@ -412,6 +412,15 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] hiển thị ngưỡng, phần thiếu và liên kết tới Điều 644 trong presenter; giữ cảnh báo `TEAM_REVIEW`;
 - [ ] xây mô-đun xác định suất pháp luật giả định từ tổng giá trị và toàn bộ người thừa kế; hiện tại giá trị này là fact đầu vào nên R-F01c chưa phải phép chia di sản end-to-end.
 
+### Quan hệ vợ chồng đặc biệt — Điều 655
+
+- [x] triển khai R-G01–R-G03 bằng các facts sự kiện độc lập: chia tài sản chung, yêu cầu ly hôn, hiệu lực quyết định ly hôn và kết hôn sau thời điểm mở thừa kế;
+- [x] dùng lại `deceased-person` và cạnh `spouse-at-opening` từ graph theo cả hai chiều, không nhập lại kết luận quan hệ trong presenter;
+- [x] dẫn xuất `spouse-preservation-basis` trước khi hợp nhất thành `spouse-status-at-opening=valid`, qua đó giữ được trace riêng tới từng khoản Điều 655;
+- [x] thêm completeness cho quan hệ và các observations; trường hợp không khớp hoàn cảnh đặc biệt trả `unknown`, tuyệt đối không được diễn giải thành mất quyền;
+- [x] thêm API, snapshot, presenter theo dòng sự kiện, legal dialog Điều 655 và regression tests;
+- [ ] cân nhắc thay fact quan hệ `spouse-at-opening` bằng mô hình sự kiện kết hôn/chấm dứt có mốc thời gian khi triển khai temporal subsystem đầy đủ.
+
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 
 - Chốt phạm vi câu hỏi mà MVP phải trả lời.

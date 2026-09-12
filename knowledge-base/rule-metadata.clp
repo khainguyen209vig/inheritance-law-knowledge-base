@@ -232,6 +232,30 @@
     (description "Sau khi graph gia đình đã được xác nhận đầy đủ và các thuộc tính cần thiết đã được đánh giá, người đang xét không khớp nhóm đối tượng tại khoản 1 Điều 644.")
     (status draft))
   (rule-metadata
+    (rule-id R-G01)
+    (module spouse-status)
+    (legal-source "Điều 655 khoản 1 Bộ luật Dân sự 2015")
+    (description "Người đang xét là vợ hoặc chồng tại thời điểm mở thừa kế; việc vợ chồng đã chia tài sản chung trong thời kỳ hôn nhân không tự làm mất căn cứ thừa kế của người còn sống.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-G02)
+    (module spouse-status)
+    (legal-source "Điều 655 khoản 2 Bộ luật Dân sự 2015")
+    (description "Tại thời điểm một bên chết, vụ việc ly hôn đang được giải quyết nhưng bản án hoặc quyết định chưa có hiệu lực pháp luật nên người còn sống vẫn được xem xét với tư cách vợ hoặc chồng.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-G03)
+    (module spouse-status)
+    (legal-source "Điều 655 khoản 3 Bộ luật Dân sự 2015")
+    (description "Người đang xét là vợ hoặc chồng tại thời điểm mở thừa kế; việc người đó kết hôn với người khác sau thời điểm này không làm mất căn cứ hưởng di sản đã phát sinh.")
+    (status draft))
+  (rule-metadata
+    (rule-id SPOUSE-STATUS-PRESERVED)
+    (module spouse-status)
+    (legal-source "Quy tắc kết nối nội bộ Điều 655")
+    (description "Ít nhất một hoàn cảnh đặc biệt tại Điều 655 đã được dẫn xuất cho người đang xét.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

@@ -8,6 +8,7 @@ import { EligibilityWorkspace } from "@/modules/eligibility/workspace";
 import { HeirRankWorkspace } from "@/modules/heir-rank/workspace";
 import { RepresentationWorkspace } from "@/modules/representation/workspace";
 import { CompulsoryShareWorkspace } from "@/modules/compulsory-share/workspace";
+import { SpouseStatusWorkspace } from "@/modules/spouse-status/workspace";
 
 interface ModuleInitialCase {
   id: string;
@@ -25,6 +26,7 @@ const workspacePresenters: Partial<Record<AnalysisModuleId, WorkspacePresenter>>
   "heir-rank": HeirRankWorkspace,
   representation: RepresentationWorkspace,
   "compulsory-share": CompulsoryShareWorkspace,
+  "spouse-status": SpouseStatusWorkspace,
 };
 
 export function ModuleWorkspace({ moduleId, initialCase }: { moduleId: AnalysisModuleId; initialCase?: ModuleInitialCase }) {

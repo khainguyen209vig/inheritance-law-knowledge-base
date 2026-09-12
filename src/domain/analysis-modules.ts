@@ -5,6 +5,7 @@ export type AnalysisModuleId =
   | "heir-rank"
   | "representation"
   | "compulsory-share"
+  | "spouse-status"
   | "refusal-and-unclaimed"
   | "limitation";
 
@@ -150,6 +151,27 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
       inferencePath: "/api/cases/:caseId/inference/compulsory-share",
       subjectPrefix: "person",
       defaultCaseTitle: "Hồ sơ xác định người thuộc diện suất bắt buộc",
+    },
+  },
+  "spouse-status": {
+    id: "spouse-status",
+    title: "Quan hệ vợ chồng đặc biệt",
+    shortDescription: "Đánh giá việc giữ tư cách vợ hoặc chồng tại thời điểm mở thừa kế theo Điều 655.",
+    status: "implemented",
+    interactionMode: "timeline",
+    primaryResultPredicate: "spouse-status-at-opening",
+    dependencies: [
+      {
+        moduleId: "heir-rank",
+        mode: "required",
+        status: "implemented",
+        reason: "Dùng quan hệ vợ chồng và người chết từ graph gia đình.",
+      },
+    ],
+    runtime: {
+      inferencePath: "/api/cases/:caseId/inference/spouse-status",
+      subjectPrefix: "spouse",
+      defaultCaseTitle: "Hồ sơ quan hệ vợ chồng đặc biệt",
     },
   },
   "refusal-and-unclaimed": {
