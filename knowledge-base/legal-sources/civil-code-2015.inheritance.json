@@ -86,6 +86,40 @@
       "sourceDocument": "doc/Luat_ThuaKe.doc",
       "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
     },
+    "article-623": {
+      "id": "article-623",
+      "number": "Điều 623",
+      "title": "Thời hiệu thừa kế",
+      "sections": [
+        {
+          "id": "clause-1-intro",
+          "label": "Khoản 1",
+          "text": "Thời hiệu để người thừa kế yêu cầu chia di sản là 30 năm đối với bất động sản, 10 năm đối với động sản, kể từ thời điểm mở thừa kế. Hết thời hạn này thì di sản thuộc về người thừa kế đang quản lý di sản đó. Trường hợp không có người thừa kế đang quản lý di sản thì di sản được giải quyết như sau:"
+        },
+        {
+          "id": "clause-1-a",
+          "label": "Khoản 1 điểm a",
+          "text": "Di sản thuộc quyền sở hữu của người đang chiếm hữu theo quy định tại Điều 236 của Bộ luật này;"
+        },
+        {
+          "id": "clause-1-b",
+          "label": "Khoản 1 điểm b",
+          "text": "Di sản thuộc về Nhà nước, nếu không có người chiếm hữu quy định tại điểm a khoản này."
+        },
+        {
+          "id": "clause-2",
+          "label": "Khoản 2",
+          "text": "Thời hiệu để người thừa kế yêu cầu xác nhận quyền thừa kế của mình hoặc bác bỏ quyền thừa kế của người khác là 10 năm, kể từ thời điểm mở thừa kế."
+        },
+        {
+          "id": "clause-3",
+          "label": "Khoản 3",
+          "text": "Thời hiệu yêu cầu người thừa kế thực hiện nghĩa vụ về tài sản của người chết để lại là 03 năm, kể từ thời điểm mở thừa kế."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
     "article-627": {
       "id": "article-627",
       "number": "Điều 627",

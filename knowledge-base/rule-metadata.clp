@@ -334,6 +334,30 @@
     (description "Khi có yêu cầu chia và việc chia ảnh hưởng nghiêm trọng đến đời sống của vợ hoặc chồng còn sống và gia đình, hệ thống chỉ ghi nhận quyền yêu cầu Tòa án. Thời hạn lần đầu tối đa ba năm; nếu ảnh hưởng vẫn còn thì có thể yêu cầu gia hạn một lần, tối đa ba năm.")
     (status draft))
   (rule-metadata
+    (rule-id R-J01)
+    (module limitation)
+    (legal-source "Điều 623 khoản 1 Bộ luật Dân sự 2015")
+    (description "Yêu cầu đang xét là yêu cầu chia một di sản bất động sản, nên CLIPS chọn thời hạn ba mươi năm kể từ thời điểm mở thừa kế. Temporal helper chỉ cộng số năm vào ngày mở thừa kế.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-J02)
+    (module limitation)
+    (legal-source "Điều 623 khoản 1 Bộ luật Dân sự 2015")
+    (description "Yêu cầu đang xét là yêu cầu chia một di sản động sản, nên CLIPS chọn thời hạn mười năm kể từ thời điểm mở thừa kế. Temporal helper chỉ cộng số năm vào ngày mở thừa kế.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-J03)
+    (module limitation)
+    (legal-source "Điều 623 khoản 2 Bộ luật Dân sự 2015")
+    (description "Yêu cầu đang xét là xác nhận quyền thừa kế của mình hoặc bác bỏ quyền thừa kế của người khác, nên CLIPS chọn thời hạn mười năm kể từ thời điểm mở thừa kế.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-J04)
+    (module limitation)
+    (legal-source "Điều 623 khoản 3 Bộ luật Dân sự 2015")
+    (description "Yêu cầu đang xét là yêu cầu người thừa kế thực hiện nghĩa vụ về tài sản của người chết để lại, nên CLIPS chọn thời hạn ba năm kể từ thời điểm mở thừa kế.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

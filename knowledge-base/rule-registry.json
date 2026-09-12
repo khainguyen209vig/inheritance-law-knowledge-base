@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v17",
+  "knowledgeBaseVersion": "inheritance-kb-v18",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -454,6 +454,30 @@
       "title": "Quyền yêu cầu Tòa án hoãn phân chia", "reasoning": "Khi có yêu cầu chia và việc chia ảnh hưởng nghiêm trọng đến đời sống của vợ hoặc chồng còn sống và gia đình, hệ thống chỉ ghi nhận quyền yêu cầu Tòa án. Thời hạn lần đầu tối đa ba năm; nếu ảnh hưởng vẫn còn thì có thể yêu cầu gia hạn một lần, tối đa ba năm.",
       "conclusion": "Có thể yêu cầu Tòa án hoãn chia hoặc gia hạn trong giới hạn luật định", "citation": "Điều 661 Bộ luật Dân sự 2015", "provisionId": "article-661", "relevantSections": ["main"], "clipsMetadata": true,
       "implementations": ["R-I05-surviving-spouse-may-request-deferral", "R-I05-surviving-spouse-may-request-one-extension"]
+    },
+    "R-J01": {
+      "ruleId": "R-J01", "module": "limitation", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Thời hiệu yêu cầu chia di sản là bất động sản", "reasoning": "Yêu cầu đang xét là yêu cầu chia một di sản bất động sản, nên CLIPS chọn thời hạn ba mươi năm kể từ thời điểm mở thừa kế. Temporal helper chỉ cộng số năm vào ngày mở thừa kế.",
+      "conclusion": "Thời hiệu yêu cầu chia di sản là ba mươi năm", "citation": "Điều 623 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-623", "relevantSections": ["clause-1-intro"], "clipsMetadata": true,
+      "implementations": ["R-J01-immovable-estate-division-period"]
+    },
+    "R-J02": {
+      "ruleId": "R-J02", "module": "limitation", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Thời hiệu yêu cầu chia di sản là động sản", "reasoning": "Yêu cầu đang xét là yêu cầu chia một di sản động sản, nên CLIPS chọn thời hạn mười năm kể từ thời điểm mở thừa kế. Temporal helper chỉ cộng số năm vào ngày mở thừa kế.",
+      "conclusion": "Thời hiệu yêu cầu chia di sản là mười năm", "citation": "Điều 623 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-623", "relevantSections": ["clause-1-intro"], "clipsMetadata": true,
+      "implementations": ["R-J02-movable-estate-division-period"]
+    },
+    "R-J03": {
+      "ruleId": "R-J03", "module": "limitation", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Thời hiệu yêu cầu xác nhận hoặc bác bỏ quyền thừa kế", "reasoning": "Yêu cầu đang xét là xác nhận quyền thừa kế của mình hoặc bác bỏ quyền thừa kế của người khác, nên CLIPS chọn thời hạn mười năm kể từ thời điểm mở thừa kế.",
+      "conclusion": "Thời hiệu của yêu cầu là mười năm", "citation": "Điều 623 khoản 2 Bộ luật Dân sự 2015", "provisionId": "article-623", "relevantSections": ["clause-2"], "clipsMetadata": true,
+      "implementations": ["R-J03-inheritance-right-period"]
+    },
+    "R-J04": {
+      "ruleId": "R-J04", "module": "limitation", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Thời hiệu yêu cầu thực hiện nghĩa vụ tài sản", "reasoning": "Yêu cầu đang xét là yêu cầu người thừa kế thực hiện nghĩa vụ về tài sản của người chết để lại, nên CLIPS chọn thời hạn ba năm kể từ thời điểm mở thừa kế.",
+      "conclusion": "Thời hiệu của yêu cầu là ba năm", "citation": "Điều 623 khoản 3 Bộ luật Dân sự 2015", "provisionId": "article-623", "relevantSections": ["clause-3"], "clipsMetadata": true,
+      "implementations": ["R-J04-estate-obligation-period"]
     },
     "REPRESENTATION-CANDIDATE-INACTIVE": {
       "ruleId": "REPRESENTATION-CANDIDATE-INACTIVE", "module": "representation", "kind": "internal", "status": "draft",

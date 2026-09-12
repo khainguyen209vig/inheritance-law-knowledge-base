@@ -297,8 +297,8 @@ Thứ tự thanh toán được giữ dưới dạng knowledge facts của R-I01
 
 | Rule | V1 tóm tắt | Loại | Điều kiện chuẩn hóa V2 | Kết luận chuẩn hóa V2 | Thay đổi/điểm review | Trạng thái |
 |---|---|---|---|---|---|---|
-| R-J01 | Bất động sản → thời hiệu chia 30 năm | TEMPORAL | `request-type=divide-estate`, `asset-type=immovable` | `limitation-period=30 years`, tính từ `opening-date` | Việc cộng ngày/năm nên do temporal helper có test boundary | DEFERRED |
-| R-J02 | Động sản → thời hiệu chia 10 năm | TEMPORAL | `request-type=divide-estate`, `asset-type=movable` | `limitation-period=10 years` | Gắn với request và asset cụ thể | DEFERRED |
+| R-J01 | Bất động sản → thời hiệu chia 30 năm | TEMPORAL | `request-type=divide-estate`, `asset-type=immovable` | `limitation-period=30 years`, tính từ `opening-date` | Temporal helper đã có test ngày thường và 29/02 | MODEL-READY |
+| R-J02 | Động sản → thời hiệu chia 10 năm | TEMPORAL | `request-type=divide-estate`, `asset-type=movable` | `limitation-period=10 years` | Đã gắn với request và asset cụ thể | MODEL-READY |
 | R-J03 | Xác nhận/bác bỏ quyền thừa kế → 10 năm | TEMPORAL | `request-type=confirm-or-deny-inheritance-right` | `limitation-period=10 years` | Không phụ thuộc loại tài sản | MODEL-READY |
 | R-J04 | Yêu cầu thực hiện nghĩa vụ tài sản → 3 năm | TEMPORAL | `request-type=perform-estate-obligation` | `limitation-period=3 years` | Gắn với yêu cầu cụ thể | MODEL-READY |
 | R-J05 | Hết thời hiệu, có người thừa kế quản lý → thuộc người quản lý | CLASSIFICATION | Thời hiệu chia đã hết và người thừa kế đang quản lý di sản | `post-limitation-recipient=managing-heir` | Chỉ chạy sau khi temporal subsystem xác nhận hết thời hiệu | TEAM-REVIEW |
@@ -403,7 +403,8 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-I02 | Đã triển khai nhận diện nguyên tắc Điều 659 khoản 1 theo từng nhóm định đoạt; có completeness và không tính phần end-to-end |
 | R-I03a–R-I03b | Đã triển khai từ graph và hàng đang hoạt động; R-I03b giữ `TEAM_REVIEW`, chưa tính lại giá trị các suất |
 | R-I04–R-I05 | Đã triển khai mốc ngày và quyền yêu cầu Tòa; R-I05 giữ `TEAM_REVIEW`, không suy diễn quyết định tư pháp |
-| Nhóm J | Đặc tả đề xuất để team review, chưa triển khai |
+| R-J01–R-J04 | Đã triển khai: CLIPS chọn số năm, temporal helper tính deadline, presenter hiển thị timeline; chưa kết luận hết thời hiệu |
+| R-J05–R-J07 | Chưa triển khai; cần chốt mô hình quản lý/chiếm hữu và completeness |
 | Legal validation | Chưa thực hiện đầy đủ |
 
 ## 10. Câu hỏi dành cho buổi review team

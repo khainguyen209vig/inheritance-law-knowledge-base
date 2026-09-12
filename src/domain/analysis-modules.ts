@@ -214,10 +214,15 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
     id: "limitation",
     title: "Thời hiệu thừa kế",
     shortDescription: "Đánh giá các mốc thời gian liên quan tới yêu cầu về thừa kế.",
-    status: "planned",
+    status: "implemented",
     interactionMode: "timeline",
-    primaryResultPredicate: "inheritance-limitation-status",
+    primaryResultPredicate: "limitation-deadline",
     dependencies: [],
+    runtime: {
+      inferencePath: "/api/cases/:caseId/inference/limitation",
+      subjectPrefix: "limitation-request",
+      defaultCaseTitle: "Hồ sơ thời hiệu thừa kế",
+    },
   },
 };
 

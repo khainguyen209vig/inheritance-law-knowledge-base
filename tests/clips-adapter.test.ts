@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inferCompulsoryShare, inferEligibility, inferEstateSettlement, inferHeirRank, inferInheritanceType, inferRefusalAndUnclaimed, inferRepresentation, inferSpouseStatus, inferWillValidity } from "../src/server/clips/adapter";
+import { inferCompulsoryShare, inferEligibility, inferEstateSettlement, inferHeirRank, inferInheritanceType, inferLimitation, inferRefusalAndUnclaimed, inferRepresentation, inferSpouseStatus, inferWillValidity } from "../src/server/clips/adapter";
 
 test("CLIPS adapter returns a valid-will result and trace", async () => {
   const output = await inferWillValidity({
@@ -338,6 +338,23 @@ test("estate settlement adapter preserves the Article 661 date and court-request
   assert.ok(output.results.some((item) => item.subject === "spouse-one" && item.predicate === "court-deferral-may-be-requested" && item.value === "true"));
   assert.ok(output.results.some((item) => item.subject === "spouse-one" && item.predicate === "initial-deferral-maximum-years" && item.value === "3"));
   assert.ok(!output.results.some((item) => item.subject === "spouse-one" && item.predicate === "court-deferral-granted"));
+});
+
+test("limitation adapter selects Article 623 periods and calculates calendar deadlines", async () => {
+  const output = await inferLimitation({ caseId: "adapter-limitation", subject: "adapter-limitation", facts: [
+    { id: "immovable-scope", subject: "immovable-request", predicate: "limitation-assessment-subject", value: true },
+    { id: "immovable-type", subject: "immovable-request", predicate: "request-type", value: "divide-estate" },
+    { id: "immovable-asset", subject: "immovable-request", predicate: "asset-type", value: "immovable" },
+    { id: "immovable-opening", subject: "immovable-request", predicate: "inheritance-opening-date", value: "2020-02-29" },
+    { id: "obligation-scope", subject: "obligation-request", predicate: "limitation-assessment-subject", value: true },
+    { id: "obligation-type", subject: "obligation-request", predicate: "request-type", value: "perform-estate-obligation" },
+    { id: "obligation-opening", subject: "obligation-request", predicate: "inheritance-opening-date", value: "2020-06-30" },
+  ] });
+  assert.ok(output.results.some((item) => item.subject === "immovable-request" && item.predicate === "limitation-period-years" && item.value === "30"));
+  assert.ok(output.results.some((item) => item.subject === "immovable-request" && item.predicate === "limitation-deadline" && item.value === "2050-02-28"));
+  assert.ok(output.results.some((item) => item.subject === "obligation-request" && item.predicate === "limitation-deadline" && item.value === "2023-06-30"));
+  assert.ok(output.traces.some((item) => item.subject === "immovable-request" && item.ruleId === "R-J01"));
+  assert.ok(output.traces.some((item) => item.subject === "obligation-request" && item.ruleId === "R-J04"));
 });
 
 test("CLIPS adapter preserves unknown and missing facts", async () => {

@@ -5,6 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import type { WillValidityRequest } from "@/domain/will-validity";
 import type { StoredCase } from "@/server/db/case-repository";
+import { addCalendarYears } from "@/domain/temporal";
 import { parseClipsOutput } from "./parse-output";
 import type { InferenceOutput } from "./types";
 
@@ -49,6 +50,20 @@ export async function inferRefusalAndUnclaimed(input: { caseId: string; subject:
 
 export async function inferEstateSettlement(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
   return inferWithClips(serializeCaseFacts({ ...input, module: "estate-settlement" }), createEstateSettlementDriver);
+}
+
+export async function inferLimitation(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
+  const output = await inferWithClips(serializeCaseFacts({ ...input, module: "limitation" }), createLimitationDriver);
+  const openingDates = new Map(input.facts
+    .filter((fact) => fact.predicate === "inheritance-opening-date" && typeof fact.value === "string")
+    .map((fact) => [fact.subject, String(fact.value)]));
+  const deadlines = output.results.flatMap((result) => {
+    const openingDate = openingDates.get(result.subject);
+    const years = result.predicate === "limitation-period-years" && /^\d+$/u.test(result.value) ? Number(result.value) : undefined;
+    if (!openingDate || years === undefined) return [];
+    return [{ ...result, predicate: "limitation-deadline", value: addCalendarYears(openingDate, years) }];
+  });
+  return { ...output, results: [...output.results, ...deadlines] };
 }
 
 async function inferWithClips(
@@ -123,7 +138,7 @@ function serializeCaseFacts(input: { caseId: string; subject: string; module: st
 }
 
 function serializeCaseFactValue(fact: StoredCase["facts"][number]): string {
-  if (fact.predicate === "estate-portion-label" || fact.predicate === "person-label" || fact.predicate === "heir-person-label" || fact.predicate === "obligation-label" || fact.predicate === "distribution-group-label" || fact.predicate === "distribution-beneficiary-label" || fact.predicate === "specified-division-date") {
+  if (fact.predicate === "estate-portion-label" || fact.predicate === "person-label" || fact.predicate === "heir-person-label" || fact.predicate === "obligation-label" || fact.predicate === "distribution-group-label" || fact.predicate === "distribution-beneficiary-label" || fact.predicate === "specified-division-date" || fact.predicate === "limitation-request-label" || fact.predicate === "inheritance-opening-date") {
     return `"${String(fact.value).replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
   }
   return String(fact.value);
@@ -245,6 +260,17 @@ function createEstateSettlementDriver(factsPath: string): string {
     `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/08-refusal-and-unclaimed.clp")})`, `(load ${clipsPath("rules/04-heir-rank.clp")})`,
     `(load ${clipsPath("rules/09-estate-settlement.clp")})`, `(load ${clipsPath("rules/99-estate-settlement-completeness.clp")})`,
     `(load ${clipsPath("rules/99-estate-settlement-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
+    `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
+    "(run)", "(emit-machine-output)", "(exit)", "",
+  ].join("\n");
+}
+
+function createLimitationDriver(factsPath: string): string {
+  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
+  return [
+    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
+    `(load ${clipsPath("rules/10-limitation.clp")})`, `(load ${clipsPath("rules/99-limitation-completeness.clp")})`,
+    `(load ${clipsPath("rules/99-limitation-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
     `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
     "(run)", "(emit-machine-output)", "(exit)", "",
   ].join("\n");

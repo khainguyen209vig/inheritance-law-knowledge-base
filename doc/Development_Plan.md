@@ -449,6 +449,16 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] tách quyền yêu cầu hoãn, quyền yêu cầu gia hạn, giới hạn ba năm và một lần gia hạn; tuyệt đối không sinh `court-deferral-granted`;
 - [x] thêm chế độ presenter “Hạn chế chia”, legal dialog Điều 661 và giữ cảnh báo `TEAM_REVIEW`.
 
+### Thời hiệu thừa kế — Điều 623
+
+- [x] triển khai R-J01/R-J02 theo từng yêu cầu chia và từng loại tài sản; bất động sản 30 năm, động sản 10 năm;
+- [x] triển khai R-J03/R-J04 cho yêu cầu xác nhận/bác bỏ quyền thừa kế 10 năm và yêu cầu thực hiện nghĩa vụ tài sản 3 năm;
+- [x] để CLIPS chọn rule cùng `limitation-period-years`, tách phép cộng năm lịch sang temporal helper TypeScript có boundary test cho ngày 29/02;
+- [x] thêm completeness cho loại yêu cầu, loại tài sản có điều kiện và ngày mở thừa kế; thiếu dữ kiện trả `unknown`;
+- [x] thêm API, snapshot, timeline presenter và legal dialog Điều 623 cho nhiều yêu cầu trong cùng hồ sơ;
+- [x] không tự suy diễn `limitation-expired`: chưa mô hình hóa gián đoạn, bắt đầu lại, quy định chuyển tiếp hoặc dữ kiện ngày đánh giá;
+- [ ] thiết kế R-J05–R-J07 sau khi chốt facts/completeness về người thừa kế quản lý, người chiếm hữu đáp ứng Điều 236 và phạm vi tài sản.
+
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 
 - Chốt phạm vi câu hỏi mà MVP phải trả lời.

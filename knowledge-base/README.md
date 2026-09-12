@@ -33,6 +33,8 @@ Mô-đun `refusal-and-unclaimed` triển khai R-H01–R-H04 theo Điều 620 và
 
 Mô-đun `estate-settlement` triển khai R-I01–R-I05 theo Điều 658–661. Bảng ưu tiên là knowledge facts; nhóm chia theo di chúc có completeness riêng; R-I03 tái sử dụng hàng từ graph. R-I04 giữ giới hạn chia dưới dạng ngày ISO `distribution-not-before`. R-I05 chỉ dẫn xuất quyền yêu cầu Tòa án và các giới hạn tối đa 3 năm/lần gia hạn duy nhất, không sinh kết luận Tòa đã chấp thuận. R-I03b và R-I05 giữ `TEAM_REVIEW`. Hệ thống chưa phân bổ tài sản end-to-end.
 
+Mô-đun `limitation` triển khai R-J01–R-J04 theo Điều 623. CLIPS phân loại yêu cầu và dẫn xuất `limitation-period-years`; TypeScript temporal helper cộng năm lịch vào `inheritance-opening-date` để tạo `limitation-deadline`. Việc tính ngày không thay thế suy luận pháp lý và chưa kết luận thời hiệu đã hết. R-J05–R-J07 chưa chạy cho tới khi có facts/completeness về người quản lý và người chiếm hữu.
+
 Nếu các observations đều có mặt nhưng chưa khớp đường suy luận dương hoặc exclusion rule đã được mô hình hóa, completeness layer tạo `unresolved-rule-path` và trả `UNKNOWN`. Cách xử lý này giữ open-world semantics cho đến khi team duyệt rule âm tương ứng.
 
 ## Phân lớp tri thức
