@@ -8,7 +8,6 @@ export interface FamilyPerson {
   id: string;
   name: string;
   life?: FamilyLifeStatus;
-  refusal?: boolean;
   eligibilityReviewed: boolean;
 }
 
@@ -40,7 +39,6 @@ export function restoreFamilyGraph(facts: ApiFact[], token: string): FamilyGraph
     id,
     name: String(facts.find((fact) => fact.subject === id && (fact.predicate === "heir-person-label" || fact.predicate === "person-label"))?.value ?? (id === deceasedId ? "Người để lại di sản" : `Người ${index}`)),
     life: facts.find((fact) => fact.subject === id && fact.predicate === "heir-life-status")?.value as FamilyLifeStatus | undefined,
-    refusal: facts.find((fact) => fact.subject === id && fact.predicate === "valid-refusal")?.value as boolean | undefined,
     eligibilityReviewed: facts.some((fact) => fact.subject === id && fact.predicate === "eligibility-review-complete" && fact.value === true),
   }));
   const careByEdgeId = new Map(facts.filter((fact) => fact.predicate === "step-care-status" && typeof fact.value === "string").map((fact) => [fact.subject, fact.value as StepCareStatus]));
@@ -61,7 +59,6 @@ export function serializeFamilyGraph(caseId: string, graph: FamilyGraph, searchC
         { id: `fg-person-${index + 1}-eligibility`, subject: person.id, predicate: "eligibility-candidate", value: true },
       );
       if (person.life) facts.push({ id: `fg-person-${index + 1}-life`, subject: person.id, predicate: "heir-life-status", value: person.life });
-      if (person.refusal !== undefined) facts.push({ id: `fg-person-${index + 1}-refusal`, subject: person.id, predicate: "valid-refusal", value: person.refusal });
     }
   });
   graph.edges.forEach((edge, index) => {

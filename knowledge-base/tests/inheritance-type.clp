@@ -1,6 +1,7 @@
 (load "knowledge-base/templates.clp")
 (load "knowledge-base/rule-metadata.clp")
 (load "knowledge-base/rules/01-will-validity.clp")
+(load "knowledge-base/rules/08-refusal-and-unclaimed.clp")
 (load "knowledge-base/rules/02-inheritance-type.clp")
 (load "knowledge-base/rules/91-inheritance-type-completeness.clp")
 (load "knowledge-base/rules/97-inheritance-type-projection.clp")

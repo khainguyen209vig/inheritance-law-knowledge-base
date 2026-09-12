@@ -1,6 +1,7 @@
 (load "knowledge-base/templates.clp")
 (load "knowledge-base/rule-metadata.clp")
 (load "knowledge-base/rules/03-eligibility.clp")
+(load "knowledge-base/rules/08-refusal-and-unclaimed.clp")
 (load "knowledge-base/rules/06-compulsory-share.clp")
 (load "knowledge-base/rules/96-compulsory-share-completeness.clp")
 (load "knowledge-base/rules/97-compulsory-share-projection.clp")

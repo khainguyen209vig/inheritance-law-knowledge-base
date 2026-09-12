@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v12",
+  "knowledgeBaseVersion": "inheritance-kb-v13",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -406,6 +406,12 @@
       "title": "Không có hành vi từ chối", "reasoning": "Người đang xét được ghi nhận tường minh là không thực hiện việc từ chối nhận di sản.",
       "conclusion": "Không có việc từ chối hợp lệ đang áp dụng", "citation": "Quy tắc trạng thái nội bộ", "relevantSections": [], "clipsMetadata": true,
       "implementations": ["NO-REFUSAL-MADE"]
+    },
+    "REFUSAL-STATUS-NORMALIZED": {
+      "ruleId": "REFUSAL-STATUS-NORMALIZED", "module": "refusal-and-unclaimed", "kind": "internal", "status": "draft",
+      "title": "Chuẩn hóa trạng thái từ chối dùng chung", "reasoning": "Các mô-đun hạ nguồn dùng một predicate trung gian. Kết quả suy luận từ facts chi tiết nhóm H được ưu tiên; fact `valid-refusal` của hồ sơ cũ chỉ được chuyển tiếp khi chưa có assessment nhóm H.",
+      "conclusion": "Tạo trạng thái từ chối chuẩn hóa cho A/C/E/F", "citation": "Quy tắc tương thích và kết nối nội bộ", "relevantSections": [], "clipsMetadata": true,
+      "implementations": ["NORMALIZE-INFERRED-REFUSAL-STATUS", "NORMALIZE-LEGACY-REFUSAL-STATUS"]
     },
     "R-H04": {
       "ruleId": "R-H04", "module": "refusal-and-unclaimed", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",

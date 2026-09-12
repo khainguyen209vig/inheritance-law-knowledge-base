@@ -70,7 +70,7 @@
   (declare (salience 210))
   (analysis-request (case-id ?case-id) (module representation))
   (asserted-fact (case-id ?case-id) (subject ?person) (predicate representation-candidate) (value true))
-  (not (asserted-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal)))
+  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status)))
   =>
   (assert (missing-requirement (case-id ?case-id) (subject ?person) (module representation) (predicate valid-refusal))))
 

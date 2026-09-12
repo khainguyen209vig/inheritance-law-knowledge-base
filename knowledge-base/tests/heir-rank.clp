@@ -1,6 +1,7 @@
 (load "knowledge-base/templates.clp")
 (load "knowledge-base/rule-metadata.clp")
 (load "knowledge-base/rules/03-eligibility.clp")
+(load "knowledge-base/rules/08-refusal-and-unclaimed.clp")
 (load "knowledge-base/rules/04-heir-rank.clp")
 (load "knowledge-base/rules/93-heir-rank-completeness.clp")
 (load "knowledge-base/rules/95-heir-rank-projection.clp")

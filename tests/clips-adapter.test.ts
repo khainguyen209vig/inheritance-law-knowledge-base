@@ -134,6 +134,28 @@ test("heir-rank adapter does not skip an unresolved earlier-rank candidate", asy
   assert.ok(!output.results.some((result) => result.subject === "resolved-second" && result.predicate === "called-to-inherit" && result.value === "true"));
 });
 
+test("detailed Group H facts override a contradictory legacy refusal result downstream", async () => {
+  const output = await inferHeirRank({ caseId: "adapter-rank-refusal-h", subject: "adapter-rank-refusal-h", facts: [
+    { id: "deceased-h", subject: "deceased-h", predicate: "deceased-person", value: true },
+    { id: "search-h", subject: "adapter-rank-refusal-h", predicate: "heir-search-complete", value: true },
+    { id: "candidate-h", subject: "person-h", predicate: "heir-rank-candidate", value: true },
+    { id: "edge-h", subject: "deceased-h", predicate: "biological-parent-of", value: "person-h" },
+    { id: "eligibility-h", subject: "person-h", predicate: "eligibility-candidate", value: true },
+    { id: "review-h", subject: "person-h", predicate: "eligibility-review-complete", value: true },
+    { id: "life-h", subject: "person-h", predicate: "heir-life-status", value: "alive" },
+    { id: "legacy-refusal-h", subject: "person-h", predicate: "valid-refusal", value: false },
+    { id: "scope-h", subject: "person-h", predicate: "refusal-assessment-subject", value: true },
+    { id: "made-h", subject: "person-h", predicate: "refusal-made", value: true },
+    { id: "intent-h", subject: "person-h", predicate: "refusal-intent", value: "ordinary" },
+    { id: "written-h", subject: "person-h", predicate: "refusal-written", value: true },
+    { id: "recipient-h", subject: "person-h", predicate: "refusal-notice-recipient", value: "other-heir" },
+    { id: "timing-h", subject: "person-h", predicate: "refusal-before-estate-distribution", value: true },
+  ] });
+  assert.ok(output.results.some((result) => result.subject === "person-h" && result.predicate === "called-to-inherit" && result.value === "false"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "VALID-REFUSAL-COMPOSED"));
+  assert.ok(!output.results.some((result) => result.subject === "person-h" && result.predicate === "called-to-inherit" && result.value === "true"));
+});
+
 test("representation adapter derives a grandchild result from a multi-step family path", async () => {
   const output = await inferRepresentation({ caseId: "adapter-representation", subject: "adapter-representation", facts: [
     { id: "representation-deceased", subject: "representation-deceased", predicate: "deceased-person", value: true },

@@ -89,7 +89,7 @@
   (asserted-fact (fact-id ?complete-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-set-complete) (value true))
   (asserted-fact (fact-id ?status-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary))
   (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))
-  (asserted-fact (fact-id ?refusal-fact) (case-id ?case-id) (subject ?beneficiary) (predicate valid-refusal) (value true))
+  (derived-fact (case-id ?case-id) (subject ?beneficiary) (predicate refusal-status) (value true) (rule-id ?refusal-fact))
   (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory) (rule-id R-A05b)))
   =>
   (assert (derived-fact

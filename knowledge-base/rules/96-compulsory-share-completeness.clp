@@ -31,7 +31,7 @@
   (declare (salience 220))
   (analysis-request (case-id ?case-id) (module compulsory-share))
   (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true))
-  (not (asserted-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal)))
+  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status)))
   =>
   (assert (missing-requirement (case-id ?case-id) (subject ?person) (module compulsory-share) (predicate valid-refusal))))
 

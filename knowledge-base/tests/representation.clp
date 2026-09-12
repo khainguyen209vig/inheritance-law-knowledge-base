@@ -1,6 +1,7 @@
 (load "knowledge-base/templates.clp")
 (load "knowledge-base/rule-metadata.clp")
 (load "knowledge-base/rules/03-eligibility.clp")
+(load "knowledge-base/rules/08-refusal-and-unclaimed.clp")
 (load "knowledge-base/rules/05-representation.clp")
 (load "knowledge-base/rules/94-representation-completeness.clp")
 (load "knowledge-base/rules/95-representation-projection.clp")

@@ -428,7 +428,9 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] triển khai R-H04 theo từng phần di sản, yêu cầu xác nhận đã tìm đủ người hưởng theo di chúc và pháp luật, không có người đang được gọi hưởng/disposition hiệu lực, đồng thời có phần còn lại sau nghĩa vụ;
 - [x] thêm completeness, API, snapshot, presenter tách ngữ cảnh người–phần di sản, legal dialog Điều 620/622 và regression tests;
 - [x] giữ R-H01/R-H03 ở `TEAM_REVIEW`; không diễn giải `unknown` thành việc từ chối vô hiệu hoặc tài sản chắc chắn không thuộc Nhà nước;
-- [ ] tích hợp derived `valid-refusal` từ nhóm H vào working memory của nhóm A/C/E/F để thay hoàn toàn lựa chọn `valid-refusal` thủ công đang tồn tại trong graph/presenter cũ.
+- [x] nạp rules nhóm H vào working memory của A/C/E/F và chuẩn hóa về `refusal-status`; facts chi tiết H được ưu tiên, fact `valid-refusal` cũ chỉ còn là fallback khi chưa có assessment H;
+- [x] xóa thao tác nhập kết luận `valid-refusal` khỏi graph editor và điều hướng người dùng sang presenter Điều 620;
+- [ ] sau khi các hồ sơ thử nghiệm đã được migrate sang facts H, loại bỏ hoàn toàn schema/fallback `valid-refusal` cũ.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

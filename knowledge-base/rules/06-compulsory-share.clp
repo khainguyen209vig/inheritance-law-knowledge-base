@@ -73,7 +73,7 @@
 (defrule R-F03-valid-refusal-excludes-compulsory-share
   (declare (salience 400))
   (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id ?candidate-rule))
-  (asserted-fact (fact-id ?refusal) (case-id ?case-id) (subject ?person) (predicate valid-refusal) (value true))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value true) (rule-id ?refusal))
   (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir)))
   =>
   (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir) (value false) (rule-id R-F03) (supports ?candidate-rule ?refusal))))
@@ -89,7 +89,7 @@
 (defrule COMPULSORY-HEIR-ACTIVE
   (declare (salience 360))
   (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id ?candidate-rule))
-  (asserted-fact (fact-id ?refusal) (case-id ?case-id) (subject ?person) (predicate valid-refusal) (value false))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value false) (rule-id ?refusal))
   (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value not-excluded) (rule-id ?eligibility-rule))
   (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir)))
   =>

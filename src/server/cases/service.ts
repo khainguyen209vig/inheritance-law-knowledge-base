@@ -20,19 +20,19 @@ export async function runStoredEligibility(repository: CaseRepository, caseId: s
 export async function runStoredHeirRank(repository: CaseRepository, caseId: string): Promise<StoredInferenceRun> {
   const facts = repository.getAllFacts(caseId);
   const output = await inferHeirRank({ caseId, subject: caseId, facts });
-  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "heir-rank", knowledgeBaseVersion: "heir-rank-rc01-rc06-draft-v1" });
+  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "heir-rank", knowledgeBaseVersion: "heir-rank-rc01-rc06-refusal-integrated-v2" });
 }
 
 export async function runStoredRepresentation(repository: CaseRepository, caseId: string): Promise<StoredInferenceRun> {
   const facts = repository.getAllFacts(caseId);
   const output = await inferRepresentation({ caseId, subject: caseId, facts });
-  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "representation", knowledgeBaseVersion: "representation-re01-re05-draft-v1" });
+  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "representation", knowledgeBaseVersion: "representation-re01-re05-refusal-integrated-v2" });
 }
 
 export async function runStoredCompulsoryShare(repository: CaseRepository, caseId: string): Promise<StoredInferenceRun> {
   const facts = repository.getAllFacts(caseId);
   const output = await inferCompulsoryShare({ caseId, subject: caseId, facts });
-  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "compulsory-share", knowledgeBaseVersion: "compulsory-share-rf01-rf04-draft-v2" });
+  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "compulsory-share", knowledgeBaseVersion: "compulsory-share-rf01-rf04-refusal-integrated-v3" });
 }
 
 export async function runStoredSpouseStatus(repository: CaseRepository, caseId: string): Promise<StoredInferenceRun> {
@@ -59,6 +59,6 @@ export async function runStoredInheritanceType(
     facts,
     output,
     module: "inheritance-type",
-    knowledgeBaseVersion: "inheritance-type-ra01-ra06-team-review-v1",
+    knowledgeBaseVersion: "inheritance-type-ra01-ra06-refusal-integrated-v2",
   });
 }

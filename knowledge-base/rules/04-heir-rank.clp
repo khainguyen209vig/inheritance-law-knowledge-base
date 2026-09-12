@@ -139,7 +139,7 @@
   (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value conflict)))
   (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value not-excluded) (rule-id ?eligibility-rule))
   (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?person) (predicate heir-life-status) (value alive))
-  (asserted-fact (fact-id ?refusal) (case-id ?case-id) (subject ?person) (predicate valid-refusal) (value false))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value false) (rule-id ?refusal))
   (not (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-statutory-candidate)))
   =>
   (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-statutory-candidate) (value ?rank) (rule-id STATUTORY-CANDIDATE-QUALIFIED) (supports ?eligibility-rule ?life ?refusal))))
@@ -163,7 +163,7 @@
 (defrule STATUTORY-CANDIDATE-INACTIVE-REFUSAL
   (declare (salience 280))
   (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?rank&1|2|3))
-  (asserted-fact (fact-id ?refusal) (case-id ?case-id) (subject ?person) (predicate valid-refusal) (value true))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value true) (rule-id ?refusal))
   (not (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit)))
   =>
   (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit) (value false) (rule-id STATUTORY-CANDIDATE-INACTIVE) (supports ?refusal))))

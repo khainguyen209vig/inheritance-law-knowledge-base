@@ -398,7 +398,7 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-E04–R-E05 | Đã triển khai với đánh giá chăm sóc gắn theo cạnh; giữ `TEAM_REVIEW`, open-world và không phủ định căn cứ khác |
 | R-F01a–R-F04 | Đã triển khai phân loại, loại trừ và R-F01c tính ngưỡng/phần thiếu theo từng cặp người–phần di sản; R-F01c chưa tự xác định suất pháp luật giả định; R-F01c/R-F02 giữ `TEAM_REVIEW` |
 | R-G01–R-G03 | Đã triển khai theo từng người phối ngẫu từ graph, có completeness và trace tới ba khoản Điều 655; không kết luận quyền hưởng cuối cùng |
-| R-H01–R-H04 | Đã triển khai theo từng người và phần di sản; H01/H03 giữ `TEAM_REVIEW`; derived `valid-refusal` chưa thay hoàn toàn fact thủ công ở các presenter cũ |
+| R-H01–R-H04 | Đã triển khai theo từng người và phần di sản; H01/H03 giữ `TEAM_REVIEW`; A/C/E/F dùng `refusal-status` chuẩn hóa và chỉ fallback về fact cũ nếu chưa có assessment H |
 | Nhóm I–J | Đặc tả đề xuất để team review, chưa triển khai |
 | Legal validation | Chưa thực hiện đầy đủ |
 

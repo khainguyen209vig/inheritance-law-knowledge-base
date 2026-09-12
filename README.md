@@ -368,6 +368,7 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 15. [x] Triển khai R-F01c theo từng cặp người–phần di sản: tính ngưỡng hai phần ba, xác định có thiếu hay không và số phần thiếu; suất pháp luật giả định vẫn là fact đầu vào, chưa tự chia end-to-end.
 16. [x] Triển khai nhóm G về trạng thái vợ/chồng tại thời điểm mở thừa kế, dùng sự kiện riêng cho chia tài sản chung, ly hôn và kết hôn sau đó; có trace tới Điều 655.
 17. [x] Triển khai nhóm H theo từng người và phần di sản: hợp thành hiệu lực từ chối theo Điều 620, dùng completeness để xác định phần còn lại thuộc Nhà nước theo Điều 622.
-18. [ ] Tích hợp derived `valid-refusal` của nhóm H vào A/C/E/F, sau đó đánh giá phạm vi khả thi của nhóm I; graph editor vẫn nằm trong UX debt trước bản trình bày.
+18. [x] Tích hợp derived `valid-refusal` của nhóm H vào A/C/E/F qua `refusal-status`; bỏ nhập kết luận từ chối khỏi graph, vẫn giữ fallback cho hồ sơ cũ.
+19. [ ] Đánh giá và triển khai lát cắt phù hợp của nhóm I; graph editor vẫn nằm trong UX debt trước bản trình bày.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

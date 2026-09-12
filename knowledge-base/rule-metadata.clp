@@ -286,6 +286,12 @@
     (description "Người đang xét được ghi nhận tường minh là không thực hiện việc từ chối nhận di sản.")
     (status draft))
   (rule-metadata
+    (rule-id REFUSAL-STATUS-NORMALIZED)
+    (module refusal-and-unclaimed)
+    (legal-source "Quy tắc tương thích và kết nối nội bộ")
+    (description "Các mô-đun hạ nguồn dùng một predicate trung gian. Kết quả suy luận từ facts chi tiết nhóm H được ưu tiên; fact `valid-refusal` của hồ sơ cũ chỉ được chuyển tiếp khi chưa có assessment nhóm H.")
+    (status draft))
+  (rule-metadata
     (rule-id R-H04)
     (module refusal-and-unclaimed)
     (legal-source "Điều 622 Bộ luật Dân sự 2015")

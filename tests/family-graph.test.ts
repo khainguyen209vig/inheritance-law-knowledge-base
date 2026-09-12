@@ -26,13 +26,14 @@ test("family graph serializes observations and never serializes a legal rank con
     deceasedId: "person-a",
     people: [
       { id: "person-a", name: "A", eligibilityReviewed: false },
-      { id: "person-b", name: "B", life: "alive", refusal: false, eligibilityReviewed: true },
+      { id: "person-b", name: "B", life: "alive", eligibilityReviewed: true },
     ],
     edges: [{ id: "edge", from: "person-a", to: "person-b", type: "biological-parent-of" }],
   };
   const facts = serializeFamilyGraph("case-graph", graph, true);
   assert.ok(facts.some((fact) => fact.predicate === "biological-parent-of"));
   assert.ok(facts.some((fact) => fact.predicate === "heir-rank-candidate"));
+  assert.ok(!facts.some((fact) => fact.predicate === "valid-refusal"));
   assert.ok(!facts.some((fact) => fact.predicate === "candidate-heir-rank" || fact.predicate === "called-to-inherit"));
 });
 

@@ -35,7 +35,7 @@
   (declare (salience 180))
   (analysis-request (case-id ?case-id) (module heir-rank))
   (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1|2|3))
-  (not (asserted-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal)))
+  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status)))
   =>
   (assert (missing-requirement (case-id ?case-id) (subject ?person) (module heir-rank) (predicate valid-refusal))))
 

@@ -59,7 +59,7 @@
   (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary))
   (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))
   (not (asserted-fact (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-life-status) (value dead-before-or-same|organization-no-longer-exists)))
-  (not (asserted-fact (case-id ?case-id) (subject ?beneficiary) (predicate valid-refusal) (value true)))
+  (not (derived-fact (case-id ?case-id) (subject ?beneficiary) (predicate refusal-status) (value true)))
   (not (and
     (asserted-fact (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-disqualified) (value true))
     (asserted-fact (case-id ?case-id) (subject ?beneficiary) (predicate disqualification-exception) (value false))))
