@@ -438,7 +438,9 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] dùng một production rule tổng quát để nối từng `estate-obligation` với bảng tri thức, không viết mười nhánh `if/then`;
 - [x] thêm completeness cho khoản chưa có `obligation-type`, API, snapshot, presenter nhiều khoản và legal dialog Điều 658;
 - [x] tách `obligation-amount` khỏi điều kiện suy luận: số tiền hiện chỉ phục vụ trình bày, chưa dùng để phân bổ;
-- [ ] đánh giá và triển khai R-I02 như phép nhận diện nguyên tắc chia đều khi di chúc không xác định phần, không tính giá trị end-to-end;
+- [x] triển khai R-I02 theo từng `testamentary-distribution-group`; yêu cầu danh sách người hưởng đầy đủ, ít nhất hai người, phần không được xác định và không có thỏa thuận khác;
+- [x] biểu diễn cả `testamentary-shares-specified` và `alternative-share-agreement` bằng observation ba trạng thái ở UI; thiếu dữ kiện trả `unknown`;
+- [x] thêm presenter chuyển ngữ cảnh giữa R-I01 và R-I02, hỗ trợ nhiều nhóm và nhiều người hưởng, trace tới Điều 659 khoản 1;
 - [ ] giữ R-I03–R-I05 cho các lát cắt riêng về người đã thành thai và hạn chế phân chia; không gộp vào R-I01.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức

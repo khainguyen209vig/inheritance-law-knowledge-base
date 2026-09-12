@@ -287,6 +287,19 @@ test("estate settlement adapter joins obligations with Article 658 knowledge fac
   assert.ok(output.traces.some((trace) => trace.subject === "funeral-one" && trace.ruleId === "R-I01"));
 });
 
+test("estate settlement adapter identifies the Article 659 equal-share default", async () => {
+  const output = await inferEstateSettlement({ caseId: "adapter-equal-share", subject: "adapter-equal-share", facts: [
+    { id: "group", subject: "group-one", predicate: "testamentary-distribution-group", value: true },
+    { id: "complete", subject: "group-one", predicate: "distribution-beneficiary-set-complete", value: true },
+    { id: "person-one", subject: "group-one", predicate: "distribution-beneficiary", value: "person-one" },
+    { id: "person-two", subject: "group-one", predicate: "distribution-beneficiary", value: "person-two" },
+    { id: "shares", subject: "group-one", predicate: "testamentary-shares-specified", value: false },
+    { id: "agreement", subject: "group-one", predicate: "alternative-share-agreement", value: false },
+  ] });
+  assert.ok(output.results.some((item) => item.subject === "group-one" && item.predicate === "equal-testamentary-share-principle-applies" && item.value === "true"));
+  assert.ok(output.traces.some((trace) => trace.subject === "group-one" && trace.ruleId === "R-I02"));
+});
+
 test("CLIPS adapter preserves unknown and missing facts", async () => {
   const output = await inferWillValidity({
     caseId: "adapter-unknown",

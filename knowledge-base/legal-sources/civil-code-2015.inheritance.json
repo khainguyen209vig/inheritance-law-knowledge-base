@@ -428,6 +428,30 @@
       ],
       "sourceDocument": "doc/Luat_ThuaKe.doc",
       "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
+    "article-659": {
+      "id": "article-659",
+      "number": "Điều 659",
+      "title": "Phân chia di sản theo di chúc",
+      "sections": [
+        {
+          "id": "clause-1",
+          "label": "Khoản 1",
+          "text": "Việc phân chia di sản được thực hiện theo ý chí của người để lại di chúc; nếu di chúc không xác định rõ phần của từng người thừa kế thì di sản được chia đều cho những người được chỉ định trong di chúc, trừ trường hợp có thoả thuận khác."
+        },
+        {
+          "id": "clause-2",
+          "label": "Khoản 2",
+          "text": "Trường hợp di chúc xác định phân chia di sản theo hiện vật thì người thừa kế được nhận hiện vật kèm theo hoa lợi, lợi tức thu được từ hiện vật đó hoặc phải chịu phần giá trị của hiện vật bị giảm sút tính đến thời điểm phân chia di sản; nếu hiện vật bị tiêu huỷ do lỗi của người khác thì người thừa kế có quyền yêu cầu bồi thường thiệt hại."
+        },
+        {
+          "id": "clause-3",
+          "label": "Khoản 3",
+          "text": "Trường hợp di chúc chỉ xác định phân chia di sản theo tỷ lệ đối với tổng giá trị khối di sản thì tỷ lệ này được tính trên giá trị khối di sản đang còn vào thời điểm phân chia di sản."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
     }
   }
 }

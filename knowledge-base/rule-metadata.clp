@@ -304,6 +304,12 @@
     (description "Loại nghĩa vụ hoặc chi phí của từng khoản được đối chiếu với bảng tri thức 10 mức tại Điều 658. Một production rule tổng quát thực hiện phép đối chiếu; thứ tự pháp lý không được mã hóa thành mười nhánh điều kiện.")
     (status draft))
   (rule-metadata
+    (rule-id R-I02)
+    (module estate-settlement)
+    (legal-source "Điều 659 khoản 1 Bộ luật Dân sự 2015")
+    (description "Khi danh sách người được chỉ định đã đầy đủ, có từ hai người, di chúc không xác định rõ phần của từng người và không có thỏa thuận khác, hệ thống ghi nhận nguyên tắc chia đều. Việc có phần đã xác định, có thỏa thuận khác hoặc chỉ có một người làm nguyên tắc mặc định này không áp dụng.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

@@ -31,3 +31,39 @@
     (value ?priority)
     (rule-id R-I01)
     (supports ?entity ?type-fact ?knowledge))))
+
+; R-I02 is scoped to a testamentary distribution group. Negative observations
+; are explicit facts; absence of an agreement fact never means "no agreement".
+(defrule R-I02-equal-share-default-applies
+  (asserted-fact (fact-id ?group-fact) (case-id ?case-id) (subject ?group) (predicate testamentary-distribution-group) (value true))
+  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary-set-complete) (value true))
+  (asserted-fact (fact-id ?first-fact) (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary) (value ?first))
+  (asserted-fact (fact-id ?second-fact) (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary) (value ?second&~?first))
+  (asserted-fact (fact-id ?shares) (case-id ?case-id) (subject ?group) (predicate testamentary-shares-specified) (value false))
+  (asserted-fact (fact-id ?agreement) (case-id ?case-id) (subject ?group) (predicate alternative-share-agreement) (value false))
+  (not (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies) (value true) (rule-id R-I02) (supports ?group-fact ?complete ?first-fact ?second-fact ?shares ?agreement))))
+
+(defrule R-I02-specified-shares-disable-default
+  (asserted-fact (fact-id ?group-fact) (case-id ?case-id) (subject ?group) (predicate testamentary-distribution-group) (value true))
+  (asserted-fact (fact-id ?shares) (case-id ?case-id) (subject ?group) (predicate testamentary-shares-specified) (value true))
+  (not (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies) (value false) (rule-id R-I02) (supports ?group-fact ?shares))))
+
+(defrule R-I02-alternative-agreement-disables-default
+  (asserted-fact (fact-id ?group-fact) (case-id ?case-id) (subject ?group) (predicate testamentary-distribution-group) (value true))
+  (asserted-fact (fact-id ?agreement) (case-id ?case-id) (subject ?group) (predicate alternative-share-agreement) (value true))
+  (not (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies) (value false) (rule-id R-I02) (supports ?group-fact ?agreement))))
+
+(defrule R-I02-single-beneficiary-not-a-sharing-case
+  (asserted-fact (fact-id ?group-fact) (case-id ?case-id) (subject ?group) (predicate testamentary-distribution-group) (value true))
+  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary-set-complete) (value true))
+  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary) (value ?beneficiary))
+  (not (asserted-fact (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary) (value ?other&~?beneficiary)))
+  (not (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies) (value false) (rule-id R-I02) (supports ?group-fact ?complete ?beneficiary-fact))))

@@ -16,4 +16,14 @@
     (any-factp ((?result module-result)) (and (eq ?result:subject unknown-one) (eq ?result:value unknown)))
     (any-factp ((?missing missing-requirement)) (and (eq ?missing:subject unknown-one) (eq ?missing:predicate obligation-type))))
   then (printout t "PASS estate-settlement-open-world" crlf) else (printout t "FAIL estate-settlement-open-world" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject group-equal) (eq ?result:predicate equal-testamentary-share-principle-applies) (eq ?result:value true)))
+    (any-factp ((?trace inference-trace)) (and (eq ?trace:subject group-equal) (eq ?trace:rule-id R-I02))))
+  then (printout t "PASS estate-settlement-equal-testamentary-share" crlf) else (printout t "FAIL estate-settlement-equal-testamentary-share" crlf))
+(if (any-factp ((?result module-result)) (and (eq ?result:subject group-specified) (eq ?result:value false)))
+  then (printout t "PASS estate-settlement-specified-share" crlf) else (printout t "FAIL estate-settlement-specified-share" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject group-missing) (eq ?result:value unknown)))
+    (any-factp ((?missing missing-requirement)) (and (eq ?missing:subject group-missing) (eq ?missing:predicate alternative-share-agreement))))
+  then (printout t "PASS estate-settlement-distribution-open-world" crlf) else (printout t "FAIL estate-settlement-distribution-open-world" crlf))
 (exit)

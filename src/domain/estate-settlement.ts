@@ -35,4 +35,11 @@ export const estateSettlementFactSchema = z.discriminatedUnion("predicate", [
   z.object({ id: symbolSchema, predicate: z.literal("obligation-type"), value: z.enum(obligationTypes) }),
   z.object({ id: symbolSchema, predicate: z.literal("obligation-label"), value: z.string().trim().min(1).max(200) }),
   z.object({ id: symbolSchema, predicate: z.literal("obligation-amount"), value: z.number().nonnegative() }),
+  z.object({ id: symbolSchema, predicate: z.literal("testamentary-distribution-group"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("distribution-group-label"), value: z.string().trim().min(1).max(200) }),
+  z.object({ id: symbolSchema, predicate: z.literal("distribution-beneficiary"), value: symbolSchema }),
+  z.object({ id: symbolSchema, predicate: z.literal("distribution-beneficiary-label"), value: z.string().trim().min(1).max(200) }),
+  z.object({ id: symbolSchema, predicate: z.literal("distribution-beneficiary-set-complete"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("testamentary-shares-specified"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("alternative-share-agreement"), value: z.boolean() }),
 ]);
