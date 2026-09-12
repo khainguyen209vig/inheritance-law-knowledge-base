@@ -89,6 +89,51 @@ test("heir-rank adapter derives rank one from directed graph edges", async () =>
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-C01"));
 });
 
+test("heir-rank adapter selects the first qualified rank only after an explicit complete search", async () => {
+  const output = await inferHeirRank({ caseId: "adapter-rank-two", subject: "adapter-rank-two", facts: [
+    { id: "deceased-two", subject: "deceased-two", predicate: "deceased-person", value: true },
+    { id: "search-two", subject: "adapter-rank-two", predicate: "heir-search-complete", value: true },
+    { id: "first-candidate", subject: "first-person", predicate: "heir-rank-candidate", value: true },
+    { id: "first-edge", subject: "first-person", predicate: "spouse-at-opening", value: "deceased-two" },
+    { id: "first-eligibility", subject: "first-person", predicate: "eligibility-candidate", value: true },
+    { id: "first-review", subject: "first-person", predicate: "eligibility-review-complete", value: true },
+    { id: "first-life", subject: "first-person", predicate: "heir-life-status", value: "dead-before-or-same" },
+    { id: "first-refusal", subject: "first-person", predicate: "valid-refusal", value: false },
+    { id: "second-candidate", subject: "second-person", predicate: "heir-rank-candidate", value: true },
+    { id: "second-edge-one", subject: "second-person", predicate: "biological-parent-of", value: "middle-person" },
+    { id: "second-edge-two", subject: "middle-person", predicate: "biological-parent-of", value: "deceased-two" },
+    { id: "second-eligibility", subject: "second-person", predicate: "eligibility-candidate", value: true },
+    { id: "second-review", subject: "second-person", predicate: "eligibility-review-complete", value: true },
+    { id: "second-life", subject: "second-person", predicate: "heir-life-status", value: "alive" },
+    { id: "second-refusal", subject: "second-person", predicate: "valid-refusal", value: false },
+  ] });
+  assert.ok(output.results.some((result) => result.predicate === "active-heir-rank" && result.value === "rank-2"));
+  assert.ok(output.results.some((result) => result.subject === "first-person" && result.predicate === "called-to-inherit" && result.value === "false"));
+  assert.ok(output.results.some((result) => result.subject === "second-person" && result.predicate === "called-to-inherit" && result.value === "true"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-C06"));
+});
+
+test("heir-rank adapter does not skip an unresolved earlier-rank candidate", async () => {
+  const output = await inferHeirRank({ caseId: "adapter-rank-unresolved", subject: "adapter-rank-unresolved", facts: [
+    { id: "unresolved-deceased", subject: "deceased-three", predicate: "deceased-person", value: true },
+    { id: "unresolved-search", subject: "adapter-rank-unresolved", predicate: "heir-search-complete", value: true },
+    { id: "unresolved-first", subject: "unresolved-first", predicate: "heir-rank-candidate", value: true },
+    { id: "unresolved-first-edge", subject: "unresolved-first", predicate: "spouse-at-opening", value: "deceased-three" },
+    { id: "unresolved-first-life", subject: "unresolved-first", predicate: "heir-life-status", value: "alive" },
+    { id: "unresolved-first-refusal", subject: "unresolved-first", predicate: "valid-refusal", value: false },
+    { id: "resolved-second", subject: "resolved-second", predicate: "heir-rank-candidate", value: true },
+    { id: "resolved-second-edge-one", subject: "resolved-second", predicate: "biological-parent-of", value: "middle-three" },
+    { id: "resolved-second-edge-two", subject: "middle-three", predicate: "biological-parent-of", value: "deceased-three" },
+    { id: "resolved-second-eligibility", subject: "resolved-second", predicate: "eligibility-candidate", value: true },
+    { id: "resolved-second-review", subject: "resolved-second", predicate: "eligibility-review-complete", value: true },
+    { id: "resolved-second-life", subject: "resolved-second", predicate: "heir-life-status", value: "alive" },
+    { id: "resolved-second-refusal", subject: "resolved-second", predicate: "valid-refusal", value: false },
+  ] });
+  assert.ok(output.missing.some((item) => item.subject === "unresolved-first" && item.predicate === "article-621-status"));
+  assert.ok(!output.results.some((result) => result.predicate === "active-heir-rank"));
+  assert.ok(!output.results.some((result) => result.subject === "resolved-second" && result.predicate === "called-to-inherit" && result.value === "true"));
+});
+
 test("CLIPS adapter preserves unknown and missing facts", async () => {
   const output = await inferWillValidity({
     caseId: "adapter-unknown",

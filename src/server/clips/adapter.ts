@@ -164,7 +164,8 @@ function createHeirRankDriver(factsPath: string): string {
   const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
   return [
     `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/04-heir-rank.clp")})`, `(load ${clipsPath("rules/93-heir-rank-completeness.clp")})`,
+    `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/04-heir-rank.clp")})`,
+    `(load ${clipsPath("rules/93-heir-rank-completeness.clp")})`,
     `(load ${clipsPath("rules/95-heir-rank-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
     `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
     "(run)", "(emit-machine-output)", "(exit)", "",

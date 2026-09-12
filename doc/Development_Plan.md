@@ -348,15 +348,23 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - presenter eligibility hỗ trợ nhiều người, các căn cứ loại trừ và ngoại lệ khoản 2;
 - R-D01 và R-D05 giữ nhãn `TEAM_REVIEW`; toàn bộ knowledge base vẫn là draft chưa phê duyệt.
 
-### Bước tiếp theo — Hàng thừa kế và graph quan hệ
+### Mốc đã triển khai — Hàng thừa kế và graph quan hệ
 
 - [x] đặc tả người chết, ứng viên, cạnh cha/mẹ đẻ, cha/mẹ nuôi và vợ/chồng tại thời điểm mở thừa kế;
 - [x] triển khai R-C01 thành năm production rules trên graph có hướng;
 - [x] thêm presenter graph, API, persistence, legal dialog Điều 651 và regression tests;
-- [ ] review và triển khai cách suy ra quan hệ hàng 2–3 từ chuỗi cạnh graph;
-- [ ] triển khai R-C05/R-C06 sau khi có completeness cho việc tìm kiếm người thừa kế;
-- dùng kết quả `eligibility` làm dependency, không nhập lại kết luận pháp lý bằng tay;
+- [x] triển khai R-C02/R-C03 để suy ra hàng 2–3 từ chuỗi cạnh graph; các mapping `TEAM_REVIEW` vẫn chờ team kiểm chứng;
+- [x] triển khai R-C04–R-C06 và marker `heir-search-complete` để không dùng closed-world assumption khi chọn hàng hoạt động;
+- [x] nạp rules `eligibility` trong cùng working memory và dùng derived fact `article-621-status`, không nhập lại kết luận pháp lý bằng tay;
+- [x] mở rộng presenter cho tình trạng sống, từ chối, completeness, kết quả xếp hàng/gọi hưởng và dialog căn cứ theo trace;
 - giữ tính năng so sánh inference runs ở backlog hậu MVP.
+
+### Bước tiếp theo — Thừa kế thế vị
+
+- đặc tả `represented-person`, `would-be-entitled` và kết quả `inherits-by-representation` theo từng nhánh gia đình;
+- triển khai R-E01/R-E02 trước để thể hiện suy luận nhiều bước trên graph;
+- review R-E04/R-E05 về quan hệ con riêng–bố dượng/mẹ kế trước khi bật kết luận;
+- tái sử dụng trạng thái sống, Điều 621 và graph hiện có thay vì hỏi lại kết luận tổng hợp.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

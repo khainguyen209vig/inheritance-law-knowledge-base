@@ -389,8 +389,11 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | Phạm vi | Trạng thái |
 |---|---|
 | R-B01–R-B04 | Đã có vertical slice CLIPS theo kiến trúc V2 |
-| R-B05–R-B09 | Đặc tả đề xuất, chưa triển khai |
-| Nhóm A, C–J | Đặc tả đề xuất để team review, chưa triển khai |
+| R-B05–R-B09 | Đã triển khai CLIPS và regression tests; knowledge base vẫn là draft |
+| R-A01–R-A06 | Đã triển khai theo từng phần di sản; các rule có nhãn `TEAM_REVIEW` chưa được phê duyệt |
+| R-C01–R-C06 | Đã triển khai trên graph quan hệ, gồm phân loại ba hàng và chọn hàng hoạt động có completeness; R-C02, R-C03, R-C04, R-C06 chờ team review |
+| R-D01–R-D05 | Đã triển khai theo từng người; R-D01 và R-D05 chờ team review |
+| Nhóm E–J | Đặc tả đề xuất để team review, chưa triển khai |
 | Legal validation | Chưa thực hiện đầy đủ |
 
 ## 10. Câu hỏi dành cho buổi review team

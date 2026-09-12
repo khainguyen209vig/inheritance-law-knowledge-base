@@ -19,7 +19,7 @@ Mô-đun `inheritance-type` triển khai R-A01–R-A06 theo từng `estate-porti
 
 Mô-đun `eligibility` triển khai R-D01–R-D05 theo từng người dựa trên Điều 621. Hành vi, bản án, mục đích và ngoại lệ được biểu diễn bằng facts riêng; `eligibility-review-complete=true` xác nhận nhóm đã rà soát đủ các căn cứ, không phải kết luận pháp lý do hệ thống tự đoán.
 
-Mô-đun `heir-rank` hiện triển khai R-C01. Quan hệ hàng thứ nhất được suy ra từ graph có hướng thay vì một nhãn kết luận do người dùng nhập; kết quả `candidate-heir-rank=rank-1` chưa phải kết luận `called-to-inherit`.
+Mô-đun `heir-rank` triển khai R-C01–R-C06. Ba hàng được suy ra từ các đường đi trên graph có hướng thay vì nhãn hàng do người dùng nhập. `candidate-heir-rank` được giữ riêng với `called-to-inherit`; việc chọn `active-heir-rank` chỉ diễn ra khi có `heir-search-complete=true`, đồng thời dùng kết quả Điều 621, tình trạng sống và việc từ chối. R-C02, R-C03, R-C04 và R-C06 vẫn là `TEAM_REVIEW`.
 
 Nếu các observations đều có mặt nhưng chưa khớp đường suy luận dương hoặc exclusion rule đã được mô hình hóa, completeness layer tạo `unresolved-rule-path` và trả `UNKNOWN`. Cách xử lý này giữ open-world semantics cho đến khi team duyệt rule âm tương ứng.
 
@@ -33,7 +33,7 @@ Nếu các observations đều có mặt nhưng chưa khớp đường suy luậ
 | Domain knowledge | `rules/01-will-validity.clp` đến `rules/04-heir-rank.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
 | Completeness/conflict | `rules/90-*` đến `rules/93-*` | Phát hiện facts thiếu và kết luận mâu thuẫn |
 | Explanation | `rules/98-explanation.clp` | Chuyển provenance của derived facts thành trace đồng nhất |
-| Result projection | `rules/96-*`, `rules/97-*`, `rules/99-*` | Chọn kết quả cần trả cho mô-đun mà UI yêu cầu |
+| Result projection | `rules/95-*` đến `rules/99-*` | Chọn kết quả cần trả cho mô-đun mà UI yêu cầu |
 | Machine output | `machine-output.clp` | Xuất result, missing facts và trace bằng line protocol ổn định cho TypeScript |
 
 `analysis-request` không được sử dụng trong domain rules. Vì vậy tri thức vẫn được suy ra khi không có yêu cầu hiển thị từ UI; yêu cầu chỉ điều khiển projection của kết quả.

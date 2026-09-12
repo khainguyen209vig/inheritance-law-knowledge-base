@@ -7,6 +7,8 @@ const relationFact = (predicate: string) => z.object({ id: symbolSchema, predica
 export const heirRankFactSchema = z.discriminatedUnion("predicate", [
   booleanFact("deceased-person"),
   booleanFact("heir-rank-candidate"),
+  booleanFact("heir-search-complete"),
+  z.object({ id: symbolSchema, predicate: z.literal("heir-life-status"), value: z.enum(["alive", "dead-before-or-same"]) }),
   relationFact("biological-parent-of"),
   relationFact("adoptive-parent-of"),
   relationFact("spouse-at-opening"),

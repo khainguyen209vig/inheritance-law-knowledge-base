@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v4",
+  "knowledgeBaseVersion": "inheritance-kb-v5",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -170,6 +170,74 @@
       "relevantSections": ["clause-1-intro", "clause-1-a"],
       "clipsMetadata": true,
       "implementations": ["R-C01-spouse", "R-C01-biological-parent", "R-C01-adoptive-parent", "R-C01-biological-child", "R-C01-adoptive-child"]
+    },
+    "R-C02": {
+      "ruleId": "R-C02", "module": "heir-rank", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Ứng viên thuộc hàng thừa kế thứ hai",
+      "reasoning": "Đường quan hệ huyết thống trong graph cho thấy người đang xét là ông/bà, anh/chị/em ruột hoặc cháu ruột mà người chết là ông/bà.",
+      "conclusion": "Ứng viên thuộc hàng thừa kế thứ hai",
+      "citation": "Điều 651 khoản 1 điểm b Bộ luật Dân sự 2015", "provisionId": "article-651", "relevantSections": ["clause-1-intro", "clause-1-b"], "clipsMetadata": true,
+      "implementations": ["R-C02-grandparent", "R-C02-sibling", "R-C02-grandchild"]
+    },
+    "R-C03": {
+      "ruleId": "R-C03", "module": "heir-rank", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Ứng viên thuộc hàng thừa kế thứ ba",
+      "reasoning": "Đường quan hệ huyết thống trong graph cho thấy người đang xét là cụ, bác/chú/cậu/cô/dì, cháu ruột theo nhánh anh chị em hoặc chắt ruột của người chết.",
+      "conclusion": "Ứng viên thuộc hàng thừa kế thứ ba",
+      "citation": "Điều 651 khoản 1 điểm c Bộ luật Dân sự 2015", "provisionId": "article-651", "relevantSections": ["clause-1-intro", "clause-1-c"], "clipsMetadata": true,
+      "implementations": ["R-C03-great-grandparent", "R-C03-aunt-or-uncle", "R-C03-niece-or-nephew", "R-C03-great-grandchild"]
+    },
+    "R-C04": {
+      "ruleId": "R-C04", "module": "heir-rank", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Nguyên tắc hưởng phần di sản bằng nhau",
+      "reasoning": "Khi có từ hai người trở lên cùng được gọi hưởng ở hàng đang hoạt động, hệ thống ghi nhận nguyên tắc cùng hàng hưởng phần bằng nhau; mô-đun này chưa tính giá trị phần chia.",
+      "conclusion": "Áp dụng nguyên tắc cùng hàng hưởng phần bằng nhau",
+      "citation": "Điều 651 khoản 2 Bộ luật Dân sự 2015", "provisionId": "article-651", "relevantSections": ["clause-2"], "clipsMetadata": true,
+      "implementations": ["R-C04-equal-share-principle"]
+    },
+    "R-C05": {
+      "ruleId": "R-C05", "module": "heir-rank", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Hàng sau chưa được gọi hưởng",
+      "reasoning": "Khi đã xác định có người đủ điều kiện ở một hàng trước, ứng viên thuộc hàng sau chưa được gọi hưởng theo pháp luật.",
+      "conclusion": "Ứng viên hàng sau không được gọi hưởng",
+      "citation": "Điều 651 khoản 3 Bộ luật Dân sự 2015", "provisionId": "article-651", "relevantSections": ["clause-3"], "clipsMetadata": true,
+      "implementations": ["R-C05-prior-rank-active"]
+    },
+    "R-C06": {
+      "ruleId": "R-C06", "module": "heir-rank", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Xác định hàng được gọi hưởng",
+      "reasoning": "Chỉ sau khi danh sách ứng viên được xác nhận đầy đủ, hệ thống chọn hàng thấp nhất còn người sống, không từ chối hợp lệ và không bị loại khỏi thừa kế theo pháp luật.",
+      "conclusion": "Người đủ điều kiện trong hàng đang hoạt động được gọi hưởng",
+      "citation": "Điều 651 khoản 3 Bộ luật Dân sự 2015; kết nối Điều 621", "provisionId": "article-651", "relevantSections": ["clause-3"], "clipsMetadata": true,
+      "implementations": ["R-C06-active-rank-one", "R-C06-active-rank-two", "R-C06-active-rank-three", "R-C06-call-active-rank"]
+    },
+    "SYSTEM-RANK-CONFLICT": {
+      "ruleId": "SYSTEM-RANK-CONFLICT", "module": "heir-rank", "kind": "system", "status": "draft",
+      "title": "Phát hiện xung đột hàng thừa kế", "reasoning": "Cùng một người được graph quan hệ dẫn xuất vào nhiều hàng khác nhau.",
+      "conclusion": "Cần kiểm tra lại graph quan hệ", "citation": "Quy tắc kiểm soát nhất quán của hệ thống", "relevantSections": [], "clipsMetadata": true,
+      "implementations": ["SYSTEM-RANK-CONFLICT"]
+    },
+    "STATUTORY-CANDIDATE-QUALIFIED": {
+      "ruleId": "STATUTORY-CANDIDATE-QUALIFIED", "module": "heir-rank", "kind": "internal", "status": "draft",
+      "title": "Ứng viên đủ điều kiện xét theo hàng", "reasoning": "Ứng viên đã có hàng, còn sống, không từ chối hợp lệ và không bị loại theo Điều 621.",
+      "conclusion": "Đưa ứng viên vào tập xét hàng đang hoạt động", "citation": "Quy tắc kết nối nội bộ giữa Điều 621 và Điều 651", "provisionId": "article-651", "relevantSections": ["clause-3"], "clipsMetadata": true,
+      "implementations": ["STATUTORY-CANDIDATE-QUALIFIED"]
+    },
+    "STATUTORY-CANDIDATE-INACTIVE": {
+      "ruleId": "STATUTORY-CANDIDATE-INACTIVE", "module": "heir-rank", "kind": "internal", "status": "draft",
+      "title": "Ứng viên không hoạt động trong thừa kế theo pháp luật",
+      "reasoning": "Ứng viên đã chết trước hoặc cùng thời điểm, từ chối hợp lệ, hoặc bị Điều 621 loại khỏi thừa kế theo pháp luật. Ngoại lệ được hưởng theo di chúc không làm người đó đủ điều kiện hưởng theo pháp luật.",
+      "conclusion": "Ứng viên không được gọi hưởng theo pháp luật",
+      "citation": "Quy tắc kết nối nội bộ; liên quan Điều 620, Điều 621 và Điều 651", "provisionId": "article-651", "relevantSections": ["clause-3"], "clipsMetadata": true,
+      "implementations": ["STATUTORY-CANDIDATE-INACTIVE-ELIGIBILITY", "STATUTORY-CANDIDATE-INACTIVE-LIFE", "STATUTORY-CANDIDATE-INACTIVE-REFUSAL"]
+    },
+    "STATUTORY-CANDIDATE-UNRESOLVED": {
+      "ruleId": "STATUTORY-CANDIDATE-UNRESOLVED", "module": "heir-rank", "kind": "internal", "status": "draft",
+      "title": "Ứng viên chưa đủ dữ kiện điều kiện hưởng",
+      "reasoning": "Ứng viên đã được xếp hàng nhưng chưa thể chứng minh là đủ điều kiện hoặc bị loại; vì vậy không được xem người ở hàng này là vắng mặt.",
+      "conclusion": "Chặn việc chuyển sang hàng sau cho đến khi bổ sung dữ kiện",
+      "citation": "Quy tắc completeness nội bộ; phục vụ áp dụng Điều 651 khoản 3", "provisionId": "article-651", "relevantSections": ["clause-3"], "clipsMetadata": true,
+      "implementations": ["STATUTORY-CANDIDATE-UNRESOLVED"]
     },
     "R-D01": {
       "ruleId": "R-D01", "module": "eligibility", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",

@@ -60,7 +60,7 @@ test("stored heir-rank inference persists graph classification", async () => {
     ] });
     const run = await runStoredHeirRank(repository, "case-rank");
     assert.equal(run.module, "heir-rank");
-    assert.equal(run.results[0]?.value, "rank-1");
+    assert.ok(run.results.some((result) => result.predicate === "candidate-heir-rank" && result.value === "rank-1"));
   } finally { database.close(); }
 });
 
