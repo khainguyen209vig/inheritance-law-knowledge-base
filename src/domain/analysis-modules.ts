@@ -129,23 +129,28 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
     id: "compulsory-share",
     title: "Suất thừa kế bắt buộc",
     shortDescription: "Đánh giá người thừa kế không phụ thuộc nội dung di chúc và mức suất liên quan.",
-    status: "planned",
+    status: "implemented",
     interactionMode: "people-table",
-    primaryResultPredicate: "entitled-to-compulsory-share",
+    primaryResultPredicate: "compulsory-heir-candidate",
     dependencies: [
       {
         moduleId: "will-validity",
         mode: "conditional",
-        status: "draft",
+        status: "implemented",
         reason: "Có thể cần trạng thái pháp lý của di chúc khi đánh giá phần định đoạt.",
       },
       {
         moduleId: "eligibility",
         mode: "required",
-        status: "draft",
+        status: "implemented",
         reason: "Người được xét trước hết phải có quyền hưởng di sản.",
       },
     ],
+    runtime: {
+      inferencePath: "/api/cases/:caseId/inference/compulsory-share",
+      subjectPrefix: "person",
+      defaultCaseTitle: "Hồ sơ xác định người thuộc diện suất bắt buộc",
+    },
   },
   "refusal-and-unclaimed": {
     id: "refusal-and-unclaimed",

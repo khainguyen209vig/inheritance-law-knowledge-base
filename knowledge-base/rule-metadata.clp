@@ -184,6 +184,48 @@
     (description "Cùng một cạnh quan hệ con riêng–bố dượng hoặc mẹ kế vừa được đánh giá có, vừa được đánh giá không có chăm sóc như cha con, mẹ con.")
     (status draft))
   (rule-metadata
+    (rule-id R-F01a)
+    (module compulsory-share)
+    (legal-source "Điều 644 khoản 1 điểm a Bộ luật Dân sự 2015")
+    (description "Graph xác định người đang xét là con đẻ hoặc con nuôi của người để lại di sản và dữ kiện tuổi xác định người đó chưa thành niên.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-F01b)
+    (module compulsory-share)
+    (legal-source "Điều 644 khoản 1 điểm a Bộ luật Dân sự 2015")
+    (description "Quan hệ cha mẹ đẻ, cha mẹ nuôi hoặc vợ chồng tại thời điểm mở thừa kế đặt người đang xét vào nhóm đối tượng tại Điều 644 khoản 1 điểm a.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-F02)
+    (module compulsory-share)
+    (legal-source "Điều 644 khoản 1 điểm b Bộ luật Dân sự 2015")
+    (description "Graph xác định quan hệ con, dữ kiện tuổi là thành niên và đánh giá khả năng lao động là không có khả năng lao động.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-F03)
+    (module compulsory-share)
+    (legal-source "Điều 644 khoản 2; Điều 620 Bộ luật Dân sự 2015")
+    (description "Người thuộc nhóm được bảo vệ nhưng đã từ chối nhận di sản hợp lệ thì khoản 1 Điều 644 không áp dụng.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-F04)
+    (module compulsory-share)
+    (legal-source "Điều 644 khoản 2; Điều 621 khoản 1 Bộ luật Dân sự 2015")
+    (description "Người thuộc nhóm được bảo vệ nhưng có kết luận bị loại theo khoản 1 Điều 621 thì khoản 1 Điều 644 không áp dụng.")
+    (status draft))
+  (rule-metadata
+    (rule-id COMPULSORY-HEIR-ACTIVE)
+    (module compulsory-share)
+    (legal-source "Quy tắc kết nối nội bộ Điều 620, Điều 621 và Điều 644")
+    (description "Người thuộc nhóm đối tượng Điều 644, không từ chối hợp lệ và không bị Điều 621 loại trừ được giữ trong tập chờ đối chiếu phần được chỉ định với ngưỡng hai phần ba.")
+    (status draft))
+  (rule-metadata
+    (rule-id COMPULSORY-CANDIDATE-NOT-IN-PROTECTED-CLASS)
+    (module compulsory-share)
+    (legal-source "Quy tắc completeness phục vụ Điều 644")
+    (description "Sau khi graph gia đình đã được xác nhận đầy đủ và các thuộc tính cần thiết đã được đánh giá, người đang xét không khớp nhóm đối tượng tại khoản 1 Điều 644.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

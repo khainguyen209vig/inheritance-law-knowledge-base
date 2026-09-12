@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v8",
+  "knowledgeBaseVersion": "inheritance-kb-v9",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -304,6 +304,48 @@
       "title": "Phát hiện đánh giá chăm sóc mâu thuẫn", "reasoning": "Cùng một cạnh quan hệ con riêng–bố dượng hoặc mẹ kế vừa được đánh giá có, vừa được đánh giá không có chăm sóc như cha con, mẹ con.",
       "conclusion": "Cần sửa dữ kiện đánh giá quan hệ", "citation": "Quy tắc kiểm soát nhất quán của hệ thống", "relevantSections": [], "clipsMetadata": true,
       "implementations": ["SYSTEM-STEP-CARE-CONFLICT"]
+    },
+    "R-F01a": {
+      "ruleId": "R-F01a", "module": "compulsory-share", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Con chưa thành niên thuộc nhóm được bảo vệ", "reasoning": "Graph xác định người đang xét là con đẻ hoặc con nuôi của người để lại di sản và dữ kiện tuổi xác định người đó chưa thành niên.",
+      "conclusion": "Thuộc nhóm ứng viên thừa kế không phụ thuộc nội dung di chúc", "citation": "Điều 644 khoản 1 điểm a Bộ luật Dân sự 2015", "provisionId": "article-644", "relevantSections": ["clause-1-intro", "clause-1-a"], "clipsMetadata": true,
+      "implementations": ["R-F01a-minor-biological-child", "R-F01a-minor-adopted-child"]
+    },
+    "R-F01b": {
+      "ruleId": "R-F01b", "module": "compulsory-share", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Cha, mẹ, vợ hoặc chồng thuộc nhóm được bảo vệ", "reasoning": "Quan hệ cha mẹ đẻ, cha mẹ nuôi hoặc vợ chồng tại thời điểm mở thừa kế đặt người đang xét vào nhóm đối tượng tại Điều 644 khoản 1 điểm a.",
+      "conclusion": "Thuộc nhóm ứng viên thừa kế không phụ thuộc nội dung di chúc", "citation": "Điều 644 khoản 1 điểm a Bộ luật Dân sự 2015", "provisionId": "article-644", "relevantSections": ["clause-1-intro", "clause-1-a"], "clipsMetadata": true,
+      "implementations": ["R-F01b-parent", "R-F01b-spouse-forward", "R-F01b-spouse-reverse"]
+    },
+    "R-F02": {
+      "ruleId": "R-F02", "module": "compulsory-share", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Con thành niên không có khả năng lao động thuộc nhóm được bảo vệ", "reasoning": "Graph xác định quan hệ con, dữ kiện tuổi là thành niên và đánh giá khả năng lao động là không có khả năng lao động.",
+      "conclusion": "Thuộc nhóm ứng viên thừa kế không phụ thuộc nội dung di chúc", "citation": "Điều 644 khoản 1 điểm b Bộ luật Dân sự 2015", "provisionId": "article-644", "relevantSections": ["clause-1-intro", "clause-1-b"], "clipsMetadata": true,
+      "implementations": ["R-F02-adult-biological-child-without-work-capacity", "R-F02-adult-adopted-child-without-work-capacity"]
+    },
+    "R-F03": {
+      "ruleId": "R-F03", "module": "compulsory-share", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Loại khỏi suất bắt buộc do từ chối hợp lệ", "reasoning": "Người thuộc nhóm được bảo vệ nhưng đã từ chối nhận di sản hợp lệ thì khoản 1 Điều 644 không áp dụng.",
+      "conclusion": "Không được hưởng theo cơ chế suất bắt buộc", "citation": "Điều 644 khoản 2; Điều 620 Bộ luật Dân sự 2015", "provisionId": "article-644", "relevantSections": ["clause-2"], "clipsMetadata": true,
+      "implementations": ["R-F03-valid-refusal-excludes-compulsory-share"]
+    },
+    "R-F04": {
+      "ruleId": "R-F04", "module": "compulsory-share", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Loại khỏi suất bắt buộc do không có quyền hưởng", "reasoning": "Người thuộc nhóm được bảo vệ nhưng có kết luận bị loại theo khoản 1 Điều 621 thì khoản 1 Điều 644 không áp dụng.",
+      "conclusion": "Không được hưởng theo cơ chế suất bắt buộc", "citation": "Điều 644 khoản 2; Điều 621 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-644", "relevantSections": ["clause-2"], "clipsMetadata": true,
+      "implementations": ["R-F04-disqualification-excludes-compulsory-share"]
+    },
+    "COMPULSORY-HEIR-ACTIVE": {
+      "ruleId": "COMPULSORY-HEIR-ACTIVE", "module": "compulsory-share", "kind": "internal", "status": "draft",
+      "title": "Ứng viên suất bắt buộc còn hoạt động", "reasoning": "Người thuộc nhóm đối tượng Điều 644, không từ chối hợp lệ và không bị Điều 621 loại trừ được giữ trong tập chờ đối chiếu phần được chỉ định với ngưỡng hai phần ba.",
+      "conclusion": "Ứng viên đủ điều kiện cá nhân để sang bước tính ngưỡng", "citation": "Quy tắc kết nối nội bộ Điều 620, Điều 621 và Điều 644", "provisionId": "article-644", "relevantSections": ["clause-1-intro", "clause-2"], "clipsMetadata": true,
+      "implementations": ["COMPULSORY-HEIR-ACTIVE"]
+    },
+    "COMPULSORY-CANDIDATE-NOT-IN-PROTECTED-CLASS": {
+      "ruleId": "COMPULSORY-CANDIDATE-NOT-IN-PROTECTED-CLASS", "module": "compulsory-share", "kind": "system", "status": "draft",
+      "title": "Không thuộc nhóm đối tượng được bảo vệ", "reasoning": "Sau khi graph gia đình đã được xác nhận đầy đủ và các thuộc tính cần thiết đã được đánh giá, người đang xét không khớp nhóm đối tượng tại khoản 1 Điều 644.",
+      "conclusion": "Không phải ứng viên suất bắt buộc", "citation": "Quy tắc completeness phục vụ Điều 644", "provisionId": "article-644", "relevantSections": ["clause-1-a", "clause-1-b"], "clipsMetadata": true,
+      "implementations": ["COMPULSORY-CANDIDATE-NOT-IN-PROTECTED-CLASS"]
     },
     "REPRESENTATION-CANDIDATE-INACTIVE": {
       "ruleId": "REPRESENTATION-CANDIDATE-INACTIVE", "module": "representation", "kind": "internal", "status": "draft",

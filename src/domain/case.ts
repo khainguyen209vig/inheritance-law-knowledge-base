@@ -3,9 +3,10 @@ import { inheritanceTypeFactSchema } from "./inheritance-type";
 import { eligibilityFactSchema } from "./eligibility";
 import { heirRankFactSchema } from "./heir-rank";
 import { representationFactSchema } from "./representation";
+import { compulsoryShareFactSchema } from "./compulsory-share";
 import { willFactSchema } from "./will-validity";
 
-export const caseFactSchema = z.union([willFactSchema, inheritanceTypeFactSchema, eligibilityFactSchema, heirRankFactSchema, representationFactSchema]);
+export const caseFactSchema = z.union([willFactSchema, inheritanceTypeFactSchema, eligibilityFactSchema, heirRankFactSchema, representationFactSchema, compulsoryShareFactSchema]);
 
 export const caseIdSchema = z
   .string()
@@ -47,6 +48,7 @@ export const runInheritanceTypeSchema = z.object({}).strict();
 export const runEligibilitySchema = z.object({}).strict();
 export const runHeirRankSchema = z.object({}).strict();
 export const runRepresentationSchema = z.object({}).strict();
+export const runCompulsoryShareSchema = z.object({}).strict();
 
 export type CreateCaseInput = z.infer<typeof createCaseSchema>;
 export type ReplaceCaseFactsInput = z.infer<typeof replaceCaseFactsSchema>;

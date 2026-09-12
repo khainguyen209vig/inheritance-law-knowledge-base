@@ -403,10 +403,12 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 
 ### Mốc tiếp theo — Người thừa kế không phụ thuộc nội dung di chúc
 
-- chuẩn hóa R-F01a/R-F01b thành các loại ứng viên bắt buộc độc lập, không nhập kết luận “được hưởng 2/3” trực tiếp;
-- mô hình hóa suất thừa kế theo pháp luật giả định và giá trị phần được chỉ định trước khi triển khai phép so sánh 2/3;
-- giữ riêng bước xác định đối tượng, bước tính ngưỡng và bước bù thiếu để presenter có thể giải thích từng kết luận;
-- review R-F02/R-F03 về ngoại lệ và phạm vi phần di sản trước khi bật kết quả.
+- [x] chuẩn hóa và triển khai R-F01a/R-F01b thành các phép phân loại ứng viên độc lập từ graph, không nhập kết luận “được hưởng 2/3” trực tiếp;
+- [x] triển khai R-F02 với `age-group=adult` và `work-capacity-status=incapable`; giữ `TEAM_REVIEW` vì tiêu chí không có khả năng lao động còn cần team kiểm chứng nguồn chứng cứ;
+- [x] triển khai R-F03/R-F04 bằng kết quả từ chối và Điều 621 có sẵn; tách `compulsory-heir-candidate` khỏi trạng thái còn hoạt động;
+- [x] thêm completeness cho graph, tuổi, khả năng lao động, từ chối và Điều 621; presenter chỉ nói “chờ đối chiếu ngưỡng 2/3” khi chưa có phép tính;
+- [ ] mô hình hóa suất thừa kế theo pháp luật giả định, phần được chỉ định trong di chúc và đơn vị tiền/tỷ lệ trước khi triển khai R-F01c;
+- [ ] giữ riêng bước tính ngưỡng và bước bù thiếu để presenter có thể giải thích từng kết luận số học.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

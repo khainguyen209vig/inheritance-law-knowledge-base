@@ -35,6 +35,10 @@ export async function inferRepresentation(input: { caseId: string; subject: stri
   return inferWithClips(serializeCaseFacts({ ...input, module: "representation" }), createRepresentationDriver);
 }
 
+export async function inferCompulsoryShare(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
+  return inferWithClips(serializeCaseFacts({ ...input, module: "compulsory-share" }), createCompulsoryShareDriver);
+}
+
 async function inferWithClips(
   serializedFacts: string,
   createDriverFile: (factsPath: string) => string,
@@ -182,6 +186,17 @@ function createRepresentationDriver(factsPath: string): string {
     `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
     `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/05-representation.clp")})`,
     `(load ${clipsPath("rules/94-representation-completeness.clp")})`, `(load ${clipsPath("rules/95-representation-projection.clp")})`,
+    `(load ${clipsPath("rules/98-explanation.clp")})`, `(load ${clipsPath("machine-output.clp")})`,
+    "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`, "(run)", "(emit-machine-output)", "(exit)", "",
+  ].join("\n");
+}
+
+function createCompulsoryShareDriver(factsPath: string): string {
+  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
+  return [
+    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
+    `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/06-compulsory-share.clp")})`,
+    `(load ${clipsPath("rules/96-compulsory-share-completeness.clp")})`, `(load ${clipsPath("rules/97-compulsory-share-projection.clp")})`,
     `(load ${clipsPath("rules/98-explanation.clp")})`, `(load ${clipsPath("machine-output.clp")})`,
     "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`, "(run)", "(emit-machine-output)", "(exit)", "",
   ].join("\n");

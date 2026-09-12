@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { runStoredEligibility, runStoredHeirRank, runStoredInheritanceType, runStoredRepresentation, runStoredWillValidity } from "../src/server/cases/service";
+import { runStoredCompulsoryShare, runStoredEligibility, runStoredHeirRank, runStoredInheritanceType, runStoredRepresentation, runStoredWillValidity } from "../src/server/cases/service";
 import { CaseRepository } from "../src/server/db/case-repository";
 import { openDatabase } from "../src/server/db/database";
 
@@ -85,6 +85,26 @@ test("stored representation inference persists its candidate subject", async () 
     const run = await runStoredRepresentation(repository, "case-representation");
     assert.equal(run.module, "representation");
     assert.ok(run.results.some((result) => result.subject === "candidate-one" && result.value === "true"));
+  } finally { database.close(); }
+});
+
+test("stored compulsory-share inference persists protected-class results", async () => {
+  const database = openDatabase(":memory:");
+  const repository = new CaseRepository(database);
+  try {
+    repository.createCase({ id: "case-compulsory", title: "Suất bắt buộc" });
+    repository.replaceFacts("case-compulsory", { subject: "case-compulsory", facts: [
+      { id: "deceased", subject: "deceased-one", predicate: "deceased-person", value: true },
+      { id: "complete", subject: "case-compulsory", predicate: "heir-search-complete", value: true },
+      { id: "scope", subject: "parent-one", predicate: "compulsory-share-assessment-subject", value: true },
+      { id: "edge", subject: "parent-one", predicate: "biological-parent-of", value: "deceased-one" },
+      { id: "refusal", subject: "parent-one", predicate: "valid-refusal", value: false },
+      { id: "eligibility", subject: "parent-one", predicate: "eligibility-candidate", value: true },
+      { id: "review", subject: "parent-one", predicate: "eligibility-review-complete", value: true },
+    ] });
+    const run = await runStoredCompulsoryShare(repository, "case-compulsory");
+    assert.equal(run.module, "compulsory-share");
+    assert.ok(run.results.some((result) => result.subject === "parent-one" && result.predicate === "compulsory-heir-candidate" && result.value === "true"));
   } finally { database.close(); }
 });
 

@@ -125,6 +125,35 @@
       "sourceDocument": "doc/Luat_ThuaKe.doc",
       "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
     },
+    "article-644": {
+      "id": "article-644",
+      "number": "Điều 644",
+      "title": "Người thừa kế không phụ thuộc vào nội dung của di chúc",
+      "sections": [
+        {
+          "id": "clause-1-intro",
+          "label": "Khoản 1",
+          "text": "Những người sau đây vẫn được hưởng phần di sản bằng hai phần ba suất của một người thừa kế theo pháp luật nếu di sản được chia theo pháp luật, trong trường hợp họ không được người lập di chúc cho hưởng di sản hoặc chỉ cho hưởng phần di sản ít hơn hai phần ba suất đó:"
+        },
+        {
+          "id": "clause-1-a",
+          "label": "Khoản 1 điểm a",
+          "text": "Con chưa thành niên, cha, mẹ, vợ, chồng;"
+        },
+        {
+          "id": "clause-1-b",
+          "label": "Khoản 1 điểm b",
+          "text": "Con thành niên mà không có khả năng lao động."
+        },
+        {
+          "id": "clause-2",
+          "label": "Khoản 2",
+          "text": "Quy định tại khoản 1 Điều này không áp dụng đối với người từ chối nhận di sản theo quy định tại Điều 620 hoặc họ là những người không có quyền hưởng di sản theo quy định tại khoản 1 Điều 621 của Bộ luật này."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
     "article-649": {
       "id": "article-649",
       "number": "Điều 649",

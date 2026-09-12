@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inferEligibility, inferHeirRank, inferInheritanceType, inferRepresentation, inferWillValidity } from "../src/server/clips/adapter";
+import { inferCompulsoryShare, inferEligibility, inferHeirRank, inferInheritanceType, inferRepresentation, inferWillValidity } from "../src/server/clips/adapter";
 
 test("CLIPS adapter returns a valid-will result and trace", async () => {
   const output = await inferWillValidity({
@@ -189,6 +189,23 @@ test("representation adapter blocks contradictory step-family care assessments",
   assert.ok(output.results.some((result) => result.subject === "step-child" && result.predicate === "step-care-assessment" && result.value === "conflict"));
   assert.ok(!output.results.some((result) => result.predicate === "step-relationship-inheritance-basis" || result.predicate === "eligible-by-step-relationship"));
   assert.ok(output.traces.some((trace) => trace.ruleId === "SYSTEM-STEP-CARE-CONFLICT"));
+});
+
+test("compulsory-share adapter separates protected-class classification from active status", async () => {
+  const output = await inferCompulsoryShare({ caseId: "adapter-compulsory", subject: "adapter-compulsory", facts: [
+    { id: "deceased", subject: "deceased-one", predicate: "deceased-person", value: true },
+    { id: "complete", subject: "adapter-compulsory", predicate: "heir-search-complete", value: true },
+    { id: "scope", subject: "minor-child", predicate: "compulsory-share-assessment-subject", value: true },
+    { id: "edge", subject: "deceased-one", predicate: "biological-parent-of", value: "minor-child" },
+    { id: "age", subject: "minor-child", predicate: "age-group", value: "minor" },
+    { id: "refusal", subject: "minor-child", predicate: "valid-refusal", value: false },
+    { id: "eligibility", subject: "minor-child", predicate: "eligibility-candidate", value: true },
+    { id: "review", subject: "minor-child", predicate: "eligibility-review-complete", value: true },
+  ] });
+  assert.ok(output.results.some((result) => result.predicate === "compulsory-heir-candidate" && result.value === "true"));
+  assert.ok(output.results.some((result) => result.predicate === "compulsory-heir" && result.value === "true"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-F01a"));
+  assert.ok(!output.results.some((result) => result.predicate === "minimum-compulsory-share"));
 });
 
 test("CLIPS adapter preserves unknown and missing facts", async () => {

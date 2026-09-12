@@ -11,7 +11,7 @@ const outputPath = resolve(
   projectRoot,
   process.argv[3] ?? "knowledge-base/legal-sources/civil-code-2015.inheritance.json",
 );
-const selectedArticleNumbers = new Set([621, 627, 629, 630, 649, 650, 651, 652, 653, 654]);
+const selectedArticleNumbers = new Set([621, 627, 629, 630, 644, 649, 650, 651, 652, 653, 654]);
 const officialUrl = "https://vanban.chinhphu.vn/?pageid=27160&docid=183188";
 
 interface ExtractedSection {
