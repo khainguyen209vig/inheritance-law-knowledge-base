@@ -31,3 +31,24 @@
   (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir)))
   =>
   (assert (module-result (case-id ?case-id) (subject ?person) (module compulsory-share) (predicate compulsory-heir) (value unknown) (derivations SYSTEM-INCOMPLETE))))
+
+(defrule project-minimum-compulsory-share
+  (declare (salience 50))
+  (analysis-request (case-id ?case-id) (module compulsory-share))
+  (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-compulsory-share) (value ?amount) (rule-id ?rule))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?calculation-id) (module compulsory-share) (predicate minimum-compulsory-share) (value ?amount) (derivations ?rule))))
+
+(defrule project-minimum-share-rule-applies
+  (declare (salience 50))
+  (analysis-request (case-id ?case-id) (module compulsory-share))
+  (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-share-rule-applies) (value ?value&true|false) (rule-id ?rule))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?calculation-id) (module compulsory-share) (predicate minimum-share-rule-applies) (value ?value) (derivations ?rule))))
+
+(defrule project-compulsory-share-shortfall
+  (declare (salience 50))
+  (analysis-request (case-id ?case-id) (module compulsory-share))
+  (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-shortfall) (value ?amount) (rule-id ?rule))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?calculation-id) (module compulsory-share) (predicate compulsory-share-shortfall) (value ?amount) (derivations ?rule))))

@@ -30,4 +30,14 @@
     (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-F03))
     (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-F04)))
   then (printout t "PASS compulsory-traces" crlf) else (printout t "FAIL compulsory-traces" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject calc-minor-one) (eq ?result:predicate minimum-compulsory-share) (= ?result:value 200.0)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject calc-minor-one) (eq ?result:predicate minimum-share-rule-applies) (eq ?result:value true)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject calc-minor-one) (eq ?result:predicate compulsory-share-shortfall) (= ?result:value 100.0))))
+  then (printout t "PASS compulsory-shortfall-calculation" crlf) else (printout t "FAIL compulsory-shortfall-calculation" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject calc-spouse-one) (eq ?result:predicate minimum-compulsory-share) (= ?result:value 200.0)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject calc-spouse-one) (eq ?result:predicate minimum-share-rule-applies) (eq ?result:value false)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject calc-spouse-one) (eq ?result:predicate compulsory-share-shortfall) (= ?result:value 0))))
+  then (printout t "PASS compulsory-threshold-met" crlf) else (printout t "FAIL compulsory-threshold-met" crlf))
 (exit)

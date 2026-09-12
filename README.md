@@ -364,7 +364,8 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 11. [ ] Graph editor vòng 1 đã có node/cạnh, fact preview và diagnostics; UI/UX vẫn phải tiếp tục cải thiện và usability test trước bản trình bày cuối.
 12. [x] Triển khai R-E03a/R-E03b cho căn cứ quan hệ con nuôi, không gộp với quan hệ cha mẹ đẻ và không kết luận quyền hưởng cuối cùng.
 13. [x] Triển khai draft R-E04/R-E05 bằng đánh giá chăm sóc gắn với từng cạnh con riêng–bố dượng/mẹ kế; thiếu đánh giá không bị diễn giải thành phủ định.
-14. [x] Triển khai lát cắt phân loại/loại trừ nhóm F với R-F01a, R-F01b, R-F02, R-F03 và R-F04; chưa tính giá trị hai phần ba suất.
-15. [ ] Thiết kế dữ kiện suất thừa kế theo pháp luật giả định và phần di chúc đã chỉ định để triển khai riêng R-F01c.
+14. [x] Triển khai lát cắt phân loại/loại trừ nhóm F với R-F01a, R-F01b, R-F02, R-F03 và R-F04.
+15. [x] Triển khai R-F01c theo từng cặp người–phần di sản: tính ngưỡng hai phần ba, xác định có thiếu hay không và số phần thiếu; suất pháp luật giả định vẫn là fact đầu vào, chưa tự chia end-to-end.
+16. [ ] Triển khai nhóm G về trạng thái vợ/chồng tại thời điểm mở thừa kế, đồng thời giữ graph editor trong danh sách UX debt trước bản trình bày.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

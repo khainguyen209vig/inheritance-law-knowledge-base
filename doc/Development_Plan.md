@@ -406,9 +406,11 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] chuẩn hóa và triển khai R-F01a/R-F01b thành các phép phân loại ứng viên độc lập từ graph, không nhập kết luận “được hưởng 2/3” trực tiếp;
 - [x] triển khai R-F02 với `age-group=adult` và `work-capacity-status=incapable`; giữ `TEAM_REVIEW` vì tiêu chí không có khả năng lao động còn cần team kiểm chứng nguồn chứng cứ;
 - [x] triển khai R-F03/R-F04 bằng kết quả từ chối và Điều 621 có sẵn; tách `compulsory-heir-candidate` khỏi trạng thái còn hoạt động;
-- [x] thêm completeness cho graph, tuổi, khả năng lao động, từ chối và Điều 621; presenter chỉ nói “chờ đối chiếu ngưỡng 2/3” khi chưa có phép tính;
-- [ ] mô hình hóa suất thừa kế theo pháp luật giả định, phần được chỉ định trong di chúc và đơn vị tiền/tỷ lệ trước khi triển khai R-F01c;
-- [ ] giữ riêng bước tính ngưỡng và bước bù thiếu để presenter có thể giải thích từng kết luận số học.
+- [x] thêm completeness cho graph, tuổi, khả năng lao động, từ chối và Điều 621; không diễn giải dữ kiện thiếu thành phủ định;
+- [x] mô hình hóa calculation riêng cho từng cặp người–phần di sản, với `hypothetical-statutory-share` và `testamentary-share-received` dùng cùng một đơn vị;
+- [x] triển khai R-F01c thành hai bước có trace: tính `minimum-compulsory-share = hypothetical-statutory-share × 2/3`, sau đó xác định `minimum-share-rule-applies` và `compulsory-share-shortfall`;
+- [x] hiển thị ngưỡng, phần thiếu và liên kết tới Điều 644 trong presenter; giữ cảnh báo `TEAM_REVIEW`;
+- [ ] xây mô-đun xác định suất pháp luật giả định từ tổng giá trị và toàn bộ người thừa kế; hiện tại giá trị này là fact đầu vào nên R-F01c chưa phải phép chia di sản end-to-end.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

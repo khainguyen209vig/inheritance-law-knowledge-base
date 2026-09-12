@@ -242,9 +242,9 @@ Quan hệ cháu/chắt không nên nhập bằng một nhãn text duy nhất; en
 
 | Rule | V1 tóm tắt | Loại | Điều kiện chuẩn hóa V2 | Kết luận chuẩn hóa V2 | Thay đổi/điểm review | Trạng thái |
 |---|---|---|---|---|---|---|
-| R-F01a | Con chưa thành niên/cha/mẹ/vợ/chồng thiếu 2/3 suất → hưởng tối thiểu 2/3 | CLASSIFICATION | X là con chưa thành niên của người chết | `compulsory-heir-candidate(X,case)=true` | Đã triển khai từ graph; chưa tính ngưỡng 2/3 | MODEL-READY |
-| R-F01b | Cùng V1 R-F01 | CLASSIFICATION | X là cha, mẹ, vợ hoặc chồng của người chết tại thời điểm mở thừa kế | `compulsory-heir-candidate(X,case)=true` | Đã triển khai từ graph; chưa tính ngưỡng 2/3 | MODEL-READY |
-| R-F01c | Cùng V1 R-F01 | CALCULATION | Candidate không được hưởng theo di chúc hoặc phần chỉ định nhỏ hơn 2/3 suất theo pháp luật | `minimum-share-rule-applies(X)=true`, hệ số `2/3` | Chỉ nhận diện quyền và hệ số; không tính chia end-to-end trong MVP | DEFERRED |
+| R-F01a | Con chưa thành niên/cha/mẹ/vợ/chồng thiếu 2/3 suất → hưởng tối thiểu 2/3 | CLASSIFICATION | X là con chưa thành niên của người chết | `compulsory-heir-candidate(X,case)=true` | Đã triển khai từ graph; tách khỏi phép tính để trace rõ bước phân loại | MODEL-READY |
+| R-F01b | Cùng V1 R-F01 | CLASSIFICATION | X là cha, mẹ, vợ hoặc chồng của người chết tại thời điểm mở thừa kế | `compulsory-heir-candidate(X,case)=true` | Đã triển khai từ graph; tách khỏi phép tính để trace rõ bước phân loại | MODEL-READY |
+| R-F01c | Cùng V1 R-F01 | CALCULATION | `compulsory-heir(X)=true`; calculation gắn X với một phần di sản; có suất pháp luật giả định và phần đã nhận theo di chúc cùng đơn vị | `minimum-compulsory-share(calc)=statutory-share×2/3`; so sánh để sinh `minimum-share-rule-applies` và `compulsory-share-shortfall` | Đã triển khai theo calculation; suất pháp luật giả định vẫn là fact đầu vào, không tự chia end-to-end | TEAM-REVIEW |
 | R-F02 | Con thành niên không có khả năng lao động, thiếu 2/3 suất → hưởng tối thiểu | CLASSIFICATION | X là con thành niên và `work-capacity=incapable` | `compulsory-heir-candidate(X,case)=true` | Đã triển khai draft; evidence/source vẫn cần team review | TEAM-REVIEW |
 | R-F03 | Thuộc diện suất bắt buộc nhưng từ chối → không hưởng | EXCLUSION | Candidate có `valid-refusal=true` | `compulsory-heir(X,case)=false`, reason `refusal` | Đã triển khai, dùng predicate thay vì Rule ID nguồn | MODEL-READY |
 | R-F04 | Thuộc diện suất bắt buộc nhưng không có quyền hưởng → không hưởng | EXCLUSION | Candidate có `article-621-status=excluded` | `compulsory-heir(X,case)=false`, reason `disqualified` | Đã triển khai, dùng kết luận Điều 621 trong cùng working memory | MODEL-READY |
@@ -396,8 +396,8 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-E01–R-E02 | Đã triển khai lát cắt thế vị trên graph; vẫn ở trạng thái `TEAM_REVIEW` |
 | R-E03a–R-E03b | Đã triển khai căn cứ quan hệ con nuôi ở trạng thái `MODEL_READY`; chưa kết luận quyền hưởng cuối cùng |
 | R-E04–R-E05 | Đã triển khai với đánh giá chăm sóc gắn theo cạnh; giữ `TEAM_REVIEW`, open-world và không phủ định căn cứ khác |
-| R-F01a/R-F01b/R-F02–R-F04 | Đã triển khai lát cắt phân loại và loại trừ; R-F02 giữ `TEAM_REVIEW`, R-F01c tính 2/3 chưa triển khai |
-| R-F01c, nhóm G–J | Đặc tả đề xuất để team review, chưa triển khai |
+| R-F01a–R-F04 | Đã triển khai phân loại, loại trừ và R-F01c tính ngưỡng/phần thiếu theo từng cặp người–phần di sản; R-F01c chưa tự xác định suất pháp luật giả định; R-F01c/R-F02 giữ `TEAM_REVIEW` |
+| Nhóm G–J | Đặc tả đề xuất để team review, chưa triển khai |
 | Legal validation | Chưa thực hiện đầy đủ |
 
 ## 10. Câu hỏi dành cho buổi review team

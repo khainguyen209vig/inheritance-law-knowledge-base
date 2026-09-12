@@ -25,7 +25,7 @@ Presenter dùng mô hình `people + edges`: mỗi node người và mỗi cạnh
 
 Mô-đun `representation` triển khai R-E01/R-E02 theo Điều 652, R-E03a/R-E03b theo Điều 653 và R-E04/R-E05 theo Điều 654. CLIPS suy ra `would-be-entitled-if-alive` rồi đối sánh nhánh cháu/chắt; quan hệ con nuôi được giữ tách biệt với quan hệ cha mẹ đẻ. Với quan hệ con riêng, `step-care-status` tham chiếu `fact-id` của cạnh `step-parent-of`: thiếu đánh giá sinh missing requirement, còn `not-established` phải được assert tường minh. R-E03–R-E05 chỉ tạo hoặc phủ định căn cứ quan hệ tương ứng, không tự kết luận quyền hưởng cuối cùng. R-E01/R-E02/R-E04/R-E05 vẫn là `TEAM_REVIEW`.
 
-Mô-đun `compulsory-share` triển khai lát cắt phân loại R-F01a/R-F01b/R-F02 và loại trừ R-F03/R-F04 theo Điều 644. Quan hệ được dùng lại từ graph; tuổi, khả năng lao động, từ chối và kết quả Điều 621 là facts/derived facts độc lập. `compulsory-heir-candidate` chỉ biểu thị thuộc nhóm được bảo vệ, còn `compulsory-heir` biểu thị đã qua điều kiện cá nhân để sang bước tính. R-F01c chưa được triển khai nên hệ thống chưa tính hoặc tuyên bố giá trị hai phần ba suất.
+Mô-đun `compulsory-share` triển khai phân loại R-F01a/R-F01b/R-F02, loại trừ R-F03/R-F04 và phép tính R-F01c theo Điều 644. Quan hệ được dùng lại từ graph; tuổi, khả năng lao động, từ chối và kết quả Điều 621 là facts/derived facts độc lập. `compulsory-heir-candidate` chỉ biểu thị thuộc nhóm được bảo vệ, còn `compulsory-heir` biểu thị đã qua điều kiện cá nhân. Mỗi calculation gắn một người với một phần di sản; CLIPS tính ngưỡng hai phần ba và phần thiếu từ suất pháp luật giả định cùng phần đã nhận theo di chúc. Suất pháp luật giả định vẫn do người dùng cung cấp, vì vậy lát cắt này không tự chia toàn bộ di sản end-to-end. R-F01c và R-F02 vẫn mang nhãn `TEAM_REVIEW`.
 
 Nếu các observations đều có mặt nhưng chưa khớp đường suy luận dương hoặc exclusion rule đã được mô hình hóa, completeness layer tạo `unresolved-rule-path` và trả `UNKNOWN`. Cách xử lý này giữ open-world semantics cho đến khi team duyệt rule âm tương ứng.
 
@@ -36,8 +36,8 @@ Nếu các observations đều có mặt nhưng chưa khớp đường suy luậ
 | Fact contracts | `templates.clp` | Định nghĩa hình dạng của dữ kiện, kết luận và provenance |
 | Rule registry | `rule-registry.json` | Nguồn duy nhất cho căn cứ, giải thích, implementation và trạng thái kiểm duyệt |
 | Legal metadata | `rule-metadata.clp` | Dữ liệu CLIPS được sinh tự động từ rule registry |
-| Domain knowledge | `rules/01-will-validity.clp` đến `rules/05-representation.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
-| Completeness/conflict | `rules/90-*` đến `rules/94-*` | Phát hiện facts thiếu và kết luận mâu thuẫn |
+| Domain knowledge | `rules/01-will-validity.clp` đến `rules/06-compulsory-share.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
+| Completeness/conflict | `rules/90-*` đến `rules/96-*` | Phát hiện facts thiếu và kết luận mâu thuẫn |
 | Explanation | `rules/98-explanation.clp` | Chuyển provenance của derived facts thành trace đồng nhất |
 | Result projection | `rules/95-*` đến `rules/99-*` | Chọn kết quả cần trả cho mô-đun mà UI yêu cầu |
 | Machine output | `machine-output.clp` | Xuất result, missing facts và trace bằng line protocol ổn định cho TypeScript |

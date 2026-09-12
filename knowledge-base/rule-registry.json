@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v9",
+  "knowledgeBaseVersion": "inheritance-kb-v10",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -316,6 +316,12 @@
       "title": "Cha, mẹ, vợ hoặc chồng thuộc nhóm được bảo vệ", "reasoning": "Quan hệ cha mẹ đẻ, cha mẹ nuôi hoặc vợ chồng tại thời điểm mở thừa kế đặt người đang xét vào nhóm đối tượng tại Điều 644 khoản 1 điểm a.",
       "conclusion": "Thuộc nhóm ứng viên thừa kế không phụ thuộc nội dung di chúc", "citation": "Điều 644 khoản 1 điểm a Bộ luật Dân sự 2015", "provisionId": "article-644", "relevantSections": ["clause-1-intro", "clause-1-a"], "clipsMetadata": true,
       "implementations": ["R-F01b-parent", "R-F01b-spouse-forward", "R-F01b-spouse-reverse"]
+    },
+    "R-F01c": {
+      "ruleId": "R-F01c", "module": "compulsory-share", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Đối chiếu phần được chỉ định với ngưỡng hai phần ba", "reasoning": "Trong một calculation gắn với đúng người và phần di sản, hệ thống lấy hai phần ba suất thừa kế theo pháp luật giả định làm ngưỡng. Nếu phần đã nhận theo di chúc thấp hơn ngưỡng, phần chênh lệch được ghi nhận là phần còn thiếu theo cơ chế Điều 644.",
+      "conclusion": "Xác định ngưỡng tối thiểu và phần chênh lệch cần xem xét", "citation": "Điều 644 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-644", "relevantSections": ["clause-1-intro"], "clipsMetadata": true,
+      "implementations": ["R-F01c-calculate-minimum-threshold", "R-F01c-shortfall-applies", "R-F01c-threshold-already-met"]
     },
     "R-F02": {
       "ruleId": "R-F02", "module": "compulsory-share", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",

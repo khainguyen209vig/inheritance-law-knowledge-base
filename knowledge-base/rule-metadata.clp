@@ -196,6 +196,12 @@
     (description "Quan hệ cha mẹ đẻ, cha mẹ nuôi hoặc vợ chồng tại thời điểm mở thừa kế đặt người đang xét vào nhóm đối tượng tại Điều 644 khoản 1 điểm a.")
     (status draft))
   (rule-metadata
+    (rule-id R-F01c)
+    (module compulsory-share)
+    (legal-source "Điều 644 khoản 1 Bộ luật Dân sự 2015")
+    (description "Trong một calculation gắn với đúng người và phần di sản, hệ thống lấy hai phần ba suất thừa kế theo pháp luật giả định làm ngưỡng. Nếu phần đã nhận theo di chúc thấp hơn ngưỡng, phần chênh lệch được ghi nhận là phần còn thiếu theo cơ chế Điều 644.")
+    (status draft))
+  (rule-metadata
     (rule-id R-F02)
     (module compulsory-share)
     (legal-source "Điều 644 khoản 1 điểm b Bộ luật Dân sự 2015")

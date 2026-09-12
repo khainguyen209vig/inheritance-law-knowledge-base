@@ -52,3 +52,39 @@
   (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate)))
   =>
   (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value false) (rule-id COMPULSORY-CANDIDATE-NOT-IN-PROTECTED-CLASS) (supports family-graph-complete))))
+
+(defrule missing-compulsory-calculation-person
+  (declare (salience 240))
+  (analysis-request (case-id ?case-id) (module compulsory-share))
+  (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-calculation) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate calculation-person)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?calculation-id) (module compulsory-share) (predicate calculation-person))))
+
+(defrule missing-compulsory-calculation-portion
+  (declare (salience 240))
+  (analysis-request (case-id ?case-id) (module compulsory-share))
+  (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-calculation) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate calculation-estate-portion)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?calculation-id) (module compulsory-share) (predicate calculation-estate-portion))))
+
+(defrule missing-hypothetical-statutory-share
+  (declare (salience 220))
+  (analysis-request (case-id ?case-id) (module compulsory-share))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir) (value true))
+  (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-calculation) (value true))
+  (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate calculation-person) (value ?person))
+  (not (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate hypothetical-statutory-share)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?calculation-id) (module compulsory-share) (predicate hypothetical-statutory-share))))
+
+(defrule missing-testamentary-share-received
+  (declare (salience 220))
+  (analysis-request (case-id ?case-id) (module compulsory-share))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir) (value true))
+  (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-calculation) (value true))
+  (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate calculation-person) (value ?person))
+  (not (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate testamentary-share-received)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?calculation-id) (module compulsory-share) (predicate testamentary-share-received))))

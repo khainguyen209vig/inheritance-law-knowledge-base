@@ -35,3 +35,23 @@
 (asserted-fact (fact-id unknown-scope) (case-id case-compulsory) (subject unknown-child) (predicate compulsory-share-assessment-subject) (value true))
 (asserted-fact (fact-id unknown-edge) (case-id case-compulsory) (subject deceased-one) (predicate biological-parent-of) (value unknown-child))
 (asserted-fact (fact-id unknown-age) (case-id case-compulsory) (subject unknown-child) (predicate age-group) (value adult))
+
+; Per-person/per-portion calculations use an explicit calculation entity.
+(asserted-fact (fact-id portion-one) (case-id case-compulsory) (subject portion-one) (predicate estate-portion) (value true))
+(asserted-fact (fact-id minor-calculation) (case-id case-compulsory) (subject calc-minor-one) (predicate compulsory-share-calculation) (value true))
+(asserted-fact (fact-id minor-calculation-person) (case-id case-compulsory) (subject calc-minor-one) (predicate calculation-person) (value minor-child))
+(asserted-fact (fact-id minor-calculation-portion) (case-id case-compulsory) (subject calc-minor-one) (predicate calculation-estate-portion) (value portion-one))
+(asserted-fact (fact-id minor-statutory-share) (case-id case-compulsory) (subject calc-minor-one) (predicate hypothetical-statutory-share) (value 300))
+(asserted-fact (fact-id minor-testamentary-share) (case-id case-compulsory) (subject calc-minor-one) (predicate testamentary-share-received) (value 100))
+
+; Spouse has already received more than the minimum threshold.
+(asserted-fact (fact-id spouse-scope) (case-id case-compulsory) (subject spouse-one) (predicate compulsory-share-assessment-subject) (value true))
+(asserted-fact (fact-id spouse-edge) (case-id case-compulsory) (subject spouse-one) (predicate spouse-at-opening) (value deceased-one))
+(asserted-fact (fact-id spouse-refusal) (case-id case-compulsory) (subject spouse-one) (predicate valid-refusal) (value false))
+(asserted-fact (fact-id spouse-eligibility) (case-id case-compulsory) (subject spouse-one) (predicate eligibility-candidate) (value true))
+(asserted-fact (fact-id spouse-review) (case-id case-compulsory) (subject spouse-one) (predicate eligibility-review-complete) (value true))
+(asserted-fact (fact-id spouse-calculation) (case-id case-compulsory) (subject calc-spouse-one) (predicate compulsory-share-calculation) (value true))
+(asserted-fact (fact-id spouse-calculation-person) (case-id case-compulsory) (subject calc-spouse-one) (predicate calculation-person) (value spouse-one))
+(asserted-fact (fact-id spouse-calculation-portion) (case-id case-compulsory) (subject calc-spouse-one) (predicate calculation-estate-portion) (value portion-one))
+(asserted-fact (fact-id spouse-statutory-share) (case-id case-compulsory) (subject calc-spouse-one) (predicate hypothetical-statutory-share) (value 300))
+(asserted-fact (fact-id spouse-testamentary-share) (case-id case-compulsory) (subject calc-spouse-one) (predicate testamentary-share-received) (value 250))

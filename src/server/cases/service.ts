@@ -32,7 +32,7 @@ export async function runStoredRepresentation(repository: CaseRepository, caseId
 export async function runStoredCompulsoryShare(repository: CaseRepository, caseId: string): Promise<StoredInferenceRun> {
   const facts = repository.getAllFacts(caseId);
   const output = await inferCompulsoryShare({ caseId, subject: caseId, facts });
-  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "compulsory-share", knowledgeBaseVersion: "compulsory-share-rf01-rf04-draft-v1" });
+  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "compulsory-share", knowledgeBaseVersion: "compulsory-share-rf01-rf04-draft-v2" });
 }
 
 export async function runStoredInheritanceType(

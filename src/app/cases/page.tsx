@@ -4,12 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAnalysisModule } from "@/domain/analysis-modules";
+import type { ModuleResultValue } from "@/modules/contracts";
 import { CaseRepository } from "@/server/db/case-repository";
 import { getDatabase } from "@/server/db/database";
 
 export const dynamic = "force-dynamic";
 
-const resultLabels = { true: "Đạt", false: "Không đạt", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn", statutory: "Theo pháp luật", testamentary: "Theo di chúc", excluded: "Không có quyền hưởng", "not-excluded": "Không bị loại trừ", "exception-under-will": "Ngoại lệ di chúc", "rank-1": "Hàng thứ nhất", "rank-2": "Hàng thứ hai", "rank-3": "Hàng thứ ba" };
+const resultLabels: Partial<Record<ModuleResultValue, string>> = { true: "Đạt", false: "Không đạt", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn", statutory: "Theo pháp luật", testamentary: "Theo di chúc", excluded: "Không có quyền hưởng", "not-excluded": "Không bị loại trừ", "exception-under-will": "Ngoại lệ di chúc", "rank-1": "Hàng thứ nhất", "rank-2": "Hàng thứ hai", "rank-3": "Hàng thứ ba" };
 
 export default function CasesPage() {
   const cases = new CaseRepository(getDatabase()).listCases();
@@ -48,7 +49,7 @@ export default function CasesPage() {
                     <div className="flex flex-wrap gap-2">
                       <Badge variant="outline">{item.factCount} facts</Badge>
                       <Badge variant="secondary">{item.runCount} lần suy luận</Badge>
-                      {primaryResult ? <Badge variant={primaryResult.value === "true" || primaryResult.value === "testamentary" || primaryResult.value === "not-excluded" ? "success" : primaryResult.value === "false" || primaryResult.value === "excluded" ? "destructive" : "warning"}>{resultLabels[primaryResult.value]}</Badge> : null}
+                      {primaryResult ? <Badge variant={primaryResult.value === "true" || primaryResult.value === "testamentary" || primaryResult.value === "not-excluded" ? "success" : primaryResult.value === "false" || primaryResult.value === "excluded" ? "destructive" : "warning"}>{resultLabels[primaryResult.value] ?? primaryResult.value}</Badge> : null}
                     </div>
                     <span className="text-xs text-muted-foreground">{new Date(item.updatedAt).toLocaleString("vi-VN")}</span>
                   </div>

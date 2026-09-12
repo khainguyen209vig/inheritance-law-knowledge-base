@@ -201,11 +201,18 @@ test("compulsory-share adapter separates protected-class classification from act
     { id: "refusal", subject: "minor-child", predicate: "valid-refusal", value: false },
     { id: "eligibility", subject: "minor-child", predicate: "eligibility-candidate", value: true },
     { id: "review", subject: "minor-child", predicate: "eligibility-review-complete", value: true },
+    { id: "portion", subject: "portion-one", predicate: "estate-portion", value: true },
+    { id: "calculation", subject: "calc-one", predicate: "compulsory-share-calculation", value: true },
+    { id: "calculation-person", subject: "calc-one", predicate: "calculation-person", value: "minor-child" },
+    { id: "calculation-portion", subject: "calc-one", predicate: "calculation-estate-portion", value: "portion-one" },
+    { id: "statutory-share", subject: "calc-one", predicate: "hypothetical-statutory-share", value: 300 },
+    { id: "testamentary-share", subject: "calc-one", predicate: "testamentary-share-received", value: 100 },
   ] });
   assert.ok(output.results.some((result) => result.predicate === "compulsory-heir-candidate" && result.value === "true"));
   assert.ok(output.results.some((result) => result.predicate === "compulsory-heir" && result.value === "true"));
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-F01a"));
-  assert.ok(!output.results.some((result) => result.predicate === "minimum-compulsory-share"));
+  assert.ok(output.results.some((result) => result.subject === "calc-one" && result.predicate === "minimum-compulsory-share" && Number(result.value) === 200));
+  assert.ok(output.results.some((result) => result.subject === "calc-one" && result.predicate === "compulsory-share-shortfall" && Number(result.value) === 100));
 });
 
 test("CLIPS adapter preserves unknown and missing facts", async () => {
