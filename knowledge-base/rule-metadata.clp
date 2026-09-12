@@ -310,6 +310,18 @@
     (description "Khi danh sách người được chỉ định đã đầy đủ, có từ hai người, di chúc không xác định rõ phần của từng người và không có thỏa thuận khác, hệ thống ghi nhận nguyên tắc chia đều. Việc có phần đã xác định, có thỏa thuận khác hoặc chỉ có một người làm nguyên tắc mặc định này không áp dụng.")
     (status draft))
   (rule-metadata
+    (rule-id R-I03a)
+    (module estate-settlement)
+    (legal-source "Điều 660 khoản 1 Bộ luật Dân sự 2015")
+    (description "Người đang xét đã thành thai nhưng chưa sinh tại thời điểm phân chia và graph dẫn xuất người đó thuộc cùng hàng thừa kế đang hoạt động, nên phải dành lại một phần bằng phần người thừa kế khác được hưởng.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-I03b)
+    (module estate-settlement)
+    (legal-source "Điều 660 khoản 1 Bộ luật Dân sự 2015")
+    (description "Nếu người đã được dành suất sinh ra còn sống thì người đó được hưởng; nếu chết trước khi sinh ra thì những người thừa kế khác được hưởng phần đã dành.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

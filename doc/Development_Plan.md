@@ -441,7 +441,10 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] triển khai R-I02 theo từng `testamentary-distribution-group`; yêu cầu danh sách người hưởng đầy đủ, ít nhất hai người, phần không được xác định và không có thỏa thuận khác;
 - [x] biểu diễn cả `testamentary-shares-specified` và `alternative-share-agreement` bằng observation ba trạng thái ở UI; thiếu dữ kiện trả `unknown`;
 - [x] thêm presenter chuyển ngữ cảnh giữa R-I01 và R-I02, hỗ trợ nhiều nhóm và nhiều người hưởng, trace tới Điều 659 khoản 1;
-- [ ] giữ R-I03–R-I05 cho các lát cắt riêng về người đã thành thai và hạn chế phân chia; không gộp vào R-I01.
+- [x] triển khai R-I03a bằng `candidate-heir-rank` và `active-heir-rank` do C/D/H dẫn xuất trong cùng working memory; UI không nhập kết luận “cùng hàng”;
+- [x] triển khai hai nhánh R-I03b cho sinh ra còn sống và chết trước khi sinh; giữ `TEAM_REVIEW`, chưa tính lại suất của những người còn lại;
+- [x] thêm chế độ presenter “Người chưa sinh”, chỉ chọn ứng viên từ graph và ghi observations về thai/sinh;
+- [ ] giữ R-I04–R-I05 cho lát cắt riêng về hạn chế phân chia; không gộp vào R-I01.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

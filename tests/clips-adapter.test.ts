@@ -300,6 +300,28 @@ test("estate settlement adapter identifies the Article 659 equal-share default",
   assert.ok(output.traces.some((trace) => trace.subject === "group-one" && trace.ruleId === "R-I02"));
 });
 
+test("estate settlement adapter reuses derived heir ranks for the prenatal share", async () => {
+  const output = await inferEstateSettlement({ caseId: "adapter-prenatal", subject: "adapter-prenatal", facts: [
+    { id: "deceased", subject: "deceased-one", predicate: "deceased-person", value: true },
+    { id: "search", subject: "adapter-prenatal", predicate: "heir-search-complete", value: true },
+    { id: "living-candidate", subject: "living-child", predicate: "heir-rank-candidate", value: true },
+    { id: "living-edge", subject: "deceased-one", predicate: "biological-parent-of", value: "living-child" },
+    { id: "living-eligibility", subject: "living-child", predicate: "eligibility-candidate", value: true },
+    { id: "living-review", subject: "living-child", predicate: "eligibility-review-complete", value: true },
+    { id: "living-life", subject: "living-child", predicate: "heir-life-status", value: "alive" },
+    { id: "living-refusal", subject: "living-child", predicate: "valid-refusal", value: false },
+    { id: "prenatal-candidate", subject: "prenatal-child", predicate: "heir-rank-candidate", value: true },
+    { id: "prenatal-edge", subject: "deceased-one", predicate: "biological-parent-of", value: "prenatal-child" },
+    { id: "prenatal-scope", subject: "prenatal-child", predicate: "prenatal-share-assessment-subject", value: true },
+    { id: "prenatal-status", subject: "prenatal-child", predicate: "prenatal-status-at-distribution", value: "conceived-not-born" },
+    { id: "prenatal-outcome", subject: "prenatal-child", predicate: "prenatal-birth-outcome", value: "born-alive" },
+  ] });
+  assert.ok(output.results.some((item) => item.subject === "prenatal-child" && item.predicate === "reserve-equal-share" && item.value === "true"));
+  assert.ok(output.results.some((item) => item.subject === "prenatal-child" && item.predicate === "reserved-share-vests-in-child" && item.value === "true"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-I03a"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-I03b"));
+});
+
 test("CLIPS adapter preserves unknown and missing facts", async () => {
   const output = await inferWillValidity({
     caseId: "adapter-unknown",

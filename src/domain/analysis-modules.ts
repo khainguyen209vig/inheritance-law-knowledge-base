@@ -199,7 +199,7 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
   "estate-settlement": {
     id: "estate-settlement",
     title: "Thanh toán nghĩa vụ di sản",
-    shortDescription: "Sắp thứ tự nghĩa vụ theo Điều 658 và nhận diện nguyên tắc chia đều theo di chúc tại Điều 659.",
+    shortDescription: "Xử lý thứ tự nghĩa vụ, nguyên tắc chia đều và suất dành cho người đã thành thai theo Điều 658–660.",
     status: "implemented",
     interactionMode: "timeline",
     primaryResultPredicate: "payment-priority",

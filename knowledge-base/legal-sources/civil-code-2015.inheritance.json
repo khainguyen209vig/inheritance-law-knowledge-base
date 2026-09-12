@@ -452,6 +452,25 @@
       ],
       "sourceDocument": "doc/Luat_ThuaKe.doc",
       "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
+    "article-660": {
+      "id": "article-660",
+      "number": "Điều 660",
+      "title": "Phân chia di sản theo pháp luật",
+      "sections": [
+        {
+          "id": "clause-1",
+          "label": "Khoản 1",
+          "text": "Khi phân chia di sản, nếu có người thừa kế cùng hàng đã thành thai nhưng chưa sinh ra thì phải dành lại một phần di sản bằng phần mà người thừa kế khác được hưởng để nếu người thừa kế đó còn sống khi sinh ra được hưởng; nếu chết trước khi sinh ra thì những người thừa kế khác được hưởng."
+        },
+        {
+          "id": "clause-2",
+          "label": "Khoản 2",
+          "text": "Những người thừa kế có quyền yêu cầu phân chia di sản bằng hiện vật; nếu không thể chia đều bằng hiện vật thì những người thừa kế có thể thoả thuận về việc định giá hiện vật và thoả thuận về người nhận hiện vật; nếu không thoả thuận được thì hiện vật được bán để chia."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
     }
   }
 }

@@ -67,7 +67,7 @@ Các nhóm luật được tổ chức thành mô-đun kết quả dùng chung w
 - [x] Triển khai mô-đun quyền hưởng R-D01–R-D05 theo từng người dựa trên Điều 621.
 - [x] Triển khai graph gia đình và R-C01–R-C06: phân loại ba hàng, chọn hàng hoạt động và gọi hưởng có kiểm soát completeness.
 - [x] Triển khai lát cắt thừa kế thế vị R-E01/R-E02 trên graph dùng chung, gồm API, presenter rà soát nhánh, trace và tests.
-- [x] Triển khai R-I01/R-I02: bảng ưu tiên Điều 658 và nguyên tắc chia đều theo di chúc tại Điều 659 khoản 1.
+- [x] Triển khai R-I01–R-I03: bảng ưu tiên, chia đều theo di chúc và suất dành cho người đã thành thai tại Điều 658–660.
 - [ ] So sánh hai inference runs của cùng hồ sơ (hạng mục hậu MVP).
 
 ## Phạm vi kết quả
@@ -373,6 +373,7 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 18. [x] Tích hợp derived `valid-refusal` của nhóm H vào A/C/E/F qua `refusal-status`; bỏ nhập kết luận từ chối khỏi graph, vẫn giữ fallback cho hồ sơ cũ.
 19. [x] Triển khai R-I01: lưu 10 mức ưu tiên Điều 658 thành knowledge facts, dùng một production rule tổng quát để xếp nhiều khoản nghĩa vụ và hiển thị hàng đợi có căn cứ pháp lý.
 20. [x] Triển khai R-I02 theo từng nhóm định đoạt: danh sách người hưởng có completeness, trạng thái phần đã xác định và thỏa thuận khác đều là facts tường minh; chưa chia tiền end-to-end.
-21. [ ] Đánh giá lát cắt R-I03 về phần dành cho người đã thành thai nhưng chưa sinh; graph editor vẫn nằm trong UX debt trước bản trình bày.
+21. [x] Triển khai R-I03a/R-I03b: tái sử dụng hàng thừa kế từ graph, dành một suất cho người đã thành thai và xử lý hai kết quả sinh; R-I03b giữ `TEAM_REVIEW`.
+22. [ ] Đánh giá R-I04/R-I05 về hạn chế phân chia di sản; graph editor vẫn nằm trong UX debt trước bản trình bày.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

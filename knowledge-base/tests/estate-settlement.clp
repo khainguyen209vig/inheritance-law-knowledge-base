@@ -1,5 +1,8 @@
 (load "knowledge-base/templates.clp")
 (load "knowledge-base/rule-metadata.clp")
+(load "knowledge-base/rules/03-eligibility.clp")
+(load "knowledge-base/rules/08-refusal-and-unclaimed.clp")
+(load "knowledge-base/rules/04-heir-rank.clp")
 (load "knowledge-base/rules/09-estate-settlement.clp")
 (load "knowledge-base/rules/99-estate-settlement-completeness.clp")
 (load "knowledge-base/rules/99-estate-settlement-projection.clp")
@@ -26,4 +29,9 @@
     (any-factp ((?result module-result)) (and (eq ?result:subject group-missing) (eq ?result:value unknown)))
     (any-factp ((?missing missing-requirement)) (and (eq ?missing:subject group-missing) (eq ?missing:predicate alternative-share-agreement))))
   then (printout t "PASS estate-settlement-distribution-open-world" crlf) else (printout t "FAIL estate-settlement-distribution-open-world" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject prenatal-alive) (eq ?result:predicate reserve-equal-share) (eq ?result:value true)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject prenatal-alive) (eq ?result:predicate reserved-share-vests-in-child) (eq ?result:value true)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject prenatal-deceased) (eq ?result:predicate reserved-share-returns-to-other-heirs) (eq ?result:value true))))
+  then (printout t "PASS estate-settlement-prenatal-branches" crlf) else (printout t "FAIL estate-settlement-prenatal-branches" crlf))
 (exit)

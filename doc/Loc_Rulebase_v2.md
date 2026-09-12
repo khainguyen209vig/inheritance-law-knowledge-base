@@ -273,8 +273,8 @@ Quan hệ cháu/chắt không nên nhập bằng một nhãn text duy nhất; en
 |---|---|---|---|---|---|---|
 | R-I01 | Có nghĩa vụ/chi phí → thanh toán theo 10 mức ưu tiên | NORMATIVE | Có `estate-obligation` và `obligation-type` cho từng khoản | Sinh `payment-priority(obligation,1..10)` bằng cách đối chiếu bảng Điều 658 | Đã triển khai: bảng ưu tiên là `payment-priority-knowledge`; chỉ một production rule tổng quát, chưa tính tiền end-to-end | MODEL-READY |
 | R-I02 | Theo di chúc nhưng không rõ phần → chia đều | CLASSIFICATION | Danh sách beneficiary đã đầy đủ và có từ hai người; di chúc không xác định phần; không có thỏa thuận khác | `equal-testamentary-share-principle-applies(disposition-group)=true`; các nhánh đã xác định phần/có thỏa thuận/chỉ một người sinh `false` | Đã triển khai theo từng nhóm; mọi phủ định là observation tường minh, chưa tính giá trị | MODEL-READY |
-| R-I03a | Có người đã thành thai chưa sinh → dành một phần bằng người khác | NORMATIVE | Phân chia theo pháp luật; có người đã thành thai nhưng chưa sinh, nếu sinh ra còn sống sẽ cùng hàng | `reserve-one-equal-share(unborn-person)=true` | Gắn đối tượng và hàng thừa kế | DEFERRED |
-| R-I03b | V1 chưa có nhánh hậu quả sau khi sinh | NORMATIVE | Kết quả sinh sống/chết của người đã thành thai sau khi dành phần | Xác định người nhận phần đã dành theo quy định tương ứng | V1 thiếu nhánh hậu quả; cần legal review trước khi bổ sung executable rule | TEAM-REVIEW |
+| R-I03a | Có người đã thành thai chưa sinh → dành một phần bằng người khác | NORMATIVE | `prenatal-status-at-distribution=conceived-not-born`; graph suy ra `candidate-heir-rank` bằng `active-heir-rank` | `reserve-equal-share(unborn-person)=true` | Đã triển khai, tái sử dụng hàng thừa kế từ C thay vì nhập “cùng hàng” | MODEL-READY |
+| R-I03b | V1 chưa có nhánh hậu quả sau khi sinh | NORMATIVE | Đã có suất dành; `prenatal-birth-outcome=born-alive|died-before-birth` | Sinh sống → suất thuộc người con; chết trước sinh → những người thừa kế khác hưởng | Đã triển khai hai predicate hậu quả, chưa tự tính lại phần mỗi người | TEAM-REVIEW |
 | R-I04 | Có yêu cầu/thỏa thuận thời hạn → chỉ chia khi hết hạn | TEMPORAL | Di chúc hoặc thỏa thuận hợp lệ xác định thời điểm chia sau | `distribution-not-before(case,date)` | Biểu diễn ràng buộc thời gian, không dùng Boolean “chưa chia” | DEFERRED |
 | R-I05 | Chia ảnh hưởng nghiêm trọng đến vợ/chồng → Tòa có thể hoãn | DISCRETION | Việc chia ảnh hưởng nghiêm trọng tới đời sống vợ/chồng còn sống | `court-deferral-may-be-requested=true`; lần đầu tối đa 3 năm và có thể gia hạn một lần tối đa 3 năm | Tòa án “có thể” quyết định; engine không tự kết luận di sản đã được hoãn chia | TEAM-REVIEW |
 
@@ -343,7 +343,7 @@ UI phải cho nhóm xác nhận danh sách người hoặc disposition đã khai
 
 ### Quyết định 5 — Phần ngoài MVP
 
-R-I01–R-I02 đã được mở sau khi các mô-đun `Must` hoàn thành. R-I03–R-I05 và phần tính deadline của Nhóm J tiếp tục được giữ trong catalog để triển khai theo từng lát cắt, không ghép thành phép chia end-to-end.
+R-I01–R-I03 đã được mở sau khi các mô-đun `Must` hoàn thành. R-I04–R-I05 và phần tính deadline của Nhóm J tiếp tục được giữ trong catalog để triển khai theo từng lát cắt, không ghép thành phép chia end-to-end.
 
 ## 8. Mapping từ V2 sang CLIPS
 
@@ -401,7 +401,8 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-H01–R-H04 | Đã triển khai theo từng người và phần di sản; H01/H03 giữ `TEAM_REVIEW`; A/C/E/F dùng `refusal-status` chuẩn hóa và chỉ fallback về fact cũ nếu chưa có assessment H |
 | R-I01 | Đã triển khai bảng 10 mức Điều 658 dưới dạng knowledge facts và một production rule tổng quát; chưa phân bổ tiền end-to-end |
 | R-I02 | Đã triển khai nhận diện nguyên tắc Điều 659 khoản 1 theo từng nhóm định đoạt; có completeness và không tính phần end-to-end |
-| R-I03–R-I05, Nhóm J | Đặc tả đề xuất để team review, chưa triển khai |
+| R-I03a–R-I03b | Đã triển khai từ graph và hàng đang hoạt động; R-I03b giữ `TEAM_REVIEW`, chưa tính lại giá trị các suất |
+| R-I04–R-I05, Nhóm J | Đặc tả đề xuất để team review, chưa triển khai |
 | Legal validation | Chưa thực hiện đầy đủ |
 
 ## 10. Câu hỏi dành cho buổi review team

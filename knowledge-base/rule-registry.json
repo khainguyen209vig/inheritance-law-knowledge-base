@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v15",
+  "knowledgeBaseVersion": "inheritance-kb-v16",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -430,6 +430,18 @@
       "title": "Nguyên tắc chia đều khi di chúc không xác định rõ phần", "reasoning": "Khi danh sách người được chỉ định đã đầy đủ, có từ hai người, di chúc không xác định rõ phần của từng người và không có thỏa thuận khác, hệ thống ghi nhận nguyên tắc chia đều. Việc có phần đã xác định, có thỏa thuận khác hoặc chỉ có một người làm nguyên tắc mặc định này không áp dụng.",
       "conclusion": "Xác định nguyên tắc chia đều có áp dụng cho nhóm định đoạt", "citation": "Điều 659 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-659", "relevantSections": ["clause-1"], "clipsMetadata": true,
       "implementations": ["R-I02-equal-share-default-applies", "R-I02-specified-shares-disable-default", "R-I02-alternative-agreement-disables-default", "R-I02-single-beneficiary-not-a-sharing-case"]
+    },
+    "R-I03a": {
+      "ruleId": "R-I03a", "module": "estate-settlement", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Dành suất cho người đã thành thai nhưng chưa sinh", "reasoning": "Người đang xét đã thành thai nhưng chưa sinh tại thời điểm phân chia và graph dẫn xuất người đó thuộc cùng hàng thừa kế đang hoạt động, nên phải dành lại một phần bằng phần người thừa kế khác được hưởng.",
+      "conclusion": "Phải dành lại một suất bằng suất của người thừa kế cùng hàng", "citation": "Điều 660 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-660", "relevantSections": ["clause-1"], "clipsMetadata": true,
+      "implementations": ["R-I03a-reserve-equal-share-for-prenatal-heir"]
+    },
+    "R-I03b": {
+      "ruleId": "R-I03b", "module": "estate-settlement", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Xử lý suất đã dành sau kết quả sinh", "reasoning": "Nếu người đã được dành suất sinh ra còn sống thì người đó được hưởng; nếu chết trước khi sinh ra thì những người thừa kế khác được hưởng phần đã dành.",
+      "conclusion": "Xác định chủ thể hưởng suất đã dành theo kết quả sinh", "citation": "Điều 660 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-660", "relevantSections": ["clause-1"], "clipsMetadata": true,
+      "implementations": ["R-I03b-born-alive-receives-reserved-share", "R-I03b-died-before-birth-returns-share"]
     },
     "REPRESENTATION-CANDIDATE-INACTIVE": {
       "ruleId": "REPRESENTATION-CANDIDATE-INACTIVE", "module": "representation", "kind": "internal", "status": "draft",

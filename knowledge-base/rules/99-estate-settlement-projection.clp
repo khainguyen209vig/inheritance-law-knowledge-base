@@ -25,3 +25,29 @@
   (not (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies)))
   =>
   (assert (module-result (case-id ?case-id) (subject ?group) (module estate-settlement) (predicate equal-testamentary-share-principle-applies) (value unknown) (derivations))))
+
+(defrule project-prenatal-share-reservation
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate reserve-equal-share) (value true) (rule-id ?rule))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?person) (module estate-settlement) (predicate reserve-equal-share) (value true) (derivations ?rule))))
+
+(defrule project-prenatal-born-alive-outcome
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-vests-in-child) (value true) (rule-id ?rule))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?person) (module estate-settlement) (predicate reserved-share-vests-in-child) (value true) (derivations ?rule))))
+
+(defrule project-prenatal-death-outcome
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-returns-to-other-heirs) (value true) (rule-id ?rule))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?person) (module estate-settlement) (predicate reserved-share-returns-to-other-heirs) (value true) (derivations ?rule))))
+
+(defrule project-unknown-prenatal-share-reservation
+  (declare (salience -500))
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?person) (predicate prenatal-share-assessment-subject) (value true))
+  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate reserve-equal-share)))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?person) (module estate-settlement) (predicate reserve-equal-share) (value unknown) (derivations))))

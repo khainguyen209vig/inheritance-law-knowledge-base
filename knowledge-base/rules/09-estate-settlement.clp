@@ -67,3 +67,28 @@
   (not (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies)))
   =>
   (assert (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies) (value false) (rule-id R-I02) (supports ?group-fact ?complete ?beneficiary-fact))))
+
+; R-I03 reuses the relationship-derived candidate rank and the active rank.
+; The user records only the prenatal observation and later birth outcome.
+(defrule R-I03a-reserve-equal-share-for-prenatal-heir
+  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate prenatal-share-assessment-subject) (value true))
+  (asserted-fact (fact-id ?prenatal) (case-id ?case-id) (subject ?person) (predicate prenatal-status-at-distribution) (value conceived-not-born))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?rank) (rule-id ?candidate-rule))
+  (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank) (value ?rank) (rule-id ?active-rule))
+  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate reserve-equal-share)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate reserve-equal-share) (value true) (rule-id R-I03a) (supports ?scope ?prenatal ?candidate-rule ?active-rule))))
+
+(defrule R-I03b-born-alive-receives-reserved-share
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate reserve-equal-share) (value true) (rule-id ?reserve-rule))
+  (asserted-fact (fact-id ?outcome) (case-id ?case-id) (subject ?person) (predicate prenatal-birth-outcome) (value born-alive))
+  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-vests-in-child)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-vests-in-child) (value true) (rule-id R-I03b) (supports ?reserve-rule ?outcome))))
+
+(defrule R-I03b-died-before-birth-returns-share
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate reserve-equal-share) (value true) (rule-id ?reserve-rule))
+  (asserted-fact (fact-id ?outcome) (case-id ?case-id) (subject ?person) (predicate prenatal-birth-outcome) (value died-before-birth))
+  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-returns-to-other-heirs)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-returns-to-other-heirs) (value true) (rule-id R-I03b) (supports ?reserve-rule ?outcome))))
