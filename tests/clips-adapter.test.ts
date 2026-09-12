@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inferInheritanceType, inferWillValidity } from "../src/server/clips/adapter";
+import { inferEligibility, inferInheritanceType, inferWillValidity } from "../src/server/clips/adapter";
 
 test("CLIPS adapter returns a valid-will result and trace", async () => {
   const output = await inferWillValidity({
@@ -33,6 +33,48 @@ test("inheritance adapter derives one statutory result per estate portion", asyn
   assert.deepEqual(output.results.map((result) => result.subject).sort(), ["portion-one", "portion-two"]);
   assert.ok(output.results.every((result) => result.value === "statutory"));
   assert.ok(output.traces.every((trace) => trace.ruleId === "R-A01"));
+});
+
+test("inheritance adapter keeps statutory and testamentary results separate by portion", async () => {
+  const output = await inferInheritanceType({
+    caseId: "adapter-mixed", subject: "adapter-mixed",
+    facts: [
+      { id: "has-will", subject: "adapter-mixed", predicate: "has-will", value: true },
+      { id: "p-one", subject: "portion-one", predicate: "estate-portion", value: true },
+      { id: "p-one-will", subject: "portion-one", predicate: "applicable-will", value: "will-one" },
+      { id: "p-one-disposed", subject: "portion-one", predicate: "portion-disposed", value: true },
+      { id: "p-one-beneficiary", subject: "portion-one", predicate: "disposition-beneficiary", value: "person-one" },
+      { id: "p-one-status", subject: "portion-one", predicate: "disposition-status", value: "effective" },
+      { id: "p-two", subject: "portion-two", predicate: "estate-portion", value: true },
+      { id: "p-two-will", subject: "portion-two", predicate: "applicable-will", value: "will-one" },
+      { id: "p-two-complete", subject: "portion-two", predicate: "disposition-set-complete", value: true },
+      { id: "p-two-disposed", subject: "portion-two", predicate: "portion-disposed", value: false },
+      { id: "mental", subject: "will-one", predicate: "testator-mental-state", value: "lucid" },
+      { id: "influence", subject: "will-one", predicate: "undue-influence", value: "none" },
+      { id: "type", subject: "will-one", predicate: "will-type", value: "written" },
+      { id: "form", subject: "will-one", predicate: "formal-defect", value: "not-detected" },
+      { id: "content", subject: "will-one", predicate: "prohibited-content", value: "not-detected" },
+    ],
+  });
+  assert.deepEqual(Object.fromEntries(output.results.map((item) => [item.subject, item.value])), {
+    "portion-one": "testamentary", "portion-two": "statutory",
+  });
+});
+
+test("eligibility adapter evaluates multiple people and safely serializes labels", async () => {
+  const output = await inferEligibility({
+    caseId: "adapter-eligibility", subject: "adapter-eligibility",
+    facts: [
+      { id: "one-candidate", subject: "person-one", predicate: "eligibility-candidate", value: true },
+      { id: "one-label", subject: "person-one", predicate: "person-label", value: "Nguyễn Văn A" },
+      { id: "one-complete", subject: "person-one", predicate: "eligibility-review-complete", value: true },
+      { id: "two-candidate", subject: "person-two", predicate: "eligibility-candidate", value: true },
+      { id: "two-complete", subject: "person-two", predicate: "eligibility-review-complete", value: true },
+      { id: "two-support", subject: "person-two", predicate: "serious-support-duty-violation", value: true },
+    ],
+  });
+  assert.deepEqual(Object.fromEntries(output.results.map((item) => [item.subject, item.value])), { "person-one": "not-excluded", "person-two": "excluded" });
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-D02"));
 });
 
 test("CLIPS adapter preserves unknown and missing facts", async () => {

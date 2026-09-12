@@ -97,7 +97,7 @@ export function willValidityResultDescription(value: InferenceValue): string {
 }
 
 export function resultStatusLabel(value: ModuleResultValue): string {
-  return { true: "Hợp pháp", false: "Không hợp pháp", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn", statutory: "Theo pháp luật", testamentary: "Theo di chúc" }[value];
+  return { true: "Hợp pháp", false: "Không hợp pháp", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn", statutory: "Theo pháp luật", testamentary: "Theo di chúc", excluded: "Không có quyền hưởng", "not-excluded": "Không bị loại trừ", "exception-under-will": "Ngoại lệ theo di chúc" }[value];
 }
 
 export function resultTone(value: InferenceValue): string {
@@ -110,7 +110,7 @@ export function resultTone(value: InferenceValue): string {
 }
 
 export function resultBadge(value: ModuleResultValue): "success" | "destructive" | "warning" | "secondary" {
-  return { true: "success", false: "destructive", unknown: "warning", conflict: "secondary", statutory: "warning", testamentary: "success" }[value] as
+  return { true: "success", false: "destructive", unknown: "warning", conflict: "secondary", statutory: "warning", testamentary: "success", excluded: "destructive", "not-excluded": "success", "exception-under-will": "warning" }[value] as
     | "success"
     | "destructive"
     | "warning"

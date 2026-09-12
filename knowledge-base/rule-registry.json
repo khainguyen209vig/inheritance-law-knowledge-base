@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v2",
+  "knowledgeBaseVersion": "inheritance-kb-v3",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -155,6 +155,54 @@
       "relevantSections": ["clause-5"],
       "clipsMetadata": true,
       "implementations": ["R-B09-valid-oral-form", "R-B09-oral-form-requirements"]
+    },
+    "R-D01": {
+      "ruleId": "R-D01", "module": "eligibility", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Hành vi xâm phạm người để lại di sản", "reasoning": "Ứng viên có bản án về hành vi cố ý xâm phạm tính mạng, sức khỏe hoặc hành vi ngược đãi, hành hạ, xâm phạm nghiêm trọng danh dự, nhân phẩm người để lại di sản.",
+      "conclusion": "Người này thuộc diện không có quyền hưởng di sản", "citation": "Điều 621 khoản 1 điểm a Bộ luật Dân sự 2015", "provisionId": "article-621", "relevantSections": ["clause-1-intro", "clause-1-a"], "clipsMetadata": true,
+      "implementations": ["R-D01-intentional-offense-against-deceased", "R-D01-abuse-against-deceased"]
+    },
+    "R-D02": {
+      "ruleId": "R-D02", "module": "eligibility", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Vi phạm nghiêm trọng nghĩa vụ nuôi dưỡng", "reasoning": "Ứng viên vi phạm nghiêm trọng nghĩa vụ nuôi dưỡng người để lại di sản.",
+      "conclusion": "Người này thuộc diện không có quyền hưởng di sản", "citation": "Điều 621 khoản 1 điểm b Bộ luật Dân sự 2015", "provisionId": "article-621", "relevantSections": ["clause-1-intro", "clause-1-b"], "clipsMetadata": true,
+      "implementations": ["R-D02-serious-support-duty-violation"]
+    },
+    "R-D03": {
+      "ruleId": "R-D03", "module": "eligibility", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Xâm phạm người thừa kế khác nhằm hưởng di sản", "reasoning": "Ứng viên bị kết án về hành vi cố ý xâm phạm tính mạng người thừa kế khác và có mục đích hưởng thêm di sản.",
+      "conclusion": "Người này thuộc diện không có quyền hưởng di sản", "citation": "Điều 621 khoản 1 điểm c Bộ luật Dân sự 2015", "provisionId": "article-621", "relevantSections": ["clause-1-intro", "clause-1-c"], "clipsMetadata": true,
+      "implementations": ["R-D03-offense-against-other-heir"]
+    },
+    "R-D04a": {
+      "ruleId": "R-D04a", "module": "eligibility", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Can thiệp trái ý chí vào việc lập di chúc", "reasoning": "Ứng viên có hành vi lừa dối hoặc cưỡng ép người để lại di sản trong việc lập di chúc.",
+      "conclusion": "Người này thuộc diện không có quyền hưởng di sản", "citation": "Điều 621 khoản 1 điểm d Bộ luật Dân sự 2015", "provisionId": "article-621", "relevantSections": ["clause-1-intro", "clause-1-d"], "clipsMetadata": true,
+      "implementations": ["R-D04a-will-interference"]
+    },
+    "R-D04b": {
+      "ruleId": "R-D04b", "module": "eligibility", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Can thiệp vào văn bản di chúc để hưởng trái ý chí", "reasoning": "Ứng viên giả mạo, sửa, hủy hoặc che giấu di chúc nhằm hưởng di sản trái ý chí người để lại di sản.",
+      "conclusion": "Người này thuộc diện không có quyền hưởng di sản", "citation": "Điều 621 khoản 1 điểm d Bộ luật Dân sự 2015", "provisionId": "article-621", "relevantSections": ["clause-1-intro", "clause-1-d"], "clipsMetadata": true,
+      "implementations": ["R-D04b-will-document-interference"]
+    },
+    "R-D05": {
+      "ruleId": "R-D05", "module": "eligibility", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Ngoại lệ do người để lại di sản biết hành vi", "reasoning": "Dù thuộc khoản 1, người này vẫn có thể hưởng theo di chúc nếu người để lại di sản biết hành vi nhưng vẫn cho hưởng.",
+      "conclusion": "Người này được hưởng theo phạm vi di chúc chỉ định", "citation": "Điều 621 khoản 2 Bộ luật Dân sự 2015", "provisionId": "article-621", "relevantSections": ["clause-2"], "clipsMetadata": true,
+      "implementations": ["R-D05-disqualification-exception"]
+    },
+    "ELIGIBILITY-BLOCKED": {
+      "ruleId": "ELIGIBILITY-BLOCKED", "module": "eligibility", "kind": "internal", "status": "draft",
+      "title": "Chiếu căn cứ loại trừ sang kết quả", "reasoning": "Sau khi rà soát đầy đủ, một căn cứ loại trừ không có ngoại lệ được chiếu thành kết quả không được hưởng.",
+      "conclusion": "Không đủ điều kiện hưởng di sản", "citation": "Quy tắc kết nối nội bộ; dựa trên Điều 621", "provisionId": "article-621", "relevantSections": ["clause-1-intro"], "clipsMetadata": true,
+      "implementations": ["ELIGIBILITY-BLOCKED"]
+    },
+    "ELIGIBILITY-CLEAR": {
+      "ruleId": "ELIGIBILITY-CLEAR", "module": "eligibility", "kind": "internal", "status": "draft",
+      "title": "Hoàn tất rà soát căn cứ loại trừ", "reasoning": "Marker completeness cho biết các nhóm căn cứ Điều 621 đã được kiểm tra và không có căn cứ loại trừ nào được dẫn xuất.",
+      "conclusion": "Không phát hiện căn cứ loại trừ trong phạm vi mô-đun", "citation": "Quy tắc completeness nội bộ; không phải kết luận quyền hưởng cuối cùng", "provisionId": "article-621", "relevantSections": ["clause-1-intro"], "clipsMetadata": true,
+      "implementations": ["ELIGIBILITY-CLEAR"]
     },
     "R-A01": {
       "ruleId": "R-A01",

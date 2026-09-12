@@ -1,0 +1,5 @@
+(analysis-request (case-id case-eligibility-d03) (subject case-eligibility-d03) (module eligibility))
+(asserted-fact (fact-id candidate) (case-id case-eligibility-d03) (subject person-one) (predicate eligibility-candidate) (value true))
+(asserted-fact (fact-id complete) (case-id case-eligibility-d03) (subject person-one) (predicate eligibility-review-complete) (value true))
+(asserted-fact (fact-id offense) (case-id case-eligibility-d03) (subject person-one) (predicate convicted-offense-against-other-heir) (value true))
+(asserted-fact (fact-id motive) (case-id case-eligibility-d03) (subject person-one) (predicate inheritance-benefit-motive) (value true))

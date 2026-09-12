@@ -9,6 +9,45 @@
     "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
   },
   "provisions": {
+    "article-621": {
+      "id": "article-621",
+      "number": "Điều 621",
+      "title": "Người không được quyền hưởng di sản",
+      "sections": [
+        {
+          "id": "clause-1-intro",
+          "label": "Khoản 1",
+          "text": "Những người sau đây không được quyền hưởng di sản:"
+        },
+        {
+          "id": "clause-1-a",
+          "label": "Khoản 1 điểm a",
+          "text": "Người bị kết án về hành vi cố ý xâm phạm tính mạng, sức khoẻ hoặc về hành vi ngược đãi nghiêm trọng, hành hạ người để lại di sản, xâm phạm nghiêm trọng danh dự, nhân phẩm của người đó;"
+        },
+        {
+          "id": "clause-1-b",
+          "label": "Khoản 1 điểm b",
+          "text": "Người vi phạm nghiêm trọng nghĩa vụ nuôi dưỡng người để lại di sản;"
+        },
+        {
+          "id": "clause-1-c",
+          "label": "Khoản 1 điểm c",
+          "text": "Người bị kết án về hành vi cố ý xâm phạm tính mạng người thừa kế khác nhằm hưởng một phần hoặc toàn bộ phần di sản mà người thừa kế đó có quyền hưởng;"
+        },
+        {
+          "id": "clause-1-d",
+          "label": "Khoản 1 điểm d",
+          "text": "Người có hành vi lừa dối, cưỡng ép hoặc ngăn cản người để lại di sản trong việc lập di chúc; giả mạo di chúc, sửa chữa di chúc, huỷ di chúc, che giấu di chúc nhằm hưởng một phần hoặc toàn bộ di sản trái với ý chí của người để lại di sản."
+        },
+        {
+          "id": "clause-2",
+          "label": "Khoản 2",
+          "text": "Những người quy định tại khoản 1 Điều này vẫn được hưởng di sản, nếu người để lại di sản đã biết hành vi của những người đó, nhưng vẫn cho họ hưởng di sản theo di chúc."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
     "article-627": {
       "id": "article-627",
       "number": "Điều 627",

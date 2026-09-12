@@ -25,7 +25,9 @@ export function LegalRuleDialog({ ruleId, onOpenChange }: { ruleId?: string; onO
 
         {explanation?.kind === "internal" ? (
           <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
-            Đây là quy tắc kỹ thuật chuyển tiếp của knowledge base, không phải một điều luật. Nó đang thay cho phần tiêu chí hình thức tại Điều 627–636 chưa được mô hình hóa đầy đủ.
+            {ruleId === "FORM-ASSESSMENT-ACCEPTED"
+              ? "Đây là quy tắc kỹ thuật chuyển tiếp, đang thay cho phần tiêu chí hình thức tại Điều 627–636 chưa được mô hình hóa đầy đủ."
+              : "Đây là quy tắc kiểm soát hoặc kết nối nội bộ của knowledge base, không phải một điều luật độc lập. Hãy đọc căn cứ pháp lý và giới hạn kết luận đi kèm."}
           </div>
         ) : null}
 

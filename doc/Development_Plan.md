@@ -338,12 +338,22 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - runtime nạp nhóm B và nhóm A trong cùng working memory để `valid-will` luôn là derived fact, không phải câu trả lời do người dùng tự khai;
 - SQLite lưu subject trên từng result, missing requirement và trace để một lần chạy có thể trả kết quả riêng cho nhiều phần di sản.
 
-### Bước tiếp theo — Hoàn thiện thao tác nhiều phần di sản
+### Mốc đã triển khai — Nhiều phần di sản và quyền hưởng
 
-- cho phép thêm, đổi tên và xóa nhiều `estate-portion` trong presenter;
-- hiển thị kết quả theo danh sách phần và tổng quan các chế độ cùng tồn tại;
-- bổ sung tình huống kiểm thử có cả `statutory` và `testamentary` nhưng ở hai phần khác nhau (không phải conflict);
-- sau khi ổn định UI, chuyển sang mô-đun `eligibility` và giữ hạng mục so sánh inference runs ở backlog hậu MVP.
+- presenter cho phép thêm, đổi tên, sửa trạng thái và xóa nhiều `estate-portion`;
+- một inference run hiển thị kết quả và trace riêng cho từng phần;
+- regression test xác nhận `statutory` và `testamentary` có thể cùng tồn tại ở hai phần khác nhau mà không phải conflict;
+- mô-đun `eligibility` triển khai R-D01–R-D05 theo từng người, dùng `eligibility-review-complete` để kiểm soát suy luận từ sự vắng mặt;
+- Điều 621 đã được trích vào legal catalog và liên kết từ trace/UI;
+- presenter eligibility hỗ trợ nhiều người, các căn cứ loại trừ và ngoại lệ khoản 2;
+- R-D01 và R-D05 giữ nhãn `TEAM_REVIEW`; toàn bộ knowledge base vẫn là draft chưa phê duyệt.
+
+### Bước tiếp theo — Hàng thừa kế và graph quan hệ
+
+- đặc tả `person`, `parent-of`, quan hệ vợ/chồng và quan hệ nuôi dưỡng;
+- triển khai R-C01 trước, sau đó review cách suy ra quan hệ hàng 2–3 từ graph;
+- dùng kết quả `eligibility` làm dependency, không nhập lại kết luận pháp lý bằng tay;
+- giữ tính năng so sánh inference runs ở backlog hậu MVP.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

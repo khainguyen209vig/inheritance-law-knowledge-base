@@ -15,6 +15,7 @@ const symbolFact = (predicate: string) => z.object({
 export const inheritanceTypeFactSchema = z.discriminatedUnion("predicate", [
   booleanFact("has-will"),
   booleanFact("estate-portion"),
+  z.object({ id: symbolSchema, predicate: z.literal("estate-portion-label"), value: z.string().trim().min(1).max(80) }),
   symbolFact("applicable-will"),
   booleanFact("portion-disposed"),
   symbolFact("disposition-beneficiary"),

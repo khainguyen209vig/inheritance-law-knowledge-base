@@ -73,10 +73,15 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
     id: "eligibility",
     title: "Quyền hưởng di sản",
     shortDescription: "Đánh giá quyền hưởng hoặc căn cứ loại trừ đối với từng người.",
-    status: "planned",
+    status: "implemented",
     interactionMode: "people-table",
-    primaryResultPredicate: "eligible-to-inherit",
+    primaryResultPredicate: "article-621-status",
     dependencies: [],
+    runtime: {
+      inferencePath: "/api/cases/:caseId/inference/eligibility",
+      subjectPrefix: "person",
+      defaultCaseTitle: "Hồ sơ đánh giá quyền hưởng di sản",
+    },
   },
   "heir-rank": {
     id: "heir-rank",

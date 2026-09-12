@@ -4,6 +4,7 @@ import { getAnalysisModule, type AnalysisModuleDefinition, type AnalysisModuleId
 import type { ApiFact } from "@/modules/contracts";
 import { WillValidityWorkspace } from "@/modules/will-validity/workspace";
 import { InheritanceTypeWorkspace } from "@/modules/inheritance-type/workspace";
+import { EligibilityWorkspace } from "@/modules/eligibility/workspace";
 
 interface ModuleInitialCase {
   id: string;
@@ -17,6 +18,7 @@ type WorkspacePresenter = ComponentType<{ module: AnalysisModuleDefinition; init
 const workspacePresenters: Partial<Record<AnalysisModuleId, WorkspacePresenter>> = {
   "will-validity": WillValidityWorkspace,
   "inheritance-type": InheritanceTypeWorkspace,
+  eligibility: EligibilityWorkspace,
 };
 
 export function ModuleWorkspace({ moduleId, initialCase }: { moduleId: AnalysisModuleId; initialCase?: ModuleInitialCase }) {

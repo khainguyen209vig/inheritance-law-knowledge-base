@@ -50,7 +50,7 @@
   (slot module (type SYMBOL))
   (slot predicate (type SYMBOL))
   (slot value (type SYMBOL)
-    (allowed-symbols true false unknown conflict statutory testamentary))
+    (allowed-symbols true false unknown conflict statutory testamentary excluded not-excluded exception-under-will))
   (multislot derivations))
 
 ; Generic explanation record copied from a derived fact. Sequence/order is

@@ -46,5 +46,6 @@ export function parseClipsOutput(stdout: string): InferenceOutput {
 
 function isModuleResultValue(value: string | undefined): value is ModuleResultValue {
   return value === "true" || value === "false" || value === "unknown" || value === "conflict"
-    || value === "statutory" || value === "testamentary";
+    || value === "statutory" || value === "testamentary"
+    || value === "excluded" || value === "not-excluded" || value === "exception-under-will";
 }

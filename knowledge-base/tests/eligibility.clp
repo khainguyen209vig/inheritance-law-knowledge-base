@@ -1,0 +1,28 @@
+(load "knowledge-base/templates.clp")
+(load "knowledge-base/rule-metadata.clp")
+(load "knowledge-base/rules/03-eligibility.clp")
+(load "knowledge-base/rules/92-eligibility-completeness.clp")
+(load "knowledge-base/rules/96-eligibility-projection.clp")
+(load "knowledge-base/rules/98-explanation.clp")
+
+(deffunction test-eligibility (?fixture ?case-id ?value ?rule-id ?label)
+  (reset) (load-facts ?fixture) (run)
+  (if (and
+    (any-factp ((?result module-result)) (and (eq ?result:case-id ?case-id) (eq ?result:subject person-one) (eq ?result:value ?value)))
+    (any-factp ((?trace inference-trace)) (and (eq ?trace:case-id ?case-id) (eq ?trace:rule-id ?rule-id))))
+    then (printout t "PASS " ?label crlf) else (printout t "FAIL " ?label crlf)))
+
+(test-eligibility "knowledge-base/fixtures/eligibility-clear.clp" case-eligible-clear not-excluded ELIGIBILITY-CLEAR eligibility-clear)
+(test-eligibility "knowledge-base/fixtures/eligibility-d01.clp" case-eligibility-d01 excluded R-D01 eligibility-d01)
+(test-eligibility "knowledge-base/fixtures/eligibility-d02.clp" case-eligibility-d02 excluded R-D02 eligibility-d02)
+(test-eligibility "knowledge-base/fixtures/eligibility-d03.clp" case-eligibility-d03 excluded R-D03 eligibility-d03)
+(test-eligibility "knowledge-base/fixtures/eligibility-d04a.clp" case-eligibility-d04a excluded R-D04a eligibility-d04a)
+(test-eligibility "knowledge-base/fixtures/eligibility-d04b.clp" case-eligibility-d04b excluded R-D04b eligibility-d04b)
+(test-eligibility "knowledge-base/fixtures/eligibility-d05.clp" case-eligibility-d05 exception-under-will R-D05 eligibility-d05)
+
+(reset)
+(load-facts "knowledge-base/fixtures/eligibility-unknown.clp")
+(run)
+(if (any-factp ((?result module-result)) (and (eq ?result:case-id case-eligibility-unknown) (eq ?result:value unknown)))
+  then (printout t "PASS eligibility-unknown" crlf) else (printout t "FAIL eligibility-unknown" crlf))
+(exit)

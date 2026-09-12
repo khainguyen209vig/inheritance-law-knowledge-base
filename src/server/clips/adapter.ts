@@ -20,7 +20,11 @@ export async function inferInheritanceType(input: {
   subject: string;
   facts: StoredCase["facts"];
 }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts(input), createInheritanceTypeDriver);
+  return inferWithClips(serializeCaseFacts({ ...input, module: "inheritance-type" }), createInheritanceTypeDriver);
+}
+
+export async function inferEligibility(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
+  return inferWithClips(serializeCaseFacts({ ...input, module: "eligibility" }), createEligibilityDriver);
 }
 
 async function inferWithClips(
@@ -76,12 +80,12 @@ function serializeWillFacts(input: WillValidityRequest): string {
   return `${[request, ...facts].join("\n\n")}\n`;
 }
 
-function serializeCaseFacts(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): string {
+function serializeCaseFacts(input: { caseId: string; subject: string; module: string; facts: StoredCase["facts"] }): string {
   const request = [
     "(analysis-request",
     `  (case-id ${input.caseId})`,
     `  (subject ${input.subject})`,
-    "  (module inheritance-type))",
+    `  (module ${input.module}))`,
   ].join("\n");
   const facts = input.facts.map((fact) => [
     "(asserted-fact",
@@ -89,9 +93,16 @@ function serializeCaseFacts(input: { caseId: string; subject: string; facts: Sto
     `  (case-id ${input.caseId})`,
     `  (subject ${fact.subject})`,
     `  (predicate ${fact.predicate})`,
-    `  (value ${String(fact.value)}))`,
+    `  (value ${serializeCaseFactValue(fact)}))`,
   ].join("\n"));
   return `${[request, ...facts].join("\n\n")}\n`;
+}
+
+function serializeCaseFactValue(fact: StoredCase["facts"][number]): string {
+  if (fact.predicate === "estate-portion-label" || fact.predicate === "person-label") {
+    return `"${String(fact.value).replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
+  }
+  return String(fact.value);
 }
 
 function createWillValidityDriver(factsPath: string): string {
@@ -131,6 +142,17 @@ function createInheritanceTypeDriver(factsPath: string): string {
     "(emit-machine-output)",
     "(exit)",
     "",
+  ].join("\n");
+}
+
+function createEligibilityDriver(factsPath: string): string {
+  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
+  return [
+    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
+    `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/92-eligibility-completeness.clp")})`,
+    `(load ${clipsPath("rules/96-eligibility-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
+    `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
+    "(run)", "(emit-machine-output)", "(exit)", "",
   ].join("\n");
 }
 

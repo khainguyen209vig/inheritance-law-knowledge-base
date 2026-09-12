@@ -1,0 +1,5 @@
+(analysis-request (case-id case-eligibility-d04b) (subject case-eligibility-d04b) (module eligibility))
+(asserted-fact (fact-id candidate) (case-id case-eligibility-d04b) (subject person-one) (predicate eligibility-candidate) (value true))
+(asserted-fact (fact-id complete) (case-id case-eligibility-d04b) (subject person-one) (predicate eligibility-review-complete) (value true))
+(asserted-fact (fact-id interference) (case-id case-eligibility-d04b) (subject person-one) (predicate will-document-interference) (value concealment))
+(asserted-fact (fact-id intent) (case-id case-eligibility-d04b) (subject person-one) (predicate improper-benefit-intent) (value true))

@@ -1,0 +1,7 @@
+(analysis-request (case-id case-eligibility-d05) (subject case-eligibility-d05) (module eligibility))
+(asserted-fact (fact-id candidate) (case-id case-eligibility-d05) (subject person-one) (predicate eligibility-candidate) (value true))
+(asserted-fact (fact-id complete) (case-id case-eligibility-d05) (subject person-one) (predicate eligibility-review-complete) (value true))
+(asserted-fact (fact-id support) (case-id case-eligibility-d05) (subject person-one) (predicate serious-support-duty-violation) (value true))
+(asserted-fact (fact-id knew) (case-id case-eligibility-d05) (subject person-one) (predicate deceased-knew-disqualifying-act) (value true))
+(asserted-fact (fact-id named) (case-id case-eligibility-d05) (subject person-one) (predicate named-in-will-after-knowledge) (value true))
+(asserted-fact (fact-id will) (case-id case-eligibility-d05) (subject person-one) (predicate eligibility-applicable-will) (value will-one))

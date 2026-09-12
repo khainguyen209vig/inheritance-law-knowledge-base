@@ -1,5 +1,5 @@
 export type InferenceValue = "true" | "false" | "unknown" | "conflict";
-export type ModuleResultValue = InferenceValue | "statutory" | "testamentary";
+export type ModuleResultValue = InferenceValue | "statutory" | "testamentary" | "excluded" | "not-excluded" | "exception-under-will";
 
 export interface ModuleResult {
   caseId: string;

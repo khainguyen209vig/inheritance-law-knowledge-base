@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { inheritanceTypeFactSchema } from "./inheritance-type";
+import { eligibilityFactSchema } from "./eligibility";
 import { willFactSchema } from "./will-validity";
 
-export const caseFactSchema = z.union([willFactSchema, inheritanceTypeFactSchema]);
+export const caseFactSchema = z.union([willFactSchema, inheritanceTypeFactSchema, eligibilityFactSchema]);
 
 export const caseIdSchema = z
   .string()
@@ -41,6 +42,7 @@ export const runWillValiditySchema = z.object({
 });
 
 export const runInheritanceTypeSchema = z.object({}).strict();
+export const runEligibilitySchema = z.object({}).strict();
 
 export type CreateCaseInput = z.infer<typeof createCaseSchema>;
 export type ReplaceCaseFactsInput = z.infer<typeof replaceCaseFactsSchema>;

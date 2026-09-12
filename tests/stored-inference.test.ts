@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { runStoredInheritanceType, runStoredWillValidity } from "../src/server/cases/service";
+import { runStoredEligibility, runStoredInheritanceType, runStoredWillValidity } from "../src/server/cases/service";
 import { CaseRepository } from "../src/server/db/case-repository";
 import { openDatabase } from "../src/server/db/database";
 
@@ -29,6 +29,23 @@ test("stored inference reads current facts and persists CLIPS output", async () 
   } finally {
     database.close();
   }
+});
+
+test("stored eligibility inference persists one result per person", async () => {
+  const database = openDatabase(":memory:");
+  const repository = new CaseRepository(database);
+  try {
+    repository.createCase({ id: "case-eligibility", title: "Ứng viên" });
+    repository.replaceFacts("case-eligibility", { subject: "case-eligibility", facts: [
+      { id: "candidate", subject: "person-one", predicate: "eligibility-candidate", value: true },
+      { id: "complete", subject: "person-one", predicate: "eligibility-review-complete", value: true },
+      { id: "violation", subject: "person-one", predicate: "serious-support-duty-violation", value: true },
+    ] });
+    const run = await runStoredEligibility(repository, "case-eligibility");
+    assert.equal(run.module, "eligibility");
+    assert.equal(run.results[0]?.subject, "person-one");
+    assert.equal(run.results[0]?.value, "excluded");
+  } finally { database.close(); }
 });
 
 test("stored inheritance inference preserves result subjects and classification values", async () => {
