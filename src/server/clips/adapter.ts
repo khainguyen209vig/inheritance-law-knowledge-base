@@ -27,6 +27,10 @@ export async function inferEligibility(input: { caseId: string; subject: string;
   return inferWithClips(serializeCaseFacts({ ...input, module: "eligibility" }), createEligibilityDriver);
 }
 
+export async function inferHeirRank(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
+  return inferWithClips(serializeCaseFacts({ ...input, module: "heir-rank" }), createHeirRankDriver);
+}
+
 async function inferWithClips(
   serializedFacts: string,
   createDriverFile: (factsPath: string) => string,
@@ -99,7 +103,7 @@ function serializeCaseFacts(input: { caseId: string; subject: string; module: st
 }
 
 function serializeCaseFactValue(fact: StoredCase["facts"][number]): string {
-  if (fact.predicate === "estate-portion-label" || fact.predicate === "person-label") {
+  if (fact.predicate === "estate-portion-label" || fact.predicate === "person-label" || fact.predicate === "heir-person-label") {
     return `"${String(fact.value).replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
   }
   return String(fact.value);
@@ -151,6 +155,17 @@ function createEligibilityDriver(factsPath: string): string {
     `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
     `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/92-eligibility-completeness.clp")})`,
     `(load ${clipsPath("rules/96-eligibility-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
+    `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
+    "(run)", "(emit-machine-output)", "(exit)", "",
+  ].join("\n");
+}
+
+function createHeirRankDriver(factsPath: string): string {
+  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
+  return [
+    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
+    `(load ${clipsPath("rules/04-heir-rank.clp")})`, `(load ${clipsPath("rules/93-heir-rank-completeness.clp")})`,
+    `(load ${clipsPath("rules/95-heir-rank-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
     `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
     "(run)", "(emit-machine-output)", "(exit)", "",
   ].join("\n");

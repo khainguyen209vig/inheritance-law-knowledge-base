@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v3",
+  "knowledgeBaseVersion": "inheritance-kb-v4",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -155,6 +155,21 @@
       "relevantSections": ["clause-5"],
       "clipsMetadata": true,
       "implementations": ["R-B09-valid-oral-form", "R-B09-oral-form-requirements"]
+    },
+    "R-C01": {
+      "ruleId": "R-C01",
+      "module": "heir-rank",
+      "kind": "legal",
+      "status": "draft",
+      "reviewState": "MODEL_READY",
+      "title": "Ứng viên thuộc hàng thừa kế thứ nhất",
+      "reasoning": "Quan hệ vợ/chồng tại thời điểm mở thừa kế, cha mẹ đẻ hoặc nuôi, và con đẻ hoặc nuôi đặt người đang xét vào nhóm ứng viên hàng thứ nhất. Kết luận này chưa tự động có nghĩa người đó được gọi hưởng.",
+      "conclusion": "Ứng viên thuộc hàng thừa kế thứ nhất",
+      "citation": "Điều 651 khoản 1 điểm a Bộ luật Dân sự 2015",
+      "provisionId": "article-651",
+      "relevantSections": ["clause-1-intro", "clause-1-a"],
+      "clipsMetadata": true,
+      "implementations": ["R-C01-spouse", "R-C01-biological-parent", "R-C01-adoptive-parent", "R-C01-biological-child", "R-C01-adoptive-child"]
     },
     "R-D01": {
       "ruleId": "R-D01", "module": "eligibility", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",

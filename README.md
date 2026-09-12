@@ -65,6 +65,7 @@ Các nhóm luật được tổ chức thành mô-đun kết quả dùng chung w
 - [x] Triển khai mô-đun loại thừa kế R-A01–R-A06 theo từng phần di sản, gồm cả các rule `TEAM_REVIEW` ở trạng thái draft.
 - [x] Thêm, sửa và xóa nhiều phần di sản với kết quả riêng từng phần.
 - [x] Triển khai mô-đun quyền hưởng R-D01–R-D05 theo từng người dựa trên Điều 621.
+- [x] Khởi tạo graph gia đình và triển khai R-C01 phân loại ứng viên hàng thừa kế thứ nhất.
 - [ ] So sánh hai inference runs của cùng hồ sơ (hạng mục hậu MVP).
 
 ## Phạm vi kết quả
@@ -166,7 +167,7 @@ Giao diện tại `/` là một reasoning workspace responsive, gồm:
 - chế độ kỹ thuật mới hiển thị predicate, value và supports;
 - lưu case, facts và inference snapshot vào SQLite khi chạy CLIPS.
 
-Nội dung Điều 621, 627, 629, 630, 649 và 650 hiển thị trong dialog được đọc từ catalog JSON đã trích xuất từ `doc/Luat_ThuaKe.doc`. Phần liên quan trực tiếp tới rule được đánh dấu “Rule đang sử dụng”, đồng thời dialog cung cấp liên kết đối chiếu văn bản trên Cổng Thông tin điện tử Chính phủ. Quy tắc chuyển tiếp nội bộ được ghi rõ là quy tắc kỹ thuật, không được trình bày như một điều luật.
+Nội dung Điều 621, 627, 629, 630, 649, 650 và 651 hiển thị trong dialog được đọc từ catalog JSON đã trích xuất từ `doc/Luat_ThuaKe.doc`. Phần liên quan trực tiếp tới rule được đánh dấu “Rule đang sử dụng”, đồng thời dialog cung cấp liên kết đối chiếu văn bản trên Cổng Thông tin điện tử Chính phủ. Quy tắc chuyển tiếp nội bộ được ghi rõ là quy tắc kỹ thuật, không được trình bày như một điều luật.
 
 ### Trích xuất và lưu trữ điều luật
 
@@ -178,13 +179,13 @@ Văn bản đã chuẩn hóa được lưu tại `knowledge-base/legal-sources/c
 npm run law:extract
 ```
 
-Lệnh sử dụng LibreOffice ở chế độ headless để chuyển `.doc` sang text, tách Điều 621, 627, 629, 630, 649 và 650, chuẩn hóa các khoản/điểm rồi ghi lại JSON. Trường `sourceSha256` giúp nhận biết chính xác phiên bản tài liệu nguồn đã được trích xuất. Sau khi chạy, cần review diff của catalog và chạy `npm test` trước khi chấp nhận thay đổi pháp lý.
+Lệnh sử dụng LibreOffice ở chế độ headless để chuyển `.doc` sang text, tách Điều 621, 627, 629, 630, 649, 650 và 651, chuẩn hóa các khoản/điểm rồi ghi lại JSON. Trường `sourceSha256` giúp nhận biết chính xác phiên bản tài liệu nguồn đã được trích xuất. Sau khi chạy, cần review diff của catalog và chạy `npm test` trước khi chấp nhận thay đổi pháp lý.
 
 Trong TypeScript có thể truy xuất trực tiếp bằng `getLegalProvision("article-630")` hoặc `getLegalSection("article-630", "clause-1-a")` từ `src/domain/legal-knowledge.ts`.
 
 UI sử dụng Tailwind CSS và các shadcn source components trong `src/components/ui`. Hàm `cn()` kết hợp `clsx` với `tailwind-merge` để xử lý class variants.
 
-Trang `/modules` đọc module registry và hiển thị các mục tiêu phân tích cùng kiểu interaction dự kiến. Ba presenter đã triển khai là `/modules/will-validity`, `/modules/inheritance-type` và `/modules/eligibility`; mỗi mô-đun có cách nhập và trình bày kết quả riêng.
+Trang `/modules` đọc module registry và hiển thị các mục tiêu phân tích cùng kiểu interaction dự kiến. Bốn presenter đã triển khai là `/modules/will-validity`, `/modules/inheritance-type`, `/modules/eligibility` và `/modules/heir-rank`; mỗi mô-đun có cách nhập và trình bày kết quả riêng.
 
 Trang `/cases` quản lý các hồ sơ trong SQLite. `/cases/:caseId` hiển thị facts hiện tại, mô-đun có thể chạy và lịch sử inference runs; `/cases/:caseId/runs/:runId` mở snapshot bất biến cùng trace và căn cứ pháp lý. Khi mở lại `will-validity`, presenter khôi phục answers từ facts đã lưu thay vì tạo một case mới.
 
@@ -218,6 +219,7 @@ Response gồm `results`, `missing` và `traces`. Route chạy trên Node.js run
 | `POST` | `/api/cases/:caseId/inference/will-validity` | Chạy CLIPS và lưu một snapshot mới |
 | `POST` | `/api/cases/:caseId/inference/inheritance-type` | Chạy nhóm luật A trên toàn bộ phần di sản và lưu snapshot |
 | `POST` | `/api/cases/:caseId/inference/eligibility` | Chạy nhóm luật D trên toàn bộ người được xét và lưu snapshot |
+| `POST` | `/api/cases/:caseId/inference/heir-rank` | Chạy phân loại hàng thừa kế trên graph gia đình và lưu snapshot |
 | `GET` | `/api/cases/:caseId/inference-runs` | Liệt kê lịch sử suy luận của vụ việc |
 | `GET` | `/api/cases/:caseId/inference-runs/:runId` | Đọc lại một lần suy luận |
 
@@ -275,6 +277,7 @@ npm run build
 │   ├── modules/
 │   │   ├── contracts.ts             # Contract chung của answer, question, fact và result
 │   │   ├── eligibility/              # Presenter quyền hưởng theo từng người
+│   │   ├── heir-rank/                # Presenter graph gia đình và hàng thừa kế
 │   │   ├── inheritance-type/         # Presenter phân loại theo từng phần di sản
 │   │   └── will-validity/            # Question flow, fact mapper, presenter và presentation labels
 │   └── server/
@@ -353,6 +356,7 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 5. [x] Liên kết kết luận/trace với registry và nội dung Điều 649–650.
 6. [x] Mở rộng presenter để thêm, sửa và xóa nhiều phần di sản trong cùng hồ sơ.
 7. [x] Triển khai `eligibility` R-D01–R-D05 theo từng người, gồm ngoại lệ khoản 2 Điều 621.
-8. [ ] Thiết kế mô-đun `heir-rank` trên graph quan hệ gia đình và kết quả eligibility.
+8. [x] Thiết kế graph quan hệ và triển khai R-C01 cho hàng thừa kế thứ nhất.
+9. [ ] Mở rộng graph cho R-C02–R-C03, sau đó triển khai R-C05–R-C06 để xác định hàng được gọi hưởng.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

@@ -87,17 +87,22 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
     id: "heir-rank",
     title: "Hàng thừa kế",
     shortDescription: "Xác định hàng thừa kế theo pháp luật của từng người.",
-    status: "planned",
+    status: "implemented",
     interactionMode: "family-tree",
-    primaryResultPredicate: "heir-rank",
+    primaryResultPredicate: "candidate-heir-rank",
     dependencies: [
       {
         moduleId: "inheritance-type",
-        mode: "required",
-        status: "draft",
-        reason: "Chỉ cần xét hàng thừa kế cho phần di sản áp dụng thừa kế theo pháp luật.",
+        mode: "conditional",
+        status: "implemented",
+        reason: "Kết quả phân loại ứng viên có thể chạy độc lập; việc gọi hưởng chỉ cần cho phần di sản theo pháp luật.",
       },
     ],
+    runtime: {
+      inferencePath: "/api/cases/:caseId/inference/heir-rank",
+      subjectPrefix: "person",
+      defaultCaseTitle: "Hồ sơ xác định hàng thừa kế",
+    },
   },
   representation: {
     id: "representation",

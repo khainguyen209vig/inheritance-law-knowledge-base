@@ -64,6 +64,12 @@
     (description "Số người làm chứng, việc ghi chép, ký hoặc điểm chỉ và thời hạn xác nhận đáp ứng các điều kiện của di chúc miệng.")
     (status draft))
   (rule-metadata
+    (rule-id R-C01)
+    (module heir-rank)
+    (legal-source "Điều 651 khoản 1 điểm a Bộ luật Dân sự 2015")
+    (description "Quan hệ vợ/chồng tại thời điểm mở thừa kế, cha mẹ đẻ hoặc nuôi, và con đẻ hoặc nuôi đặt người đang xét vào nhóm ứng viên hàng thứ nhất. Kết luận này chưa tự động có nghĩa người đó được gọi hưởng.")
+    (status draft))
+  (rule-metadata
     (rule-id R-D01)
     (module eligibility)
     (legal-source "Điều 621 khoản 1 điểm a Bộ luật Dân sự 2015")

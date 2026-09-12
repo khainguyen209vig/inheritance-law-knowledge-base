@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { runStoredEligibility, runStoredInheritanceType, runStoredWillValidity } from "../src/server/cases/service";
+import { runStoredEligibility, runStoredHeirRank, runStoredInheritanceType, runStoredWillValidity } from "../src/server/cases/service";
 import { CaseRepository } from "../src/server/db/case-repository";
 import { openDatabase } from "../src/server/db/database";
 
@@ -45,6 +45,22 @@ test("stored eligibility inference persists one result per person", async () => 
     assert.equal(run.module, "eligibility");
     assert.equal(run.results[0]?.subject, "person-one");
     assert.equal(run.results[0]?.value, "excluded");
+  } finally { database.close(); }
+});
+
+test("stored heir-rank inference persists graph classification", async () => {
+  const database = openDatabase(":memory:");
+  const repository = new CaseRepository(database);
+  try {
+    repository.createCase({ id: "case-rank", title: "Graph gia đình" });
+    repository.replaceFacts("case-rank", { subject: "case-rank", facts: [
+      { id: "deceased", subject: "deceased-one", predicate: "deceased-person", value: true },
+      { id: "candidate", subject: "person-one", predicate: "heir-rank-candidate", value: true },
+      { id: "edge", subject: "person-one", predicate: "spouse-at-opening", value: "deceased-one" },
+    ] });
+    const run = await runStoredHeirRank(repository, "case-rank");
+    assert.equal(run.module, "heir-rank");
+    assert.equal(run.results[0]?.value, "rank-1");
   } finally { database.close(); }
 });
 

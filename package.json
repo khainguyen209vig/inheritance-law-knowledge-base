@@ -9,7 +9,7 @@
     "db:init": "node --import tsx scripts/init-db.ts",
     "law:extract": "node --import tsx scripts/extract-legal-provisions.ts",
     "kb:generate": "node --import tsx scripts/generate-rule-metadata.ts",
-    "test:kb": "clips -f2 knowledge-base/tests/will-validity.clp && clips -f2 knowledge-base/tests/inheritance-type.clp && clips -f2 knowledge-base/tests/eligibility.clp",
+    "test:kb": "clips -f2 knowledge-base/tests/will-validity.clp && clips -f2 knowledge-base/tests/inheritance-type.clp && clips -f2 knowledge-base/tests/eligibility.clp && clips -f2 knowledge-base/tests/heir-rank.clp",
     "test:app": "node --import tsx --test tests/*.test.ts",
     "test": "npm run test:kb && npm run test:app"
   },

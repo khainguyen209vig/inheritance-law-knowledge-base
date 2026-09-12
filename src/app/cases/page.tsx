@@ -9,7 +9,7 @@ import { getDatabase } from "@/server/db/database";
 
 export const dynamic = "force-dynamic";
 
-const resultLabels = { true: "Đạt", false: "Không đạt", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn", statutory: "Theo pháp luật", testamentary: "Theo di chúc", excluded: "Không có quyền hưởng", "not-excluded": "Không bị loại trừ", "exception-under-will": "Ngoại lệ di chúc" };
+const resultLabels = { true: "Đạt", false: "Không đạt", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn", statutory: "Theo pháp luật", testamentary: "Theo di chúc", excluded: "Không có quyền hưởng", "not-excluded": "Không bị loại trừ", "exception-under-will": "Ngoại lệ di chúc", "rank-1": "Hàng thứ nhất", "rank-2": "Hàng thứ hai", "rank-3": "Hàng thứ ba" };
 
 export default function CasesPage() {
   const cases = new CaseRepository(getDatabase()).listCases();

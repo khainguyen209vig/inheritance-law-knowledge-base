@@ -19,6 +19,8 @@ Mô-đun `inheritance-type` triển khai R-A01–R-A06 theo từng `estate-porti
 
 Mô-đun `eligibility` triển khai R-D01–R-D05 theo từng người dựa trên Điều 621. Hành vi, bản án, mục đích và ngoại lệ được biểu diễn bằng facts riêng; `eligibility-review-complete=true` xác nhận nhóm đã rà soát đủ các căn cứ, không phải kết luận pháp lý do hệ thống tự đoán.
 
+Mô-đun `heir-rank` hiện triển khai R-C01. Quan hệ hàng thứ nhất được suy ra từ graph có hướng thay vì một nhãn kết luận do người dùng nhập; kết quả `candidate-heir-rank=rank-1` chưa phải kết luận `called-to-inherit`.
+
 Nếu các observations đều có mặt nhưng chưa khớp đường suy luận dương hoặc exclusion rule đã được mô hình hóa, completeness layer tạo `unresolved-rule-path` và trả `UNKNOWN`. Cách xử lý này giữ open-world semantics cho đến khi team duyệt rule âm tương ứng.
 
 ## Phân lớp tri thức
@@ -28,8 +30,8 @@ Nếu các observations đều có mặt nhưng chưa khớp đường suy luậ
 | Fact contracts | `templates.clp` | Định nghĩa hình dạng của dữ kiện, kết luận và provenance |
 | Rule registry | `rule-registry.json` | Nguồn duy nhất cho căn cứ, giải thích, implementation và trạng thái kiểm duyệt |
 | Legal metadata | `rule-metadata.clp` | Dữ liệu CLIPS được sinh tự động từ rule registry |
-| Domain knowledge | `rules/01-will-validity.clp` đến `rules/03-eligibility.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
-| Completeness/conflict | `rules/90-*` đến `rules/92-*` | Phát hiện facts thiếu và kết luận mâu thuẫn |
+| Domain knowledge | `rules/01-will-validity.clp` đến `rules/04-heir-rank.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
+| Completeness/conflict | `rules/90-*` đến `rules/93-*` | Phát hiện facts thiếu và kết luận mâu thuẫn |
 | Explanation | `rules/98-explanation.clp` | Chuyển provenance của derived facts thành trace đồng nhất |
 | Result projection | `rules/96-*`, `rules/97-*`, `rules/99-*` | Chọn kết quả cần trả cho mô-đun mà UI yêu cầu |
 | Machine output | `machine-output.clp` | Xuất result, missing facts và trace bằng line protocol ổn định cho TypeScript |
@@ -82,6 +84,7 @@ clips -f2 knowledge-base/run-machine-fixture.clp
 clips -f2 knowledge-base/tests/will-validity.clp
 clips -f2 knowledge-base/tests/inheritance-type.clp
 clips -f2 knowledge-base/tests/eligibility.clp
+clips -f2 knowledge-base/tests/heir-rank.clp
 ```
 
 Không đưa dữ liệu người dùng trực tiếp vào chuỗi lệnh CLIPS. Adapter TypeScript sau này phải kiểm tra schema và serialize facts bằng danh sách giá trị được phép.

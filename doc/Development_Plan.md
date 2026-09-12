@@ -350,8 +350,11 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 
 ### Bước tiếp theo — Hàng thừa kế và graph quan hệ
 
-- đặc tả `person`, `parent-of`, quan hệ vợ/chồng và quan hệ nuôi dưỡng;
-- triển khai R-C01 trước, sau đó review cách suy ra quan hệ hàng 2–3 từ graph;
+- [x] đặc tả người chết, ứng viên, cạnh cha/mẹ đẻ, cha/mẹ nuôi và vợ/chồng tại thời điểm mở thừa kế;
+- [x] triển khai R-C01 thành năm production rules trên graph có hướng;
+- [x] thêm presenter graph, API, persistence, legal dialog Điều 651 và regression tests;
+- [ ] review và triển khai cách suy ra quan hệ hàng 2–3 từ chuỗi cạnh graph;
+- [ ] triển khai R-C05/R-C06 sau khi có completeness cho việc tìm kiếm người thừa kế;
 - dùng kết quả `eligibility` làm dependency, không nhập lại kết luận pháp lý bằng tay;
 - giữ tính năng so sánh inference runs ở backlog hậu MVP.
 

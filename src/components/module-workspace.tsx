@@ -5,6 +5,7 @@ import type { ApiFact } from "@/modules/contracts";
 import { WillValidityWorkspace } from "@/modules/will-validity/workspace";
 import { InheritanceTypeWorkspace } from "@/modules/inheritance-type/workspace";
 import { EligibilityWorkspace } from "@/modules/eligibility/workspace";
+import { HeirRankWorkspace } from "@/modules/heir-rank/workspace";
 
 interface ModuleInitialCase {
   id: string;
@@ -19,6 +20,7 @@ const workspacePresenters: Partial<Record<AnalysisModuleId, WorkspacePresenter>>
   "will-validity": WillValidityWorkspace,
   "inheritance-type": InheritanceTypeWorkspace,
   eligibility: EligibilityWorkspace,
+  "heir-rank": HeirRankWorkspace,
 };
 
 export function ModuleWorkspace({ moduleId, initialCase }: { moduleId: AnalysisModuleId; initialCase?: ModuleInitialCase }) {

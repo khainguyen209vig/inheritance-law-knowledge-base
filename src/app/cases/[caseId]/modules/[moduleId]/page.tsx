@@ -24,7 +24,9 @@ export default async function CaseModulePage({ params }: { params: Promise<{ cas
     ? storedCase.facts.find((fact) => fact.predicate === "will-type")?.subject
     : module.id === "eligibility"
       ? storedCase.facts.find((fact) => fact.predicate === "eligibility-candidate")?.subject
-      : storedCase.facts.find((fact) => fact.predicate === "estate-portion")?.subject;
+      : module.id === "heir-rank"
+        ? storedCase.facts.find((fact) => fact.predicate === "heir-rank-candidate")?.subject
+        : storedCase.facts.find((fact) => fact.predicate === "estate-portion")?.subject;
   const subject = existingSubject ?? `${module.runtime?.subjectPrefix ?? "subject"}-${randomUUID()}`;
 
   return (

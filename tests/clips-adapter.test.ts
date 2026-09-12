@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inferEligibility, inferInheritanceType, inferWillValidity } from "../src/server/clips/adapter";
+import { inferEligibility, inferHeirRank, inferInheritanceType, inferWillValidity } from "../src/server/clips/adapter";
 
 test("CLIPS adapter returns a valid-will result and trace", async () => {
   const output = await inferWillValidity({
@@ -75,6 +75,18 @@ test("eligibility adapter evaluates multiple people and safely serializes labels
   });
   assert.deepEqual(Object.fromEntries(output.results.map((item) => [item.subject, item.value])), { "person-one": "not-excluded", "person-two": "excluded" });
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-D02"));
+});
+
+test("heir-rank adapter derives rank one from directed graph edges", async () => {
+  const output = await inferHeirRank({ caseId: "adapter-rank", subject: "deceased-one", facts: [
+    { id: "deceased", subject: "deceased-one", predicate: "deceased-person", value: true },
+    { id: "candidate", subject: "person-one", predicate: "heir-rank-candidate", value: true },
+    { id: "label", subject: "person-one", predicate: "heir-person-label", value: "Con nuôi A" },
+    { id: "edge", subject: "deceased-one", predicate: "adoptive-parent-of", value: "person-one" },
+  ] });
+  assert.equal(output.results[0]?.subject, "person-one");
+  assert.equal(output.results[0]?.value, "rank-1");
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-C01"));
 });
 
 test("CLIPS adapter preserves unknown and missing facts", async () => {
