@@ -393,7 +393,8 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-A01–R-A06 | Đã triển khai theo từng phần di sản; các rule có nhãn `TEAM_REVIEW` chưa được phê duyệt |
 | R-C01–R-C06 | Đã triển khai trên graph quan hệ, gồm phân loại ba hàng và chọn hàng hoạt động có completeness; R-C02, R-C03, R-C04, R-C06 chờ team review |
 | R-D01–R-D05 | Đã triển khai theo từng người; R-D01 và R-D05 chờ team review |
-| Nhóm E–J | Đặc tả đề xuất để team review, chưa triển khai |
+| R-E01–R-E02 | Đã triển khai lát cắt thế vị trên graph; vẫn ở trạng thái `TEAM_REVIEW` |
+| R-E03–R-E05, nhóm F–J | Đặc tả đề xuất để team review, chưa triển khai |
 | Legal validation | Chưa thực hiện đầy đủ |
 
 ## 10. Câu hỏi dành cho buổi review team

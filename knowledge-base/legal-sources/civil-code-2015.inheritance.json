@@ -231,6 +231,48 @@
       ],
       "sourceDocument": "doc/Luat_ThuaKe.doc",
       "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
+    "article-652": {
+      "id": "article-652",
+      "number": "Điều 652",
+      "title": "Thừa kế thế vị",
+      "sections": [
+        {
+          "id": "main",
+          "label": "Nội dung điều luật",
+          "text": "Trường hợp con của người để lại di sản chết trước hoặc cùng một thời điểm với người để lại di sản thì cháu được hưởng phần di sản mà cha hoặc mẹ của cháu được hưởng nếu còn sống; nếu cháu cũng chết trước hoặc cùng một thời điểm với người để lại di sản thì chắt được hưởng phần di sản mà cha hoặc mẹ của chắt được hưởng nếu còn sống."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
+    "article-653": {
+      "id": "article-653",
+      "number": "Điều 653",
+      "title": "Quan hệ thừa kế giữa con nuôi và cha nuôi, mẹ nuôi và cha đẻ, mẹ đẻ",
+      "sections": [
+        {
+          "id": "main",
+          "label": "Nội dung điều luật",
+          "text": "Con nuôi và cha nuôi, mẹ nuôi được thừa kế di sản của nhau và còn được thừa kế di sản theo quy định tại Điều 651 và Điều 652 của Bộ luật này."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
+    "article-654": {
+      "id": "article-654",
+      "number": "Điều 654",
+      "title": "Quan hệ thừa kế giữa con riêng và bố dượng, mẹ kế",
+      "sections": [
+        {
+          "id": "main",
+          "label": "Nội dung điều luật",
+          "text": "Con riêng và bố dượng, mẹ kế nếu có quan hệ chăm sóc, nuôi dưỡng nhau như cha con, mẹ con thì được thừa kế di sản của nhau và còn được thừa kế di sản theo quy định tại Điều 652 và Điều 653 của Bộ luật này."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
     }
   }
 }

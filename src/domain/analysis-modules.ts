@@ -108,17 +108,22 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
     id: "representation",
     title: "Thừa kế thế vị",
     shortDescription: "Đánh giá điều kiện thế vị dựa trên quan hệ gia đình và thời điểm chết.",
-    status: "planned",
+    status: "implemented",
     interactionMode: "family-tree",
     primaryResultPredicate: "inherits-by-representation",
     dependencies: [
       {
         moduleId: "heir-rank",
         mode: "required",
-        status: "draft",
+        status: "implemented",
         reason: "Cần biết nhánh quan hệ và vị trí của người được thế vị trong hàng thừa kế.",
       },
     ],
+    runtime: {
+      inferencePath: "/api/cases/:caseId/inference/representation",
+      subjectPrefix: "person",
+      defaultCaseTitle: "Hồ sơ thừa kế thế vị",
+    },
   },
   "compulsory-share": {
     id: "compulsory-share",

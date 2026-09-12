@@ -164,6 +164,23 @@ Cấu trúc triển khai cuối cùng sử dụng CLIPS. Mỗi production rule v
 - Bộ câu hỏi được xác định theo mô-đun phân tích đã chọn và có thể rẽ nhánh bằng điều kiện giao diện đã khai báo trước.
 - Cho phép người dùng chọn `Không biết/Chưa xác định` thay vì buộc trả lời Có hoặc Không.
 
+#### Hạng mục bắt buộc — Cải thiện nhập facts bằng cây quan hệ
+
+Presenter `heir-rank` hiện mới là công cụ nhập graph tạm thời: người dùng phải chọn một nhãn quan hệ tổng hợp cho từng ứng viên, còn các nút trung gian được hệ thống tạo ẩn. Cách này đủ để kiểm thử rules nhưng UX kém, khó quan sát graph thật và dễ gây nhầm khi một người có nhiều vai trò hoặc cùng xuất hiện trong nhiều nhánh.
+
+Trước phiên bản trình bày cuối cùng phải thay luồng này bằng trình biên tập cây/graph quan hệ có các yêu cầu:
+
+- tạo mỗi người đúng một lần, sau đó nối cạnh cha/mẹ–con, nuôi dưỡng và vợ/chồng trực tiếp trên sơ đồ;
+- hiển thị rõ hướng và loại cạnh; không yêu cầu người dùng tự chọn “hàng 1/2/3” hoặc nhập kết luận pháp lý;
+- hỗ trợ thêm, sửa, xóa, nối lại và phát hiện nút/cạnh trùng hoặc mâu thuẫn;
+- cho phép chọn một nút để nhập các facts theo người như tình trạng sống, eligibility và từ chối nhận di sản;
+- dùng cùng một graph cho `heir-rank` và `representation`, không tạo các cây riêng chứa dữ liệu lệch nhau;
+- có chế độ xem facts nguyên tử mà UI sẽ lưu trước khi chạy CLIPS;
+- thao tác được bằng bàn phím và trên màn hình nhỏ; trạng thái focus/selected phải rõ ràng;
+- lưu graph ổn định bằng ID của người và cạnh, không phụ thuộc vị trí hiển thị hoặc tên đang nhập.
+
+Hạng mục này là **UX debt bắt buộc xử lý**, không phải tính năng tùy chọn. Việc triển khai rules có thể tiếp tục trên fact contract hiện tại, nhưng không xem presenter graph hiện nay là UI hoàn chỉnh.
+
 ### 5.2. Inference engine
 
 - Nạp facts theo `case_id` và luật theo `knowledge_base_version`.
@@ -359,12 +376,21 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] mở rộng presenter cho tình trạng sống, từ chối, completeness, kết quả xếp hàng/gọi hưởng và dialog căn cứ theo trace;
 - giữ tính năng so sánh inference runs ở backlog hậu MVP.
 
-### Bước tiếp theo — Thừa kế thế vị
+### Mốc đang triển khai — Thừa kế thế vị
 
-- đặc tả `represented-person`, `would-be-entitled` và kết quả `inherits-by-representation` theo từng nhánh gia đình;
-- triển khai R-E01/R-E02 trước để thể hiện suy luận nhiều bước trên graph;
+- [x] đặc tả `represented-person`, `would-be-entitled` và kết quả `inherits-by-representation` theo từng nhánh gia đình;
+- [x] triển khai R-E01/R-E02 để thể hiện suy luận nhiều bước trên graph;
+- [x] nạp rules Điều 621 trong cùng working memory, thêm completeness/projection, API, snapshot, presenter rà soát nhánh và regression tests;
+- [x] trích Điều 652–654 từ tài liệu luật cục bộ vào legal catalog;
 - review R-E04/R-E05 về quan hệ con riêng–bố dượng/mẹ kế trước khi bật kết luận;
 - tái sử dụng trạng thái sống, Điều 621 và graph hiện có thay vì hỏi lại kết luận tổng hợp.
+
+### UX debt trước bản trình bày cuối
+
+- [ ] thay bộ chọn nhãn quan hệ hiện tại bằng trình biên tập cây/graph quan hệ trực quan;
+- [ ] hợp nhất việc nhập người và cạnh giữa `heir-rank` với `representation`;
+- [ ] hiển thị preview facts nguyên tử và cảnh báo graph không nhất quán trước khi suy luận;
+- [ ] kiểm thử usability nội bộ với ít nhất hai thành viên không viết rules CLIPS.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 

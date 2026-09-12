@@ -66,6 +66,7 @@ Các nhóm luật được tổ chức thành mô-đun kết quả dùng chung w
 - [x] Thêm, sửa và xóa nhiều phần di sản với kết quả riêng từng phần.
 - [x] Triển khai mô-đun quyền hưởng R-D01–R-D05 theo từng người dựa trên Điều 621.
 - [x] Triển khai graph gia đình và R-C01–R-C06: phân loại ba hàng, chọn hàng hoạt động và gọi hưởng có kiểm soát completeness.
+- [x] Triển khai lát cắt thừa kế thế vị R-E01/R-E02 trên graph dùng chung, gồm API, presenter rà soát nhánh, trace và tests.
 - [ ] So sánh hai inference runs của cùng hồ sơ (hạng mục hậu MVP).
 
 ## Phạm vi kết quả
@@ -179,13 +180,13 @@ Văn bản đã chuẩn hóa được lưu tại `knowledge-base/legal-sources/c
 npm run law:extract
 ```
 
-Lệnh sử dụng LibreOffice ở chế độ headless để chuyển `.doc` sang text, tách Điều 621, 627, 629, 630, 649, 650 và 651, chuẩn hóa các khoản/điểm rồi ghi lại JSON. Trường `sourceSha256` giúp nhận biết chính xác phiên bản tài liệu nguồn đã được trích xuất. Sau khi chạy, cần review diff của catalog và chạy `npm test` trước khi chấp nhận thay đổi pháp lý.
+Lệnh sử dụng LibreOffice ở chế độ headless để chuyển `.doc` sang text, tách Điều 621, 627, 629, 630 và 649–654, chuẩn hóa các khoản/điểm rồi ghi lại JSON. Trường `sourceSha256` giúp nhận biết chính xác phiên bản tài liệu nguồn đã được trích xuất. Sau khi chạy, cần review diff của catalog và chạy `npm test` trước khi chấp nhận thay đổi pháp lý.
 
 Trong TypeScript có thể truy xuất trực tiếp bằng `getLegalProvision("article-630")` hoặc `getLegalSection("article-630", "clause-1-a")` từ `src/domain/legal-knowledge.ts`.
 
 UI sử dụng Tailwind CSS và các shadcn source components trong `src/components/ui`. Hàm `cn()` kết hợp `clsx` với `tailwind-merge` để xử lý class variants.
 
-Trang `/modules` đọc module registry và hiển thị các mục tiêu phân tích cùng kiểu interaction dự kiến. Bốn presenter đã triển khai là `/modules/will-validity`, `/modules/inheritance-type`, `/modules/eligibility` và `/modules/heir-rank`; mỗi mô-đun có cách nhập và trình bày kết quả riêng.
+Trang `/modules` đọc module registry và hiển thị các mục tiêu phân tích cùng kiểu interaction dự kiến. Năm presenter đã triển khai là `will-validity`, `inheritance-type`, `eligibility`, `heir-rank` và `representation`; mỗi mô-đun có cách nhập và trình bày kết quả riêng. Presenter `representation` rà soát các nhánh trong graph của một hồ sơ có sẵn thay vì tạo cây quan hệ thứ hai.
 
 Trang `/cases` quản lý các hồ sơ trong SQLite. `/cases/:caseId` hiển thị facts hiện tại, mô-đun có thể chạy và lịch sử inference runs; `/cases/:caseId/runs/:runId` mở snapshot bất biến cùng trace và căn cứ pháp lý. Khi mở lại `will-validity`, presenter khôi phục answers từ facts đã lưu thay vì tạo một case mới.
 
@@ -220,6 +221,7 @@ Response gồm `results`, `missing` và `traces`. Route chạy trên Node.js run
 | `POST` | `/api/cases/:caseId/inference/inheritance-type` | Chạy nhóm luật A trên toàn bộ phần di sản và lưu snapshot |
 | `POST` | `/api/cases/:caseId/inference/eligibility` | Chạy nhóm luật D trên toàn bộ người được xét và lưu snapshot |
 | `POST` | `/api/cases/:caseId/inference/heir-rank` | Chạy phân loại hàng thừa kế trên graph gia đình và lưu snapshot |
+| `POST` | `/api/cases/:caseId/inference/representation` | Chạy R-E01/R-E02 trên các nhánh thế vị và lưu snapshot |
 | `GET` | `/api/cases/:caseId/inference-runs` | Liệt kê lịch sử suy luận của vụ việc |
 | `GET` | `/api/cases/:caseId/inference-runs/:runId` | Đọc lại một lần suy luận |
 
@@ -358,6 +360,8 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 7. [x] Triển khai `eligibility` R-D01–R-D05 theo từng người, gồm ngoại lệ khoản 2 Điều 621.
 8. [x] Thiết kế graph quan hệ và triển khai R-C01–R-C03 để phân loại ba hàng thừa kế.
 9. [x] Triển khai R-C04–R-C06, kết nối kết quả Điều 621 và chỉ chọn hàng hoạt động khi có `heir-search-complete=true`.
-10. [ ] Triển khai mô-đun `representation` (R-E01–R-E05), tái sử dụng graph gia đình và kết quả hàng thừa kế.
+10. [x] Triển khai lát cắt `representation` R-E01/R-E02, tái sử dụng graph gia đình, Điều 621 và trạng thái sống/từ chối.
+11. [ ] Trước bản trình bày cuối, thay UI chọn nhãn quan hệ tạm thời bằng trình biên tập cây/graph dùng chung; xem tiêu chí tại `doc/Development_Plan.md`.
+12. [ ] Review và triển khai các quan hệ đặc biệt R-E03–R-E05 sau khi fact model về quan hệ nuôi/con riêng được team chấp thuận.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

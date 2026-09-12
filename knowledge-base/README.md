@@ -21,6 +21,8 @@ Mô-đun `eligibility` triển khai R-D01–R-D05 theo từng người dựa tr�
 
 Mô-đun `heir-rank` triển khai R-C01–R-C06. Ba hàng được suy ra từ các đường đi trên graph có hướng thay vì nhãn hàng do người dùng nhập. `candidate-heir-rank` được giữ riêng với `called-to-inherit`; việc chọn `active-heir-rank` chỉ diễn ra khi có `heir-search-complete=true`, đồng thời dùng kết quả Điều 621, tình trạng sống và việc từ chối. R-C02, R-C03, R-C04 và R-C06 vẫn là `TEAM_REVIEW`.
 
+Mô-đun `representation` triển khai lát cắt R-E01/R-E02 theo Điều 652. CLIPS suy ra `would-be-entitled-if-alive` từ graph và kết quả Điều 621, sau đó đối sánh nhánh cháu/chắt; UI chỉ chọn phạm vi ứng viên. Hai rule này vẫn là `TEAM_REVIEW`; R-E03–R-E05 chưa được triển khai.
+
 Nếu các observations đều có mặt nhưng chưa khớp đường suy luận dương hoặc exclusion rule đã được mô hình hóa, completeness layer tạo `unresolved-rule-path` và trả `UNKNOWN`. Cách xử lý này giữ open-world semantics cho đến khi team duyệt rule âm tương ứng.
 
 ## Phân lớp tri thức
@@ -30,8 +32,8 @@ Nếu các observations đều có mặt nhưng chưa khớp đường suy luậ
 | Fact contracts | `templates.clp` | Định nghĩa hình dạng của dữ kiện, kết luận và provenance |
 | Rule registry | `rule-registry.json` | Nguồn duy nhất cho căn cứ, giải thích, implementation và trạng thái kiểm duyệt |
 | Legal metadata | `rule-metadata.clp` | Dữ liệu CLIPS được sinh tự động từ rule registry |
-| Domain knowledge | `rules/01-will-validity.clp` đến `rules/04-heir-rank.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
-| Completeness/conflict | `rules/90-*` đến `rules/93-*` | Phát hiện facts thiếu và kết luận mâu thuẫn |
+| Domain knowledge | `rules/01-will-validity.clp` đến `rules/05-representation.clp` | Suy ra tri thức pháp lý chỉ từ asserted/derived facts |
+| Completeness/conflict | `rules/90-*` đến `rules/94-*` | Phát hiện facts thiếu và kết luận mâu thuẫn |
 | Explanation | `rules/98-explanation.clp` | Chuyển provenance của derived facts thành trace đồng nhất |
 | Result projection | `rules/95-*` đến `rules/99-*` | Chọn kết quả cần trả cho mô-đun mà UI yêu cầu |
 | Machine output | `machine-output.clp` | Xuất result, missing facts và trace bằng line protocol ổn định cho TypeScript |
@@ -85,6 +87,7 @@ clips -f2 knowledge-base/tests/will-validity.clp
 clips -f2 knowledge-base/tests/inheritance-type.clp
 clips -f2 knowledge-base/tests/eligibility.clp
 clips -f2 knowledge-base/tests/heir-rank.clp
+clips -f2 knowledge-base/tests/representation.clp
 ```
 
 Không đưa dữ liệu người dùng trực tiếp vào chuỗi lệnh CLIPS. Adapter TypeScript sau này phải kiểm tra schema và serialize facts bằng danh sách giá trị được phép.

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { runStoredEligibility, runStoredHeirRank, runStoredInheritanceType, runStoredWillValidity } from "../src/server/cases/service";
+import { runStoredEligibility, runStoredHeirRank, runStoredInheritanceType, runStoredRepresentation, runStoredWillValidity } from "../src/server/cases/service";
 import { CaseRepository } from "../src/server/db/case-repository";
 import { openDatabase } from "../src/server/db/database";
 
@@ -61,6 +61,30 @@ test("stored heir-rank inference persists graph classification", async () => {
     const run = await runStoredHeirRank(repository, "case-rank");
     assert.equal(run.module, "heir-rank");
     assert.ok(run.results.some((result) => result.predicate === "candidate-heir-rank" && result.value === "rank-1"));
+  } finally { database.close(); }
+});
+
+test("stored representation inference persists its candidate subject", async () => {
+  const database = openDatabase(":memory:");
+  const repository = new CaseRepository(database);
+  try {
+    repository.createCase({ id: "case-representation", title: "Nhánh thế vị" });
+    repository.replaceFacts("case-representation", { subject: "case-representation", facts: [
+      { id: "rep-deceased", subject: "deceased-one", predicate: "deceased-person", value: true },
+      { id: "rep-edge-one", subject: "deceased-one", predicate: "biological-parent-of", value: "represented-one" },
+      { id: "rep-edge-two", subject: "represented-one", predicate: "biological-parent-of", value: "candidate-one" },
+      { id: "rep-parent-life", subject: "represented-one", predicate: "heir-life-status", value: "dead-before-or-same" },
+      { id: "rep-parent-eligibility", subject: "represented-one", predicate: "eligibility-candidate", value: true },
+      { id: "rep-parent-review", subject: "represented-one", predicate: "eligibility-review-complete", value: true },
+      { id: "rep-candidate", subject: "candidate-one", predicate: "representation-candidate", value: true },
+      { id: "rep-life", subject: "candidate-one", predicate: "heir-life-status", value: "alive" },
+      { id: "rep-refusal", subject: "candidate-one", predicate: "valid-refusal", value: false },
+      { id: "rep-eligibility", subject: "candidate-one", predicate: "eligibility-candidate", value: true },
+      { id: "rep-review", subject: "candidate-one", predicate: "eligibility-review-complete", value: true },
+    ] });
+    const run = await runStoredRepresentation(repository, "case-representation");
+    assert.equal(run.module, "representation");
+    assert.ok(run.results.some((result) => result.subject === "candidate-one" && result.value === "true"));
   } finally { database.close(); }
 });
 

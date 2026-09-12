@@ -6,6 +6,7 @@ import { WillValidityWorkspace } from "@/modules/will-validity/workspace";
 import { InheritanceTypeWorkspace } from "@/modules/inheritance-type/workspace";
 import { EligibilityWorkspace } from "@/modules/eligibility/workspace";
 import { HeirRankWorkspace } from "@/modules/heir-rank/workspace";
+import { RepresentationWorkspace } from "@/modules/representation/workspace";
 
 interface ModuleInitialCase {
   id: string;
@@ -21,6 +22,7 @@ const workspacePresenters: Partial<Record<AnalysisModuleId, WorkspacePresenter>>
   "inheritance-type": InheritanceTypeWorkspace,
   eligibility: EligibilityWorkspace,
   "heir-rank": HeirRankWorkspace,
+  representation: RepresentationWorkspace,
 };
 
 export function ModuleWorkspace({ moduleId, initialCase }: { moduleId: AnalysisModuleId; initialCase?: ModuleInitialCase }) {

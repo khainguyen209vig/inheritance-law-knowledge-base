@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v5",
+  "knowledgeBaseVersion": "inheritance-kb-v6",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -238,6 +238,44 @@
       "conclusion": "Chặn việc chuyển sang hàng sau cho đến khi bổ sung dữ kiện",
       "citation": "Quy tắc completeness nội bộ; phục vụ áp dụng Điều 651 khoản 3", "provisionId": "article-651", "relevantSections": ["clause-3"], "clipsMetadata": true,
       "implementations": ["STATUTORY-CANDIDATE-UNRESOLVED"]
+    },
+    "REPRESENTED-CHILD-WOULD-BE-ENTITLED": {
+      "ruleId": "REPRESENTED-CHILD-WOULD-BE-ENTITLED", "module": "representation", "kind": "internal", "status": "draft",
+      "title": "Xác định người con sẽ được hưởng nếu còn sống",
+      "reasoning": "Người được thế vị là con ruột của người để lại di sản, chết trước hoặc cùng thời điểm và không bị loại theo Điều 621.",
+      "conclusion": "Đủ căn cứ trung gian để xét phần thế vị", "citation": "Quy tắc kết nối Điều 621, Điều 651 và Điều 652", "provisionId": "article-652", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["REPRESENTED-CHILD-WOULD-BE-ENTITLED"]
+    },
+    "REPRESENTATION-CANDIDATE-QUALIFIED": {
+      "ruleId": "REPRESENTATION-CANDIDATE-QUALIFIED", "module": "representation", "kind": "internal", "status": "draft",
+      "title": "Ứng viên thế vị đủ điều kiện cá nhân", "reasoning": "Ứng viên còn sống, không từ chối hợp lệ và không bị loại theo Điều 621.",
+      "conclusion": "Ứng viên đủ điều kiện để đối sánh đường thế vị", "citation": "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652", "provisionId": "article-652", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["REPRESENTATION-CANDIDATE-QUALIFIED"]
+    },
+    "REPRESENTED-GRANDCHILD-WOULD-BE-ENTITLED": {
+      "ruleId": "REPRESENTED-GRANDCHILD-WOULD-BE-ENTITLED", "module": "representation", "kind": "internal", "status": "draft",
+      "title": "Xác định người cháu sẽ được hưởng thế vị nếu còn sống",
+      "reasoning": "Người cháu nằm trong nhánh thế vị hợp lệ của người con đã chết, bản thân cũng chết trước hoặc cùng thời điểm và không bị loại theo Điều 621.",
+      "conclusion": "Đủ căn cứ trung gian để xét thế vị cho chắt", "citation": "Quy tắc kết nối Điều 621 và Điều 652", "provisionId": "article-652", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["REPRESENTED-GRANDCHILD-WOULD-BE-ENTITLED"]
+    },
+    "R-E01": {
+      "ruleId": "R-E01", "module": "representation", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Cháu thừa kế thế vị cho cha hoặc mẹ", "reasoning": "Graph thể hiện người con của người để lại di sản đã chết trước hoặc cùng thời điểm, còn người con của họ đủ điều kiện hưởng phần thế vị.",
+      "conclusion": "Cháu được xác định là người thừa kế thế vị", "citation": "Điều 652 Bộ luật Dân sự 2015", "provisionId": "article-652", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["R-E01-grandchild-represents-child"]
+    },
+    "R-E02": {
+      "ruleId": "R-E02", "module": "representation", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Chắt thừa kế thế vị cho cha hoặc mẹ", "reasoning": "Graph thể hiện cả người con và người cháu trong nhánh đã chết trước hoặc cùng thời điểm, còn người chắt đủ điều kiện hưởng phần thế vị.",
+      "conclusion": "Chắt được xác định là người thừa kế thế vị", "citation": "Điều 652 Bộ luật Dân sự 2015", "provisionId": "article-652", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["R-E02-great-grandchild-represents-grandchild"]
+    },
+    "REPRESENTATION-CANDIDATE-INACTIVE": {
+      "ruleId": "REPRESENTATION-CANDIDATE-INACTIVE", "module": "representation", "kind": "internal", "status": "draft",
+      "title": "Ứng viên không đủ điều kiện hưởng thế vị", "reasoning": "Ứng viên đã chết, từ chối hợp lệ hoặc bị loại khỏi thừa kế theo pháp luật; ngoại lệ chỉ định trong di chúc không tạo quyền thế vị theo pháp luật.",
+      "conclusion": "Không hưởng theo cơ chế thế vị", "citation": "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652", "provisionId": "article-652", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["REPRESENTATION-CANDIDATE-INACTIVE-ELIGIBILITY", "REPRESENTATION-CANDIDATE-INACTIVE-LIFE", "REPRESENTATION-CANDIDATE-INACTIVE-REFUSAL"]
     },
     "R-D01": {
       "ruleId": "R-D01", "module": "eligibility", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",

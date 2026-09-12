@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inferEligibility, inferHeirRank, inferInheritanceType, inferWillValidity } from "../src/server/clips/adapter";
+import { inferEligibility, inferHeirRank, inferInheritanceType, inferRepresentation, inferWillValidity } from "../src/server/clips/adapter";
 
 test("CLIPS adapter returns a valid-will result and trace", async () => {
   const output = await inferWillValidity({
@@ -132,6 +132,24 @@ test("heir-rank adapter does not skip an unresolved earlier-rank candidate", asy
   assert.ok(output.missing.some((item) => item.subject === "unresolved-first" && item.predicate === "article-621-status"));
   assert.ok(!output.results.some((result) => result.predicate === "active-heir-rank"));
   assert.ok(!output.results.some((result) => result.subject === "resolved-second" && result.predicate === "called-to-inherit" && result.value === "true"));
+});
+
+test("representation adapter derives a grandchild result from a multi-step family path", async () => {
+  const output = await inferRepresentation({ caseId: "adapter-representation", subject: "adapter-representation", facts: [
+    { id: "representation-deceased", subject: "representation-deceased", predicate: "deceased-person", value: true },
+    { id: "representation-parent-edge", subject: "representation-deceased", predicate: "biological-parent-of", value: "represented-child" },
+    { id: "representation-child-edge", subject: "represented-child", predicate: "biological-parent-of", value: "representation-grandchild" },
+    { id: "represented-life", subject: "represented-child", predicate: "heir-life-status", value: "dead-before-or-same" },
+    { id: "represented-eligibility", subject: "represented-child", predicate: "eligibility-candidate", value: true },
+    { id: "represented-review", subject: "represented-child", predicate: "eligibility-review-complete", value: true },
+    { id: "representation-candidate", subject: "representation-grandchild", predicate: "representation-candidate", value: true },
+    { id: "representation-life", subject: "representation-grandchild", predicate: "heir-life-status", value: "alive" },
+    { id: "representation-refusal", subject: "representation-grandchild", predicate: "valid-refusal", value: false },
+    { id: "representation-eligibility", subject: "representation-grandchild", predicate: "eligibility-candidate", value: true },
+    { id: "representation-review", subject: "representation-grandchild", predicate: "eligibility-review-complete", value: true },
+  ] });
+  assert.ok(output.results.some((result) => result.subject === "representation-grandchild" && result.value === "true"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-E01"));
 });
 
 test("CLIPS adapter preserves unknown and missing facts", async () => {

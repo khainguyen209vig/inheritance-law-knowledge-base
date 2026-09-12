@@ -124,6 +124,42 @@
     (description "Ứng viên đã được xếp hàng nhưng chưa thể chứng minh là đủ điều kiện hoặc bị loại; vì vậy không được xem người ở hàng này là vắng mặt.")
     (status draft))
   (rule-metadata
+    (rule-id REPRESENTED-CHILD-WOULD-BE-ENTITLED)
+    (module representation)
+    (legal-source "Quy tắc kết nối Điều 621, Điều 651 và Điều 652")
+    (description "Người được thế vị là con ruột của người để lại di sản, chết trước hoặc cùng thời điểm và không bị loại theo Điều 621.")
+    (status draft))
+  (rule-metadata
+    (rule-id REPRESENTATION-CANDIDATE-QUALIFIED)
+    (module representation)
+    (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")
+    (description "Ứng viên còn sống, không từ chối hợp lệ và không bị loại theo Điều 621.")
+    (status draft))
+  (rule-metadata
+    (rule-id REPRESENTED-GRANDCHILD-WOULD-BE-ENTITLED)
+    (module representation)
+    (legal-source "Quy tắc kết nối Điều 621 và Điều 652")
+    (description "Người cháu nằm trong nhánh thế vị hợp lệ của người con đã chết, bản thân cũng chết trước hoặc cùng thời điểm và không bị loại theo Điều 621.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-E01)
+    (module representation)
+    (legal-source "Điều 652 Bộ luật Dân sự 2015")
+    (description "Graph thể hiện người con của người để lại di sản đã chết trước hoặc cùng thời điểm, còn người con của họ đủ điều kiện hưởng phần thế vị.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-E02)
+    (module representation)
+    (legal-source "Điều 652 Bộ luật Dân sự 2015")
+    (description "Graph thể hiện cả người con và người cháu trong nhánh đã chết trước hoặc cùng thời điểm, còn người chắt đủ điều kiện hưởng phần thế vị.")
+    (status draft))
+  (rule-metadata
+    (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
+    (module representation)
+    (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")
+    (description "Ứng viên đã chết, từ chối hợp lệ hoặc bị loại khỏi thừa kế theo pháp luật; ngoại lệ chỉ định trong di chúc không tạo quyền thế vị theo pháp luật.")
+    (status draft))
+  (rule-metadata
     (rule-id R-D01)
     (module eligibility)
     (legal-source "Điều 621 khoản 1 điểm a Bộ luật Dân sự 2015")
