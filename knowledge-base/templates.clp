@@ -6,7 +6,7 @@
   (slot case-id (type SYMBOL))
   (slot subject (type SYMBOL))
   (slot module (type SYMBOL)
-    (allowed-symbols will-validity inheritance-type eligibility heir-rank representation compulsory-share spouse-status refusal limitation)))
+    (allowed-symbols will-validity inheritance-type eligibility heir-rank representation compulsory-share spouse-status refusal-and-unclaimed limitation)))
 
 ; An atomic observation supplied by the case database or user interface.
 ; Legal conclusions must not be inserted using this template.
@@ -50,7 +50,7 @@
   (slot module (type SYMBOL))
   (slot predicate (type SYMBOL))
   (slot value (type SYMBOL INTEGER FLOAT)
-    (allowed-symbols true false unknown conflict statutory testamentary excluded not-excluded exception-under-will rank-1 rank-2 rank-3 valid))
+    (allowed-symbols true false unknown conflict statutory testamentary excluded not-excluded exception-under-will rank-1 rank-2 rank-3 valid state))
   (multislot derivations))
 
 ; Generic explanation record copied from a derived fact. Sequence/order is

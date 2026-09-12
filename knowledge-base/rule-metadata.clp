@@ -256,6 +256,42 @@
     (description "Ít nhất một hoàn cảnh đặc biệt tại Điều 655 đã được dẫn xuất cho người đang xét.")
     (status draft))
   (rule-metadata
+    (rule-id R-H01)
+    (module refusal-and-unclaimed)
+    (legal-source "Điều 620 khoản 1 Bộ luật Dân sự 2015")
+    (description "Người đang xét đã thể hiện việc từ chối và mục đích không nhằm trốn tránh thực hiện nghĩa vụ tài sản đối với người khác.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-H02)
+    (module refusal-and-unclaimed)
+    (legal-source "Điều 620 khoản 1 Bộ luật Dân sự 2015")
+    (description "Việc từ chối đã được thực hiện nhằm trốn tránh nghĩa vụ tài sản đối với người khác nên không đáp ứng khoản 1 Điều 620.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-H03)
+    (module refusal-and-unclaimed)
+    (legal-source "Điều 620 khoản 2 Bộ luật Dân sự 2015")
+    (description "Việc từ chối được lập thành văn bản và gửi đến người quản lý di sản, người thừa kế khác hoặc người được giao nhiệm vụ phân chia di sản.")
+    (status draft))
+  (rule-metadata
+    (rule-id VALID-REFUSAL-COMPOSED)
+    (module refusal-and-unclaimed)
+    (legal-source "Quy tắc kết nối nội bộ các khoản 1–3 Điều 620")
+    (description "Điều kiện nội dung, hình thức/thông báo và thời điểm trước khi phân chia di sản đều đã đạt.")
+    (status draft))
+  (rule-metadata
+    (rule-id NO-REFUSAL-MADE)
+    (module refusal-and-unclaimed)
+    (legal-source "Quy tắc trạng thái nội bộ")
+    (description "Người đang xét được ghi nhận tường minh là không thực hiện việc từ chối nhận di sản.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-H04)
+    (module refusal-and-unclaimed)
+    (legal-source "Điều 622 Bộ luật Dân sự 2015")
+    (description "Việc tìm người hưởng theo di chúc và theo pháp luật đã được xác nhận đầy đủ, không có người đang được gọi hưởng, không có disposition còn hiệu lực cho phần này và đây là phần còn lại sau khi hoàn thành nghĩa vụ tài sản.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v11",
+  "knowledgeBaseVersion": "inheritance-kb-v12",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -376,6 +376,42 @@
       "title": "Hợp nhất căn cứ bảo toàn trạng thái vợ chồng", "reasoning": "Ít nhất một hoàn cảnh đặc biệt tại Điều 655 đã được dẫn xuất cho người đang xét.",
       "conclusion": "Trạng thái vợ chồng tại thời điểm mở thừa kế được giữ là hợp lệ", "citation": "Quy tắc kết nối nội bộ Điều 655", "provisionId": "article-655", "relevantSections": ["clause-1", "clause-2", "clause-3"], "clipsMetadata": true,
       "implementations": ["SPOUSE-STATUS-PRESERVED"]
+    },
+    "R-H01": {
+      "ruleId": "R-H01", "module": "refusal-and-unclaimed", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Điều kiện nội dung của việc từ chối", "reasoning": "Người đang xét đã thể hiện việc từ chối và mục đích không nhằm trốn tránh thực hiện nghĩa vụ tài sản đối với người khác.",
+      "conclusion": "Điều kiện nội dung của việc từ chối đã đạt", "citation": "Điều 620 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-620", "relevantSections": ["clause-1"], "clipsMetadata": true,
+      "implementations": ["R-H01-substantive-condition-satisfied"]
+    },
+    "R-H02": {
+      "ruleId": "R-H02", "module": "refusal-and-unclaimed", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Từ chối nhằm trốn tránh nghĩa vụ tài sản", "reasoning": "Việc từ chối đã được thực hiện nhằm trốn tránh nghĩa vụ tài sản đối với người khác nên không đáp ứng khoản 1 Điều 620.",
+      "conclusion": "Việc từ chối không hợp lệ", "citation": "Điều 620 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-620", "relevantSections": ["clause-1"], "clipsMetadata": true,
+      "implementations": ["R-H02-avoid-obligation-invalid"]
+    },
+    "R-H03": {
+      "ruleId": "R-H03", "module": "refusal-and-unclaimed", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Hình thức và chủ thể nhận thông báo từ chối", "reasoning": "Việc từ chối được lập thành văn bản và gửi đến người quản lý di sản, người thừa kế khác hoặc người được giao nhiệm vụ phân chia di sản.",
+      "conclusion": "Điều kiện hình thức và thông báo đã đạt", "citation": "Điều 620 khoản 2 Bộ luật Dân sự 2015", "provisionId": "article-620", "relevantSections": ["clause-2"], "clipsMetadata": true,
+      "implementations": ["R-H03-form-condition-estate-manager", "R-H03-form-condition-other-heir", "R-H03-form-condition-distribution-assignee"]
+    },
+    "VALID-REFUSAL-COMPOSED": {
+      "ruleId": "VALID-REFUSAL-COMPOSED", "module": "refusal-and-unclaimed", "kind": "internal", "status": "draft",
+      "title": "Hợp thành hiệu lực của việc từ chối", "reasoning": "Điều kiện nội dung, hình thức/thông báo và thời điểm trước khi phân chia di sản đều đã đạt.",
+      "conclusion": "Việc từ chối hợp lệ", "citation": "Quy tắc kết nối nội bộ các khoản 1–3 Điều 620", "provisionId": "article-620", "relevantSections": ["clause-1", "clause-2", "clause-3"], "clipsMetadata": true,
+      "implementations": ["VALID-REFUSAL-COMPOSED"]
+    },
+    "NO-REFUSAL-MADE": {
+      "ruleId": "NO-REFUSAL-MADE", "module": "refusal-and-unclaimed", "kind": "internal", "status": "draft",
+      "title": "Không có hành vi từ chối", "reasoning": "Người đang xét được ghi nhận tường minh là không thực hiện việc từ chối nhận di sản.",
+      "conclusion": "Không có việc từ chối hợp lệ đang áp dụng", "citation": "Quy tắc trạng thái nội bộ", "relevantSections": [], "clipsMetadata": true,
+      "implementations": ["NO-REFUSAL-MADE"]
+    },
+    "R-H04": {
+      "ruleId": "R-H04", "module": "refusal-and-unclaimed", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Phần di sản không có người nhận thuộc về Nhà nước", "reasoning": "Việc tìm người hưởng theo di chúc và theo pháp luật đã được xác nhận đầy đủ, không có người đang được gọi hưởng, không có disposition còn hiệu lực cho phần này và đây là phần còn lại sau khi hoàn thành nghĩa vụ tài sản.",
+      "conclusion": "Phần di sản còn lại thuộc về Nhà nước", "citation": "Điều 622 Bộ luật Dân sự 2015", "provisionId": "article-622", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["R-H04-unclaimed-estate-belongs-to-state"]
     },
     "REPRESENTATION-CANDIDATE-INACTIVE": {
       "ruleId": "REPRESENTATION-CANDIDATE-INACTIVE", "module": "representation", "kind": "internal", "status": "draft",

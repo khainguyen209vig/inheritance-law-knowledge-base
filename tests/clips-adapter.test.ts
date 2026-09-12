@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inferCompulsoryShare, inferEligibility, inferHeirRank, inferInheritanceType, inferRepresentation, inferSpouseStatus, inferWillValidity } from "../src/server/clips/adapter";
+import { inferCompulsoryShare, inferEligibility, inferHeirRank, inferInheritanceType, inferRefusalAndUnclaimed, inferRepresentation, inferSpouseStatus, inferWillValidity } from "../src/server/clips/adapter";
 
 test("CLIPS adapter returns a valid-will result and trace", async () => {
   const output = await inferWillValidity({
@@ -227,6 +227,27 @@ test("spouse-status adapter preserves marital status for a pending non-effective
   ] });
   assert.ok(output.results.some((result) => result.subject === "spouse-one" && result.predicate === "spouse-status-at-opening" && result.value === "valid"));
   assert.ok(output.traces.some((trace) => trace.subject === "spouse-one" && trace.ruleId === "R-G02"));
+});
+
+test("refusal adapter composes validity and closes unclaimed-estate search", async () => {
+  const output = await inferRefusalAndUnclaimed({ caseId: "adapter-refusal", subject: "adapter-refusal", facts: [
+    { id: "heir-search", subject: "adapter-refusal", predicate: "heir-search-complete", value: true },
+    { id: "scope", subject: "person-one", predicate: "refusal-assessment-subject", value: true },
+    { id: "made", subject: "person-one", predicate: "refusal-made", value: true },
+    { id: "intent", subject: "person-one", predicate: "refusal-intent", value: "ordinary" },
+    { id: "written", subject: "person-one", predicate: "refusal-written", value: true },
+    { id: "recipient", subject: "person-one", predicate: "refusal-notice-recipient", value: "distribution-assignee" },
+    { id: "timing", subject: "person-one", predicate: "refusal-before-estate-distribution", value: true },
+    { id: "portion", subject: "portion-one", predicate: "estate-portion", value: true },
+    { id: "portion-scope", subject: "portion-one", predicate: "unclaimed-estate-assessment-subject", value: true },
+    { id: "testamentary-search", subject: "portion-one", predicate: "testamentary-beneficiary-search-complete", value: true },
+    { id: "remaining", subject: "portion-one", predicate: "remaining-estate-after-obligations", value: true },
+  ] });
+  assert.ok(output.results.some((result) => result.subject === "person-one" && result.predicate === "valid-refusal" && result.value === "true"));
+  assert.ok(output.results.some((result) => result.subject === "portion-one" && result.predicate === "unclaimed-estate-recipient" && result.value === "state"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-H01"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-H03"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-H04"));
 });
 
 test("CLIPS adapter preserves unknown and missing facts", async () => {

@@ -421,6 +421,15 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] thêm API, snapshot, presenter theo dòng sự kiện, legal dialog Điều 655 và regression tests;
 - [ ] cân nhắc thay fact quan hệ `spouse-at-opening` bằng mô hình sự kiện kết hôn/chấm dứt có mốc thời gian khi triển khai temporal subsystem đầy đủ.
 
+### Từ chối và tài sản không có người nhận — Điều 620/622
+
+- [x] tách việc từ chối thành `refusal-made`, mục đích, hình thức văn bản, chủ thể nhận thông báo và thời điểm trước phân chia;
+- [x] triển khai R-H01/R-H03 thành kết luận điều kiện trung gian; chỉ rule hợp thành mới sinh `valid-refusal=true`, R-H02 xử lý riêng mục đích trốn tránh nghĩa vụ;
+- [x] triển khai R-H04 theo từng phần di sản, yêu cầu xác nhận đã tìm đủ người hưởng theo di chúc và pháp luật, không có người đang được gọi hưởng/disposition hiệu lực, đồng thời có phần còn lại sau nghĩa vụ;
+- [x] thêm completeness, API, snapshot, presenter tách ngữ cảnh người–phần di sản, legal dialog Điều 620/622 và regression tests;
+- [x] giữ R-H01/R-H03 ở `TEAM_REVIEW`; không diễn giải `unknown` thành việc từ chối vô hiệu hoặc tài sản chắc chắn không thuộc Nhà nước;
+- [ ] tích hợp derived `valid-refusal` từ nhóm H vào working memory của nhóm A/C/E/F để thay hoàn toàn lựa chọn `valid-refusal` thủ công đang tồn tại trong graph/presenter cũ.
+
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 
 - Chốt phạm vi câu hỏi mà MVP phải trả lời.

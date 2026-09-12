@@ -5,9 +5,10 @@ import { heirRankFactSchema } from "./heir-rank";
 import { representationFactSchema } from "./representation";
 import { compulsoryShareFactSchema } from "./compulsory-share";
 import { spouseStatusFactSchema } from "./spouse-status";
+import { refusalAndUnclaimedFactSchema } from "./refusal-and-unclaimed";
 import { willFactSchema } from "./will-validity";
 
-export const caseFactSchema = z.union([willFactSchema, inheritanceTypeFactSchema, eligibilityFactSchema, heirRankFactSchema, representationFactSchema, compulsoryShareFactSchema, spouseStatusFactSchema]);
+export const caseFactSchema = z.union([willFactSchema, inheritanceTypeFactSchema, eligibilityFactSchema, heirRankFactSchema, representationFactSchema, compulsoryShareFactSchema, spouseStatusFactSchema, refusalAndUnclaimedFactSchema]);
 
 export const caseIdSchema = z
   .string()
@@ -51,6 +52,7 @@ export const runHeirRankSchema = z.object({}).strict();
 export const runRepresentationSchema = z.object({}).strict();
 export const runCompulsoryShareSchema = z.object({}).strict();
 export const runSpouseStatusSchema = z.object({}).strict();
+export const runRefusalAndUnclaimedSchema = z.object({}).strict();
 
 export type CreateCaseInput = z.infer<typeof createCaseSchema>;
 export type ReplaceCaseFactsInput = z.infer<typeof replaceCaseFactsSchema>;

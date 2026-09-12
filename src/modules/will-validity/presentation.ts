@@ -97,7 +97,7 @@ export function willValidityResultDescription(value: InferenceValue): string {
 }
 
 export function resultStatusLabel(value: ModuleResultValue): string {
-  const labels: Partial<Record<ModuleResultValue, string>> = { true: "Hợp pháp", false: "Không hợp pháp", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn", statutory: "Theo pháp luật", testamentary: "Theo di chúc", excluded: "Không có quyền hưởng", "not-excluded": "Không bị loại trừ", "exception-under-will": "Ngoại lệ theo di chúc", "rank-1": "Hàng thứ nhất", "rank-2": "Hàng thứ hai", "rank-3": "Hàng thứ ba", valid: "Tư cách được giữ" };
+  const labels: Partial<Record<ModuleResultValue, string>> = { true: "Hợp pháp", false: "Không hợp pháp", unknown: "Chưa đủ dữ kiện", conflict: "Mâu thuẫn", statutory: "Theo pháp luật", testamentary: "Theo di chúc", excluded: "Không có quyền hưởng", "not-excluded": "Không bị loại trừ", "exception-under-will": "Ngoại lệ theo di chúc", "rank-1": "Hàng thứ nhất", "rank-2": "Hàng thứ hai", "rank-3": "Hàng thứ ba", valid: "Tư cách được giữ", state: "Thuộc Nhà nước" };
   return labels[value] ?? value;
 }
 
@@ -111,6 +111,6 @@ export function resultTone(value: InferenceValue): string {
 }
 
 export function resultBadge(value: ModuleResultValue): "success" | "destructive" | "warning" | "secondary" {
-  const badges: Partial<Record<ModuleResultValue, "success" | "destructive" | "warning" | "secondary">> = { true: "success", false: "destructive", unknown: "warning", conflict: "secondary", statutory: "warning", testamentary: "success", excluded: "destructive", "not-excluded": "success", "exception-under-will": "warning", "rank-1": "success", "rank-2": "secondary", "rank-3": "warning", valid: "success" };
+  const badges: Partial<Record<ModuleResultValue, "success" | "destructive" | "warning" | "secondary">> = { true: "success", false: "destructive", unknown: "warning", conflict: "secondary", statutory: "warning", testamentary: "success", excluded: "destructive", "not-excluded": "success", "exception-under-will": "warning", "rank-1": "success", "rank-2": "secondary", "rank-3": "warning", valid: "success", state: "warning" };
   return badges[value] ?? "secondary";
 }

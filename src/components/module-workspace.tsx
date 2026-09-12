@@ -9,6 +9,7 @@ import { HeirRankWorkspace } from "@/modules/heir-rank/workspace";
 import { RepresentationWorkspace } from "@/modules/representation/workspace";
 import { CompulsoryShareWorkspace } from "@/modules/compulsory-share/workspace";
 import { SpouseStatusWorkspace } from "@/modules/spouse-status/workspace";
+import { RefusalAndUnclaimedWorkspace } from "@/modules/refusal-and-unclaimed/workspace";
 
 interface ModuleInitialCase {
   id: string;
@@ -27,6 +28,7 @@ const workspacePresenters: Partial<Record<AnalysisModuleId, WorkspacePresenter>>
   representation: RepresentationWorkspace,
   "compulsory-share": CompulsoryShareWorkspace,
   "spouse-status": SpouseStatusWorkspace,
+  "refusal-and-unclaimed": RefusalAndUnclaimedWorkspace,
 };
 
 export function ModuleWorkspace({ moduleId, initialCase }: { moduleId: AnalysisModuleId; initialCase?: ModuleInitialCase }) {

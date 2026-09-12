@@ -9,6 +9,30 @@
     "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
   },
   "provisions": {
+    "article-620": {
+      "id": "article-620",
+      "number": "Điều 620",
+      "title": "Từ chối nhận di sản",
+      "sections": [
+        {
+          "id": "clause-1",
+          "label": "Khoản 1",
+          "text": "Người thừa kế có quyền từ chối nhận di sản, trừ trường hợp việc từ chối nhằm trốn tránh việc thực hiện nghĩa vụ tài sản của mình đối với người khác."
+        },
+        {
+          "id": "clause-2",
+          "label": "Khoản 2",
+          "text": "Việc từ chối nhận di sản phải được lập thành văn bản và gửi đến người quản lý di sản, những người thừa kế khác, người được giao nhiệm vụ phân chia di sản để biết."
+        },
+        {
+          "id": "clause-3",
+          "label": "Khoản 3",
+          "text": "Việc từ chối nhận di sản phải được thể hiện trước thời điểm phân chia di sản."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
     "article-621": {
       "id": "article-621",
       "number": "Điều 621",
@@ -43,6 +67,20 @@
           "id": "clause-2",
           "label": "Khoản 2",
           "text": "Những người quy định tại khoản 1 Điều này vẫn được hưởng di sản, nếu người để lại di sản đã biết hành vi của những người đó, nhưng vẫn cho họ hưởng di sản theo di chúc."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
+    "article-622": {
+      "id": "article-622",
+      "number": "Điều 622",
+      "title": "Tài sản không có người nhận thừa kế",
+      "sections": [
+        {
+          "id": "main",
+          "label": "Nội dung điều luật",
+          "text": "Trường hợp không có người thừa kế theo di chúc, theo pháp luật hoặc có nhưng không được quyền hưởng di sản, từ chối nhận di sản thì tài sản còn lại sau khi đã thực hiện nghĩa vụ về tài sản mà không có người nhận thừa kế thuộc về Nhà nước."
         }
       ],
       "sourceDocument": "doc/Luat_ThuaKe.doc",

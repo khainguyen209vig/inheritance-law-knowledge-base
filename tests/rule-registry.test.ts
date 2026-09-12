@@ -31,7 +31,7 @@ test("rule registry has valid identities and controlled vocabulary", () => {
 });
 
 test("every domain production rule is owned by exactly one registry entry", () => {
-  const domainRules = ["01-will-validity.clp", "02-inheritance-type.clp", "03-eligibility.clp", "04-heir-rank.clp", "05-representation.clp", "06-compulsory-share.clp", "07-spouse-status.clp"]
+  const domainRules = ["01-will-validity.clp", "02-inheritance-type.clp", "03-eligibility.clp", "04-heir-rank.clp", "05-representation.clp", "06-compulsory-share.clp", "07-spouse-status.clp", "08-refusal-and-unclaimed.clp"]
     .map((filename) => readFileSync(join(projectRoot, "knowledge-base/rules", filename), "utf8"))
     .join("\n");
   const implementedRuleNames = [...domainRules.matchAll(/^\(defrule\s+([^\s)]+)/gmu)].map((match) => match[1]);

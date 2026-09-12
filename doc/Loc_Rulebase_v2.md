@@ -261,11 +261,11 @@ Quan hệ cháu/chắt không nên nhập bằng một nhãn text duy nhất; en
 
 | Rule | V1 tóm tắt | Loại | Điều kiện chuẩn hóa V2 | Kết luận chuẩn hóa V2 | Thay đổi/điểm review | Trạng thái |
 |---|---|---|---|---|---|---|
-| R-H01 | Từ chối không nhằm trốn nghĩa vụ → hợp lệ | DERIVATION | Có hành vi từ chối và `refusal-intent=ordinary` | `refusal-substantive-condition=satisfied` | Chưa đủ để kết luận từ chối có hiệu lực nếu thiếu hình thức/thời điểm | TEAM-REVIEW |
-| R-H02 | Từ chối nhằm trốn nghĩa vụ → không hợp lệ | EXCLUSION | `refusal-intent=avoid-obligation` | `valid-refusal=false` | Gắn với người, case và nghĩa vụ cần tránh | MODEL-READY |
-| R-H03 | Từ chối bằng văn bản, gửi đúng người → có hiệu lực | DERIVATION | Từ chối lập thành văn bản và đã gửi đến đúng chủ thể nhận | `refusal-form-condition=satisfied` | V1 chưa thể hiện đầy đủ tất cả chủ thể nhận và thời điểm; cần team đối chiếu Điều 620 | TEAM-REVIEW |
-| R-H01+H03 | V1 chưa có rule hợp thành | DERIVATION | Điều kiện nội dung và hình thức đều đạt, từ chối đúng thời điểm | `valid-refusal(X,case)=true` | Thêm rule hợp thành; không coi riêng H01 hoặc H03 là đủ | TEAM-REVIEW |
-| R-H04 | Không có người nhận theo di chúc/pháp luật → thuộc Nhà nước | CLASSIFICATION | Không có người hưởng theo di chúc; không có người hưởng theo pháp luật hoặc tất cả không có quyền/từ chối; quá trình xác định người hưởng đã đầy đủ | `unclaimed-estate(case)=state` | Bắt buộc có completeness; không suy luận chỉ vì database đang rỗng | MODEL-READY |
+| R-H01 | Từ chối không nhằm trốn nghĩa vụ → hợp lệ | DERIVATION | `refusal-made=true` và `refusal-intent=ordinary` | `refusal-substantive-condition=satisfied` | Đã triển khai; chưa đủ để kết luận hiệu lực nếu thiếu hình thức/thời điểm | TEAM-REVIEW |
+| R-H02 | Từ chối nhằm trốn nghĩa vụ → không hợp lệ | EXCLUSION | `refusal-made=true` và `refusal-intent=avoid-obligation` | `valid-refusal=false` | Đã triển khai, gắn với từng người | MODEL-READY |
+| R-H03 | Từ chối bằng văn bản, gửi đúng người → có hiệu lực | DERIVATION | `refusal-written=true` và người nhận là quản lý di sản/người thừa kế khác/người được giao phân chia | `refusal-form-condition=satisfied` | Đã triển khai thành ba production rules theo chủ thể nhận | TEAM-REVIEW |
+| R-H01+H03 | V1 chưa có rule hợp thành | DERIVATION | Điều kiện nội dung và hình thức đều đạt; `refusal-before-estate-distribution=true` | `valid-refusal(X,case)=true` | Đã triển khai bằng rule nội bộ; không coi riêng H01/H03 là đủ | TEAM-REVIEW |
+| R-H04 | Không có người nhận theo di chúc/pháp luật → thuộc Nhà nước | CLASSIFICATION | Tìm kiếm hai nguồn người hưởng đã đầy đủ; không có disposition hiệu lực/người được gọi hưởng; còn tài sản sau nghĩa vụ | `unclaimed-estate-recipient(portion)=state` | Đã triển khai theo phần di sản với closed-world guard | MODEL-READY |
 
 ### Nhóm I — Thanh toán và phân chia di sản
 
@@ -398,7 +398,8 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-E04–R-E05 | Đã triển khai với đánh giá chăm sóc gắn theo cạnh; giữ `TEAM_REVIEW`, open-world và không phủ định căn cứ khác |
 | R-F01a–R-F04 | Đã triển khai phân loại, loại trừ và R-F01c tính ngưỡng/phần thiếu theo từng cặp người–phần di sản; R-F01c chưa tự xác định suất pháp luật giả định; R-F01c/R-F02 giữ `TEAM_REVIEW` |
 | R-G01–R-G03 | Đã triển khai theo từng người phối ngẫu từ graph, có completeness và trace tới ba khoản Điều 655; không kết luận quyền hưởng cuối cùng |
-| Nhóm H–J | Đặc tả đề xuất để team review, chưa triển khai |
+| R-H01–R-H04 | Đã triển khai theo từng người và phần di sản; H01/H03 giữ `TEAM_REVIEW`; derived `valid-refusal` chưa thay hoàn toàn fact thủ công ở các presenter cũ |
+| Nhóm I–J | Đặc tả đề xuất để team review, chưa triển khai |
 | Legal validation | Chưa thực hiện đầy đủ |
 
 ## 10. Câu hỏi dành cho buổi review team

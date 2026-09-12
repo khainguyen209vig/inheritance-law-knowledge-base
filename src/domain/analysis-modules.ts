@@ -178,17 +178,22 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
     id: "refusal-and-unclaimed",
     title: "Từ chối và tài sản không có người nhận",
     shortDescription: "Ghi nhận việc từ chối nhận và trạng thái phần di sản chưa có người nhận.",
-    status: "planned",
+    status: "implemented",
     interactionMode: "people-table",
-    primaryResultPredicate: "inheritance-acceptance-status",
+    primaryResultPredicate: "valid-refusal",
     dependencies: [
       {
         moduleId: "eligibility",
         mode: "conditional",
-        status: "draft",
+        status: "implemented",
         reason: "Có thể cần danh sách người có quyền hưởng trước khi đánh giá hậu quả của việc từ chối.",
       },
     ],
+    runtime: {
+      inferencePath: "/api/cases/:caseId/inference/refusal-and-unclaimed",
+      subjectPrefix: "person",
+      defaultCaseTitle: "Hồ sơ từ chối và di sản không có người nhận",
+    },
   },
   limitation: {
     id: "limitation",
