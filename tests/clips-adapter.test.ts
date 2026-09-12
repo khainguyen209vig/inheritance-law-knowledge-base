@@ -322,6 +322,24 @@ test("estate settlement adapter reuses derived heir ranks for the prenatal share
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-I03b"));
 });
 
+test("estate settlement adapter preserves the Article 661 date and court-request boundary", async () => {
+  const output = await inferEstateSettlement({ caseId: "adapter-restriction", subject: "adapter-restriction", facts: [
+    { id: "restriction", subject: "restriction-one", predicate: "division-restriction-assessment-subject", value: true },
+    { id: "basis", subject: "restriction-one", predicate: "division-restriction-basis", value: "will-instruction" },
+    { id: "date", subject: "restriction-one", predicate: "specified-division-date", value: "2030-01-01" },
+    { id: "deceased", subject: "deceased-one", predicate: "deceased-person", value: true },
+    { id: "spouse-edge", subject: "spouse-one", predicate: "spouse-at-opening", value: "deceased-one" },
+    { id: "spouse-life", subject: "spouse-one", predicate: "heir-life-status", value: "alive" },
+    { id: "hardship", subject: "spouse-one", predicate: "division-hardship-assessment-subject", value: true },
+    { id: "request", subject: "spouse-one", predicate: "estate-division-requested", value: true },
+    { id: "impact", subject: "spouse-one", predicate: "serious-division-impact", value: true },
+  ] });
+  assert.ok(output.results.some((item) => item.subject === "restriction-one" && item.predicate === "distribution-not-before" && item.value === "2030-01-01"));
+  assert.ok(output.results.some((item) => item.subject === "spouse-one" && item.predicate === "court-deferral-may-be-requested" && item.value === "true"));
+  assert.ok(output.results.some((item) => item.subject === "spouse-one" && item.predicate === "initial-deferral-maximum-years" && item.value === "3"));
+  assert.ok(!output.results.some((item) => item.subject === "spouse-one" && item.predicate === "court-deferral-granted"));
+});
+
 test("CLIPS adapter preserves unknown and missing facts", async () => {
   const output = await inferWillValidity({
     caseId: "adapter-unknown",

@@ -322,6 +322,18 @@
     (description "Nếu người đã được dành suất sinh ra còn sống thì người đó được hưởng; nếu chết trước khi sinh ra thì những người thừa kế khác được hưởng phần đã dành.")
     (status draft))
   (rule-metadata
+    (rule-id R-I04)
+    (module estate-settlement)
+    (legal-source "Điều 661 Bộ luật Dân sự 2015")
+    (description "Ý chí trong di chúc hoặc thỏa thuận của tất cả người thừa kế xác định một thời hạn chưa chia. Hệ thống giữ giới hạn dưới dạng mốc ngày cụ thể, không suy ra Boolean chung chung.")
+    (status draft))
+  (rule-metadata
+    (rule-id R-I05)
+    (module estate-settlement)
+    (legal-source "Điều 661 Bộ luật Dân sự 2015")
+    (description "Khi có yêu cầu chia và việc chia ảnh hưởng nghiêm trọng đến đời sống của vợ hoặc chồng còn sống và gia đình, hệ thống chỉ ghi nhận quyền yêu cầu Tòa án. Thời hạn lần đầu tối đa ba năm; nếu ảnh hưởng vẫn còn thì có thể yêu cầu gia hạn một lần, tối đa ba năm.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

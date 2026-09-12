@@ -92,3 +92,44 @@
   (not (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-returns-to-other-heirs)))
   =>
   (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-returns-to-other-heirs) (value true) (rule-id R-I03b) (supports ?reserve-rule ?outcome))))
+
+(defrule R-I04-will-restricts-division-until-date
+  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?restriction) (predicate division-restriction-assessment-subject) (value true))
+  (asserted-fact (fact-id ?basis) (case-id ?case-id) (subject ?restriction) (predicate division-restriction-basis) (value will-instruction))
+  (asserted-fact (fact-id ?date-fact) (case-id ?case-id) (subject ?restriction) (predicate specified-division-date) (value ?date))
+  (not (derived-fact (case-id ?case-id) (subject ?restriction) (predicate distribution-not-before)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?restriction) (predicate distribution-not-before) (value ?date) (rule-id R-I04) (supports ?scope ?basis ?date-fact))))
+
+(defrule R-I04-all-heirs-agreement-restricts-division-until-date
+  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?restriction) (predicate division-restriction-assessment-subject) (value true))
+  (asserted-fact (fact-id ?basis) (case-id ?case-id) (subject ?restriction) (predicate division-restriction-basis) (value all-heirs-agreement))
+  (asserted-fact (fact-id ?agreement) (case-id ?case-id) (subject ?restriction) (predicate all-heirs-agreed) (value true))
+  (asserted-fact (fact-id ?date-fact) (case-id ?case-id) (subject ?restriction) (predicate specified-division-date) (value ?date))
+  (not (derived-fact (case-id ?case-id) (subject ?restriction) (predicate distribution-not-before)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?restriction) (predicate distribution-not-before) (value ?date) (rule-id R-I04) (supports ?scope ?basis ?agreement ?date-fact))))
+
+(defrule R-I05-surviving-spouse-may-request-deferral
+  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?spouse) (predicate division-hardship-assessment-subject) (value true))
+  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))
+  (or
+    (asserted-fact (fact-id ?marriage) (case-id ?case-id) (subject ?spouse) (predicate spouse-at-opening) (value ?deceased))
+    (asserted-fact (fact-id ?marriage) (case-id ?case-id) (subject ?deceased) (predicate spouse-at-opening) (value ?spouse)))
+  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?spouse) (predicate heir-life-status) (value alive))
+  (asserted-fact (fact-id ?request) (case-id ?case-id) (subject ?spouse) (predicate estate-division-requested) (value true))
+  (asserted-fact (fact-id ?impact) (case-id ?case-id) (subject ?spouse) (predicate serious-division-impact) (value true))
+  (not (derived-fact (case-id ?case-id) (subject ?spouse) (predicate court-deferral-may-be-requested)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?spouse) (predicate court-deferral-may-be-requested) (value true) (rule-id R-I05) (supports ?scope ?deceased-fact ?marriage ?life ?request ?impact)))
+  (assert (derived-fact (case-id ?case-id) (subject ?spouse) (predicate initial-deferral-maximum-years) (value 3) (rule-id R-I05) (supports ?scope ?impact))))
+
+(defrule R-I05-surviving-spouse-may-request-one-extension
+  (derived-fact (case-id ?case-id) (subject ?spouse) (predicate court-deferral-may-be-requested) (value true) (rule-id ?initial-rule))
+  (asserted-fact (fact-id ?expired) (case-id ?case-id) (subject ?spouse) (predicate prior-court-deferral-expired) (value true))
+  (asserted-fact (fact-id ?impact) (case-id ?case-id) (subject ?spouse) (predicate serious-impact-still-exists) (value true))
+  (not (derived-fact (case-id ?case-id) (subject ?spouse) (predicate court-extension-may-be-requested)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?spouse) (predicate court-extension-may-be-requested) (value true) (rule-id R-I05) (supports ?initial-rule ?expired ?impact)))
+  (assert (derived-fact (case-id ?case-id) (subject ?spouse) (predicate extension-maximum-years) (value 3) (rule-id R-I05) (supports ?expired ?impact)))
+  (assert (derived-fact (case-id ?case-id) (subject ?spouse) (predicate extension-maximum-count) (value 1) (rule-id R-I05) (supports ?expired ?impact))))

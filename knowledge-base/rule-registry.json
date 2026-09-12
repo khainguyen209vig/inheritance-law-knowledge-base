@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v16",
+  "knowledgeBaseVersion": "inheritance-kb-v17",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -442,6 +442,18 @@
       "title": "Xử lý suất đã dành sau kết quả sinh", "reasoning": "Nếu người đã được dành suất sinh ra còn sống thì người đó được hưởng; nếu chết trước khi sinh ra thì những người thừa kế khác được hưởng phần đã dành.",
       "conclusion": "Xác định chủ thể hưởng suất đã dành theo kết quả sinh", "citation": "Điều 660 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-660", "relevantSections": ["clause-1"], "clipsMetadata": true,
       "implementations": ["R-I03b-born-alive-receives-reserved-share", "R-I03b-died-before-birth-returns-share"]
+    },
+    "R-I04": {
+      "ruleId": "R-I04", "module": "estate-settlement", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Chỉ phân chia sau thời hạn đã được xác định", "reasoning": "Ý chí trong di chúc hoặc thỏa thuận của tất cả người thừa kế xác định một thời hạn chưa chia. Hệ thống giữ giới hạn dưới dạng mốc ngày cụ thể, không suy ra Boolean chung chung.",
+      "conclusion": "Di sản không được phân chia trước ngày đã xác định", "citation": "Điều 661 Bộ luật Dân sự 2015", "provisionId": "article-661", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["R-I04-will-restricts-division-until-date", "R-I04-all-heirs-agreement-restricts-division-until-date"]
+    },
+    "R-I05": {
+      "ruleId": "R-I05", "module": "estate-settlement", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
+      "title": "Quyền yêu cầu Tòa án hoãn phân chia", "reasoning": "Khi có yêu cầu chia và việc chia ảnh hưởng nghiêm trọng đến đời sống của vợ hoặc chồng còn sống và gia đình, hệ thống chỉ ghi nhận quyền yêu cầu Tòa án. Thời hạn lần đầu tối đa ba năm; nếu ảnh hưởng vẫn còn thì có thể yêu cầu gia hạn một lần, tối đa ba năm.",
+      "conclusion": "Có thể yêu cầu Tòa án hoãn chia hoặc gia hạn trong giới hạn luật định", "citation": "Điều 661 Bộ luật Dân sự 2015", "provisionId": "article-661", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["R-I05-surviving-spouse-may-request-deferral", "R-I05-surviving-spouse-may-request-one-extension"]
     },
     "REPRESENTATION-CANDIDATE-INACTIVE": {
       "ruleId": "REPRESENTATION-CANDIDATE-INACTIVE", "module": "representation", "kind": "internal", "status": "draft",

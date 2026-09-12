@@ -53,3 +53,54 @@
   (not (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank)))
   =>
   (assert (missing-requirement (case-id ?case-id) (subject ?person) (module estate-settlement) (predicate active-heir-rank))))
+
+(defrule missing-division-restriction-basis
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?restriction) (predicate division-restriction-assessment-subject) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?restriction) (predicate division-restriction-basis)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?restriction) (module estate-settlement) (predicate division-restriction-basis))))
+
+(defrule missing-all-heirs-agreement-confirmation
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?restriction) (predicate division-restriction-basis) (value all-heirs-agreement))
+  (not (asserted-fact (case-id ?case-id) (subject ?restriction) (predicate all-heirs-agreed) (value true)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?restriction) (module estate-settlement) (predicate all-heirs-agreed))))
+
+(defrule missing-specified-division-date
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?restriction) (predicate division-restriction-assessment-subject) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?restriction) (predicate specified-division-date)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?restriction) (module estate-settlement) (predicate specified-division-date))))
+
+(defrule missing-hardship-division-request
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?spouse) (predicate division-hardship-assessment-subject) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?spouse) (predicate estate-division-requested)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?spouse) (module estate-settlement) (predicate estate-division-requested))))
+
+(defrule missing-hardship-impact-observation
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?spouse) (predicate division-hardship-assessment-subject) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?spouse) (predicate serious-division-impact)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?spouse) (module estate-settlement) (predicate serious-division-impact))))
+
+(defrule missing-hardship-spouse-life-status
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?spouse) (predicate division-hardship-assessment-subject) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?spouse) (predicate heir-life-status) (value alive)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?spouse) (module estate-settlement) (predicate surviving-spouse-life-status))))
+
+(defrule missing-hardship-spouse-relationship
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?spouse) (predicate division-hardship-assessment-subject) (value true))
+  (asserted-fact (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?spouse) (predicate spouse-at-opening) (value ?deceased)))
+  (not (asserted-fact (case-id ?case-id) (subject ?deceased) (predicate spouse-at-opening) (value ?spouse)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?spouse) (module estate-settlement) (predicate spouse-at-opening))))

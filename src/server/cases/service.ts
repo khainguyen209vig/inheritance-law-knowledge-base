@@ -50,7 +50,7 @@ export async function runStoredRefusalAndUnclaimed(repository: CaseRepository, c
 export async function runStoredEstateSettlement(repository: CaseRepository, caseId: string): Promise<StoredInferenceRun> {
   const facts = repository.getAllFacts(caseId);
   const output = await inferEstateSettlement({ caseId, subject: caseId, facts });
-  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "estate-settlement", knowledgeBaseVersion: "estate-settlement-ri01-ri03-draft-v3" });
+  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "estate-settlement", knowledgeBaseVersion: "estate-settlement-ri01-ri05-draft-v4" });
 }
 
 export async function runStoredInheritanceType(

@@ -28,7 +28,8 @@ export interface ApiFact {
 
 export type InferenceValue = "true" | "false" | "unknown" | "conflict";
 export type NumericResultValue = `${number}`;
-export type ModuleResultValue = InferenceValue | "statutory" | "testamentary" | "excluded" | "not-excluded" | "exception-under-will" | "rank-1" | "rank-2" | "rank-3" | "valid" | "state" | NumericResultValue;
+export type IsoDateResultValue = `${number}-${number}-${number}`;
+export type ModuleResultValue = InferenceValue | "statutory" | "testamentary" | "excluded" | "not-excluded" | "exception-under-will" | "rank-1" | "rank-2" | "rank-3" | "valid" | "state" | NumericResultValue | IsoDateResultValue;
 
 export interface InferenceRun {
   id: string;

@@ -45,4 +45,13 @@ export const estateSettlementFactSchema = z.discriminatedUnion("predicate", [
   z.object({ id: symbolSchema, predicate: z.literal("prenatal-share-assessment-subject"), value: z.boolean() }),
   z.object({ id: symbolSchema, predicate: z.literal("prenatal-status-at-distribution"), value: z.enum(["conceived-not-born"]) }),
   z.object({ id: symbolSchema, predicate: z.literal("prenatal-birth-outcome"), value: z.enum(["born-alive", "died-before-birth"]) }),
+  z.object({ id: symbolSchema, predicate: z.literal("division-restriction-assessment-subject"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("division-restriction-basis"), value: z.enum(["will-instruction", "all-heirs-agreement"]) }),
+  z.object({ id: symbolSchema, predicate: z.literal("all-heirs-agreed"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("specified-division-date"), value: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }),
+  z.object({ id: symbolSchema, predicate: z.literal("division-hardship-assessment-subject"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("estate-division-requested"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("serious-division-impact"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("prior-court-deferral-expired"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("serious-impact-still-exists"), value: z.boolean() }),
 ]);

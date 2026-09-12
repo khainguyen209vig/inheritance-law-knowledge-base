@@ -49,7 +49,7 @@
   (slot subject (type SYMBOL))
   (slot module (type SYMBOL))
   (slot predicate (type SYMBOL))
-  (slot value (type SYMBOL INTEGER FLOAT)
+  (slot value (type SYMBOL INTEGER FLOAT STRING)
     (allowed-symbols true false unknown conflict statutory testamentary excluded not-excluded exception-under-will rank-1 rank-2 rank-3 valid state))
   (multislot derivations))
 

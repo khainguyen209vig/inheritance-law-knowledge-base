@@ -34,4 +34,14 @@
     (any-factp ((?result module-result)) (and (eq ?result:subject prenatal-alive) (eq ?result:predicate reserved-share-vests-in-child) (eq ?result:value true)))
     (any-factp ((?result module-result)) (and (eq ?result:subject prenatal-deceased) (eq ?result:predicate reserved-share-returns-to-other-heirs) (eq ?result:value true))))
   then (printout t "PASS estate-settlement-prenatal-branches" crlf) else (printout t "FAIL estate-settlement-prenatal-branches" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject restriction-one) (eq ?result:predicate distribution-not-before) (eq ?result:value "2030-01-01")))
+    (any-factp ((?trace inference-trace)) (and (eq ?trace:subject restriction-one) (eq ?trace:rule-id R-I04))))
+  then (printout t "PASS estate-settlement-division-date" crlf) else (printout t "FAIL estate-settlement-division-date" crlf))
+(if (and
+    (any-factp ((?result module-result)) (and (eq ?result:subject spouse-one) (eq ?result:predicate court-deferral-may-be-requested) (eq ?result:value true)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject spouse-one) (eq ?result:predicate initial-deferral-maximum-years) (= ?result:value 3)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject spouse-one) (eq ?result:predicate court-extension-may-be-requested) (eq ?result:value true)))
+    (any-factp ((?result module-result)) (and (eq ?result:subject spouse-one) (eq ?result:predicate extension-maximum-count) (= ?result:value 1))))
+  then (printout t "PASS estate-settlement-spouse-deferral" crlf) else (printout t "FAIL estate-settlement-spouse-deferral" crlf))
 (exit)

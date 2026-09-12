@@ -40,3 +40,16 @@
 (asserted-fact (fact-id prenatal-deceased-scope) (case-id settlement-fixture) (subject prenatal-deceased) (predicate prenatal-share-assessment-subject) (value true))
 (asserted-fact (fact-id prenatal-deceased-status) (case-id settlement-fixture) (subject prenatal-deceased) (predicate prenatal-status-at-distribution) (value conceived-not-born))
 (asserted-fact (fact-id prenatal-deceased-outcome) (case-id settlement-fixture) (subject prenatal-deceased) (predicate prenatal-birth-outcome) (value died-before-birth))
+
+(asserted-fact (fact-id restriction-scope) (case-id settlement-fixture) (subject restriction-one) (predicate division-restriction-assessment-subject) (value true))
+(asserted-fact (fact-id restriction-basis) (case-id settlement-fixture) (subject restriction-one) (predicate division-restriction-basis) (value all-heirs-agreement))
+(asserted-fact (fact-id restriction-agreement) (case-id settlement-fixture) (subject restriction-one) (predicate all-heirs-agreed) (value true))
+(asserted-fact (fact-id restriction-date) (case-id settlement-fixture) (subject restriction-one) (predicate specified-division-date) (value "2030-01-01"))
+
+(asserted-fact (fact-id hardship-scope) (case-id settlement-fixture) (subject spouse-one) (predicate division-hardship-assessment-subject) (value true))
+(asserted-fact (fact-id hardship-marriage) (case-id settlement-fixture) (subject spouse-one) (predicate spouse-at-opening) (value deceased-one))
+(asserted-fact (fact-id hardship-life) (case-id settlement-fixture) (subject spouse-one) (predicate heir-life-status) (value alive))
+(asserted-fact (fact-id hardship-request) (case-id settlement-fixture) (subject spouse-one) (predicate estate-division-requested) (value true))
+(asserted-fact (fact-id hardship-impact) (case-id settlement-fixture) (subject spouse-one) (predicate serious-division-impact) (value true))
+(asserted-fact (fact-id hardship-expired) (case-id settlement-fixture) (subject spouse-one) (predicate prior-court-deferral-expired) (value true))
+(asserted-fact (fact-id hardship-still) (case-id settlement-fixture) (subject spouse-one) (predicate serious-impact-still-exists) (value true))

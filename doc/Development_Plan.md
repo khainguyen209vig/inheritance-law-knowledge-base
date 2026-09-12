@@ -444,7 +444,10 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] triển khai R-I03a bằng `candidate-heir-rank` và `active-heir-rank` do C/D/H dẫn xuất trong cùng working memory; UI không nhập kết luận “cùng hàng”;
 - [x] triển khai hai nhánh R-I03b cho sinh ra còn sống và chết trước khi sinh; giữ `TEAM_REVIEW`, chưa tính lại suất của những người còn lại;
 - [x] thêm chế độ presenter “Người chưa sinh”, chỉ chọn ứng viên từ graph và ghi observations về thai/sinh;
-- [ ] giữ R-I04–R-I05 cho lát cắt riêng về hạn chế phân chia; không gộp vào R-I01.
+- [x] triển khai R-I04 thành `distribution-not-before` mang ngày ISO cho ý chí di chúc hoặc thỏa thuận của tất cả người thừa kế;
+- [x] triển khai R-I05 bằng quan hệ vợ/chồng từ graph, trạng thái sống và observations về ảnh hưởng nghiêm trọng;
+- [x] tách quyền yêu cầu hoãn, quyền yêu cầu gia hạn, giới hạn ba năm và một lần gia hạn; tuyệt đối không sinh `court-deferral-granted`;
+- [x] thêm chế độ presenter “Hạn chế chia”, legal dialog Điều 661 và giữ cảnh báo `TEAM_REVIEW`.
 
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 
