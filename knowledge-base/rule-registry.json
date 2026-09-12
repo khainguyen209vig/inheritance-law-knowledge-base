@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v13",
+  "knowledgeBaseVersion": "inheritance-kb-v14",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -418,6 +418,12 @@
       "title": "Phần di sản không có người nhận thuộc về Nhà nước", "reasoning": "Việc tìm người hưởng theo di chúc và theo pháp luật đã được xác nhận đầy đủ, không có người đang được gọi hưởng, không có disposition còn hiệu lực cho phần này và đây là phần còn lại sau khi hoàn thành nghĩa vụ tài sản.",
       "conclusion": "Phần di sản còn lại thuộc về Nhà nước", "citation": "Điều 622 Bộ luật Dân sự 2015", "provisionId": "article-622", "relevantSections": ["main"], "clipsMetadata": true,
       "implementations": ["R-H04-unclaimed-estate-belongs-to-state"]
+    },
+    "R-I01": {
+      "ruleId": "R-I01", "module": "estate-settlement", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
+      "title": "Xác định thứ tự ưu tiên thanh toán", "reasoning": "Loại nghĩa vụ hoặc chi phí của từng khoản được đối chiếu với bảng tri thức 10 mức tại Điều 658. Một production rule tổng quát thực hiện phép đối chiếu; thứ tự pháp lý không được mã hóa thành mười nhánh điều kiện.",
+      "conclusion": "Gán mức ưu tiên thanh toán từ 1 đến 10 cho khoản đang xét", "citation": "Điều 658 Bộ luật Dân sự 2015", "provisionId": "article-658", "relevantSections": ["main", "clause-1", "clause-2", "clause-3", "clause-4", "clause-5", "clause-6", "clause-7", "clause-8", "clause-9", "clause-10"], "clipsMetadata": true,
+      "implementations": ["R-I01-assign-payment-priority"]
     },
     "REPRESENTATION-CANDIDATE-INACTIVE": {
       "ruleId": "REPRESENTATION-CANDIDATE-INACTIVE", "module": "representation", "kind": "internal", "status": "draft",

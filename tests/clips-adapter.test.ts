@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inferCompulsoryShare, inferEligibility, inferHeirRank, inferInheritanceType, inferRefusalAndUnclaimed, inferRepresentation, inferSpouseStatus, inferWillValidity } from "../src/server/clips/adapter";
+import { inferCompulsoryShare, inferEligibility, inferEstateSettlement, inferHeirRank, inferInheritanceType, inferRefusalAndUnclaimed, inferRepresentation, inferSpouseStatus, inferWillValidity } from "../src/server/clips/adapter";
 
 test("CLIPS adapter returns a valid-will result and trace", async () => {
   const output = await inferWillValidity({
@@ -270,6 +270,21 @@ test("refusal adapter composes validity and closes unclaimed-estate search", asy
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-H01"));
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-H03"));
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-H04"));
+});
+
+test("estate settlement adapter joins obligations with Article 658 knowledge facts", async () => {
+  const output = await inferEstateSettlement({ caseId: "adapter-settlement", subject: "adapter-settlement", facts: [
+    { id: "debt-entity", subject: "debt-one", predicate: "estate-obligation", value: true },
+    { id: "debt-type", subject: "debt-one", predicate: "obligation-type", value: "other-debt" },
+    { id: "funeral-entity", subject: "funeral-one", predicate: "estate-obligation", value: true },
+    { id: "funeral-type", subject: "funeral-one", predicate: "obligation-type", value: "funeral-expense" },
+    { id: "missing-entity", subject: "missing-one", predicate: "estate-obligation", value: true },
+  ] });
+  assert.equal(output.results.find((item) => item.subject === "funeral-one")?.value, "1");
+  assert.equal(output.results.find((item) => item.subject === "debt-one")?.value, "8");
+  assert.equal(output.results.find((item) => item.subject === "missing-one")?.value, "unknown");
+  assert.ok(output.missing.some((item) => item.subject === "missing-one" && item.predicate === "obligation-type"));
+  assert.ok(output.traces.some((trace) => trace.subject === "funeral-one" && trace.ruleId === "R-I01"));
 });
 
 test("CLIPS adapter preserves unknown and missing facts", async () => {

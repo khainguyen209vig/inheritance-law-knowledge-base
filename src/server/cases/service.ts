@@ -1,4 +1,4 @@
-import { inferCompulsoryShare, inferEligibility, inferHeirRank, inferInheritanceType, inferRefusalAndUnclaimed, inferRepresentation, inferSpouseStatus, inferWillValidity } from "@/server/clips/adapter";
+import { inferCompulsoryShare, inferEligibility, inferEstateSettlement, inferHeirRank, inferInheritanceType, inferRefusalAndUnclaimed, inferRepresentation, inferSpouseStatus, inferWillValidity } from "@/server/clips/adapter";
 import { CaseRepository, type StoredInferenceRun } from "@/server/db/case-repository";
 
 export async function runStoredWillValidity(
@@ -45,6 +45,12 @@ export async function runStoredRefusalAndUnclaimed(repository: CaseRepository, c
   const facts = repository.getAllFacts(caseId);
   const output = await inferRefusalAndUnclaimed({ caseId, subject: caseId, facts });
   return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "refusal-and-unclaimed", knowledgeBaseVersion: "refusal-rh01-rh04-draft-v1" });
+}
+
+export async function runStoredEstateSettlement(repository: CaseRepository, caseId: string): Promise<StoredInferenceRun> {
+  const facts = repository.getAllFacts(caseId);
+  const output = await inferEstateSettlement({ caseId, subject: caseId, facts });
+  return repository.saveInferenceRun({ caseId, subject: caseId, facts, output, module: "estate-settlement", knowledgeBaseVersion: "estate-settlement-ri01-draft-v1" });
 }
 
 export async function runStoredInheritanceType(

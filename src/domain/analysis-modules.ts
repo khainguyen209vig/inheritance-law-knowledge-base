@@ -7,6 +7,7 @@ export type AnalysisModuleId =
   | "compulsory-share"
   | "spouse-status"
   | "refusal-and-unclaimed"
+  | "estate-settlement"
   | "limitation";
 
 export type InteractionMode = "questionnaire" | "family-tree" | "people-table" | "timeline";
@@ -193,6 +194,20 @@ export const analysisModules: Record<AnalysisModuleId, AnalysisModuleDefinition>
       inferencePath: "/api/cases/:caseId/inference/refusal-and-unclaimed",
       subjectPrefix: "person",
       defaultCaseTitle: "Hồ sơ từ chối và di sản không có người nhận",
+    },
+  },
+  "estate-settlement": {
+    id: "estate-settlement",
+    title: "Thanh toán nghĩa vụ di sản",
+    shortDescription: "Sắp thứ tự các nghĩa vụ và chi phí theo 10 mức ưu tiên tại Điều 658.",
+    status: "implemented",
+    interactionMode: "timeline",
+    primaryResultPredicate: "payment-priority",
+    dependencies: [],
+    runtime: {
+      inferencePath: "/api/cases/:caseId/inference/estate-settlement",
+      subjectPrefix: "obligation",
+      defaultCaseTitle: "Hồ sơ thứ tự thanh toán nghĩa vụ",
     },
   },
   limitation: {

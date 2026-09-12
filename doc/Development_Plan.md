@@ -432,6 +432,15 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] xóa thao tác nhập kết luận `valid-refusal` khỏi graph editor và điều hướng người dùng sang presenter Điều 620;
 - [ ] sau khi các hồ sơ thử nghiệm đã được migrate sang facts H, loại bỏ hoàn toàn schema/fallback `valid-refusal` cũ.
 
+### Thanh toán nghĩa vụ di sản — Điều 658
+
+- [x] triển khai R-I01 bằng template `payment-priority-knowledge` chứa 10 cặp loại nghĩa vụ–mức ưu tiên;
+- [x] dùng một production rule tổng quát để nối từng `estate-obligation` với bảng tri thức, không viết mười nhánh `if/then`;
+- [x] thêm completeness cho khoản chưa có `obligation-type`, API, snapshot, presenter nhiều khoản và legal dialog Điều 658;
+- [x] tách `obligation-amount` khỏi điều kiện suy luận: số tiền hiện chỉ phục vụ trình bày, chưa dùng để phân bổ;
+- [ ] đánh giá và triển khai R-I02 như phép nhận diện nguyên tắc chia đều khi di chúc không xác định phần, không tính giá trị end-to-end;
+- [ ] giữ R-I03–R-I05 cho các lát cắt riêng về người đã thành thai và hạn chế phân chia; không gộp vào R-I01.
+
 ### Giai đoạn 1 — Phân tích và kiểm chứng tri thức
 
 - Chốt phạm vi câu hỏi mà MVP phải trả lời.

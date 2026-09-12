@@ -271,7 +271,7 @@ Quan hệ cháu/chắt không nên nhập bằng một nhãn text duy nhất; en
 
 | Rule | V1 tóm tắt | Loại | Điều kiện chuẩn hóa V2 | Kết luận chuẩn hóa V2 | Thay đổi/điểm review | Trạng thái |
 |---|---|---|---|---|---|---|
-| R-I01 | Có nghĩa vụ/chi phí → thanh toán theo 10 mức ưu tiên | NORMATIVE | Có nghĩa vụ và chi phí liên quan tới thừa kế | Sinh `payment-priority(type,1..10)` theo thứ tự luật định | Nên lưu bảng ưu tiên như knowledge facts; không phải một Boolean | DEFERRED |
+| R-I01 | Có nghĩa vụ/chi phí → thanh toán theo 10 mức ưu tiên | NORMATIVE | Có `estate-obligation` và `obligation-type` cho từng khoản | Sinh `payment-priority(obligation,1..10)` bằng cách đối chiếu bảng Điều 658 | Đã triển khai: bảng ưu tiên là `payment-priority-knowledge`; chỉ một production rule tổng quát, chưa tính tiền end-to-end | MODEL-READY |
 | R-I02 | Theo di chúc nhưng không rõ phần → chia đều | CALCULATION | Phân chia theo di chúc; nhiều beneficiary; di chúc không xác định phần | `equal-share-principle-applies(disposition-group)=true` | Chỉ nhận diện nguyên tắc, chưa tính giá trị trong MVP | DEFERRED |
 | R-I03a | Có người đã thành thai chưa sinh → dành một phần bằng người khác | NORMATIVE | Phân chia theo pháp luật; có người đã thành thai nhưng chưa sinh, nếu sinh ra còn sống sẽ cùng hàng | `reserve-one-equal-share(unborn-person)=true` | Gắn đối tượng và hàng thừa kế | DEFERRED |
 | R-I03b | V1 chưa có nhánh hậu quả sau khi sinh | NORMATIVE | Kết quả sinh sống/chết của người đã thành thai sau khi dành phần | Xác định người nhận phần đã dành theo quy định tương ứng | V1 thiếu nhánh hậu quả; cần legal review trước khi bổ sung executable rule | TEAM-REVIEW |
@@ -343,7 +343,7 @@ UI phải cho nhóm xác nhận danh sách người hoặc disposition đã khai
 
 ### Quyết định 5 — Phần ngoài MVP
 
-Nhóm I và phần tính deadline của Nhóm J nên được giữ trong catalog nhưng chưa triển khai cho đến khi năm mô-đun `Must` hoàn thành.
+R-I01 đã được mở sau khi các mô-đun `Must` hoàn thành. R-I02–R-I05 và phần tính deadline của Nhóm J tiếp tục được giữ trong catalog để triển khai theo từng lát cắt, không ghép thành phép chia end-to-end.
 
 ## 8. Mapping từ V2 sang CLIPS
 
@@ -399,7 +399,8 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-F01a–R-F04 | Đã triển khai phân loại, loại trừ và R-F01c tính ngưỡng/phần thiếu theo từng cặp người–phần di sản; R-F01c chưa tự xác định suất pháp luật giả định; R-F01c/R-F02 giữ `TEAM_REVIEW` |
 | R-G01–R-G03 | Đã triển khai theo từng người phối ngẫu từ graph, có completeness và trace tới ba khoản Điều 655; không kết luận quyền hưởng cuối cùng |
 | R-H01–R-H04 | Đã triển khai theo từng người và phần di sản; H01/H03 giữ `TEAM_REVIEW`; A/C/E/F dùng `refusal-status` chuẩn hóa và chỉ fallback về fact cũ nếu chưa có assessment H |
-| Nhóm I–J | Đặc tả đề xuất để team review, chưa triển khai |
+| R-I01 | Đã triển khai bảng 10 mức Điều 658 dưới dạng knowledge facts và một production rule tổng quát; chưa phân bổ tiền end-to-end |
+| R-I02–R-I05, Nhóm J | Đặc tả đề xuất để team review, chưa triển khai |
 | Legal validation | Chưa thực hiện đầy đủ |
 
 ## 10. Câu hỏi dành cho buổi review team

@@ -364,6 +364,70 @@
       ],
       "sourceDocument": "doc/Luat_ThuaKe.doc",
       "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
+    },
+    "article-658": {
+      "id": "article-658",
+      "number": "Điều 658",
+      "title": "Thứ tự ưu tiên thanh toán",
+      "sections": [
+        {
+          "id": "main",
+          "label": "Nội dung điều luật",
+          "text": "Các nghĩa vụ tài sản và các khoản chi phí liên quan đến thừa kế được thanh toán theo thứ tự sau đây:"
+        },
+        {
+          "id": "clause-1",
+          "label": "Khoản 1",
+          "text": "Chi phí hợp lý theo tập quán cho việc mai táng;"
+        },
+        {
+          "id": "clause-2",
+          "label": "Khoản 2",
+          "text": "Tiền cấp dưỡng còn thiếu;"
+        },
+        {
+          "id": "clause-3",
+          "label": "Khoản 3",
+          "text": "Chi phí cho việc bảo quản di sản;"
+        },
+        {
+          "id": "clause-4",
+          "label": "Khoản 4",
+          "text": "Tiền trợ cấp cho người sống nương nhờ;"
+        },
+        {
+          "id": "clause-5",
+          "label": "Khoản 5",
+          "text": "Tiền công lao động;"
+        },
+        {
+          "id": "clause-6",
+          "label": "Khoản 6",
+          "text": "Tiền bồi thường thiệt hại;"
+        },
+        {
+          "id": "clause-7",
+          "label": "Khoản 7",
+          "text": "Thuế và các khoản phải nộp khác vào ngân sách nhà nước;"
+        },
+        {
+          "id": "clause-8",
+          "label": "Khoản 8",
+          "text": "Các khoản nợ khác đối với cá nhân, pháp nhân;"
+        },
+        {
+          "id": "clause-9",
+          "label": "Khoản 9",
+          "text": "Tiền phạt;"
+        },
+        {
+          "id": "clause-10",
+          "label": "Khoản 10",
+          "text": "Các chi phí khác."
+        }
+      ],
+      "sourceDocument": "doc/Luat_ThuaKe.doc",
+      "officialUrl": "https://vanban.chinhphu.vn/?pageid=27160&docid=183188"
     }
   }
 }

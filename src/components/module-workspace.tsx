@@ -10,6 +10,7 @@ import { RepresentationWorkspace } from "@/modules/representation/workspace";
 import { CompulsoryShareWorkspace } from "@/modules/compulsory-share/workspace";
 import { SpouseStatusWorkspace } from "@/modules/spouse-status/workspace";
 import { RefusalAndUnclaimedWorkspace } from "@/modules/refusal-and-unclaimed/workspace";
+import { EstateSettlementWorkspace } from "@/modules/estate-settlement/workspace";
 
 interface ModuleInitialCase {
   id: string;
@@ -29,6 +30,7 @@ const workspacePresenters: Partial<Record<AnalysisModuleId, WorkspacePresenter>>
   "compulsory-share": CompulsoryShareWorkspace,
   "spouse-status": SpouseStatusWorkspace,
   "refusal-and-unclaimed": RefusalAndUnclaimedWorkspace,
+  "estate-settlement": EstateSettlementWorkspace,
 };
 
 export function ModuleWorkspace({ moduleId, initialCase }: { moduleId: AnalysisModuleId; initialCase?: ModuleInitialCase }) {

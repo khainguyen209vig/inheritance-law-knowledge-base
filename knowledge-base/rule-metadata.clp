@@ -298,6 +298,12 @@
     (description "Việc tìm người hưởng theo di chúc và theo pháp luật đã được xác nhận đầy đủ, không có người đang được gọi hưởng, không có disposition còn hiệu lực cho phần này và đây là phần còn lại sau khi hoàn thành nghĩa vụ tài sản.")
     (status draft))
   (rule-metadata
+    (rule-id R-I01)
+    (module estate-settlement)
+    (legal-source "Điều 658 Bộ luật Dân sự 2015")
+    (description "Loại nghĩa vụ hoặc chi phí của từng khoản được đối chiếu với bảng tri thức 10 mức tại Điều 658. Một production rule tổng quát thực hiện phép đối chiếu; thứ tự pháp lý không được mã hóa thành mười nhánh điều kiện.")
+    (status draft))
+  (rule-metadata
     (rule-id REPRESENTATION-CANDIDATE-INACTIVE)
     (module representation)
     (legal-source "Quy tắc kết nối nội bộ; liên quan Điều 620–621 và Điều 652")

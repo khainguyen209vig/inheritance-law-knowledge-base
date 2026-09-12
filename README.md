@@ -8,7 +8,7 @@
 
 - Biểu diễn tường minh các chủ thể, quan hệ, sự kiện và điều kiện pháp lý trong lĩnh vực thừa kế.
 - Tách tri thức pháp luật dùng chung khỏi dữ kiện của từng vụ việc.
-- Suy luận bằng các luật `IF–THEN` có định danh và căn cứ điều luật.
+- Suy luận bằng production rules có định danh và căn cứ điều luật; bảng phân loại, quan hệ và thứ tự được giữ thành knowledge facts khi phù hợp.
 - Trình bày kết luận cùng chuỗi rules và facts đã được sử dụng.
 - Phân biệt được kết luận `TRUE`, `FALSE`, `UNKNOWN` và `CONFLICT`.
 - Cho phép mở rộng knowledge base mà không sửa mã nguồn inference engine.
@@ -67,6 +67,7 @@ Các nhóm luật được tổ chức thành mô-đun kết quả dùng chung w
 - [x] Triển khai mô-đun quyền hưởng R-D01–R-D05 theo từng người dựa trên Điều 621.
 - [x] Triển khai graph gia đình và R-C01–R-C06: phân loại ba hàng, chọn hàng hoạt động và gọi hưởng có kiểm soát completeness.
 - [x] Triển khai lát cắt thừa kế thế vị R-E01/R-E02 trên graph dùng chung, gồm API, presenter rà soát nhánh, trace và tests.
+- [x] Triển khai R-I01 bằng bảng knowledge facts Điều 658, API và presenter hàng đợi thanh toán nhiều khoản.
 - [ ] So sánh hai inference runs của cùng hồ sơ (hạng mục hậu MVP).
 
 ## Phạm vi kết quả
@@ -80,7 +81,8 @@ Hệ thống không tính toán việc phân chia toàn bộ di sản theo một
 5. Thừa kế thế vị.
 6. Suất bắt buộc.
 7. Từ chối nhận di sản và tài sản không có người nhận.
-8. Thời hiệu.
+8. Thanh toán nghĩa vụ di sản.
+9. Thời hiệu.
 
 Phiên bản trình bày tối thiểu hướng tới mô-đun 1–4. Mức mục tiêu bổ sung mô-đun thừa kế thế vị; các mô-đun còn lại được thực hiện nếu còn thời gian.
 
@@ -369,6 +371,7 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 16. [x] Triển khai nhóm G về trạng thái vợ/chồng tại thời điểm mở thừa kế, dùng sự kiện riêng cho chia tài sản chung, ly hôn và kết hôn sau đó; có trace tới Điều 655.
 17. [x] Triển khai nhóm H theo từng người và phần di sản: hợp thành hiệu lực từ chối theo Điều 620, dùng completeness để xác định phần còn lại thuộc Nhà nước theo Điều 622.
 18. [x] Tích hợp derived `valid-refusal` của nhóm H vào A/C/E/F qua `refusal-status`; bỏ nhập kết luận từ chối khỏi graph, vẫn giữ fallback cho hồ sơ cũ.
-19. [ ] Đánh giá và triển khai lát cắt phù hợp của nhóm I; graph editor vẫn nằm trong UX debt trước bản trình bày.
+19. [x] Triển khai R-I01: lưu 10 mức ưu tiên Điều 658 thành knowledge facts, dùng một production rule tổng quát để xếp nhiều khoản nghĩa vụ và hiển thị hàng đợi có căn cứ pháp lý.
+20. [ ] Đánh giá R-I02 về nguyên tắc chia đều khi di chúc không xác định rõ phần; chỉ nhận diện nguyên tắc, chưa chia tiền end-to-end. Graph editor vẫn nằm trong UX debt trước bản trình bày.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

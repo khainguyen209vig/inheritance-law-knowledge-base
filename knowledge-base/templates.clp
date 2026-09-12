@@ -6,7 +6,7 @@
   (slot case-id (type SYMBOL))
   (slot subject (type SYMBOL))
   (slot module (type SYMBOL)
-    (allowed-symbols will-validity inheritance-type eligibility heir-rank representation compulsory-share spouse-status refusal-and-unclaimed limitation)))
+    (allowed-symbols will-validity inheritance-type eligibility heir-rank representation compulsory-share spouse-status refusal-and-unclaimed estate-settlement limitation)))
 
 ; An atomic observation supplied by the case database or user interface.
 ; Legal conclusions must not be inserted using this template.
