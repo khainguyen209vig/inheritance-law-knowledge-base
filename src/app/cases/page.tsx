@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CreateCaseForm } from "@/components/cases/create-case-form";
+import { DeleteCaseButton } from "@/components/cases/delete-case-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,7 +57,7 @@ export default function CasesPage() {
                   <CardTitle className="pt-2">{item.title}</CardTitle>
                   <CardDescription>{item.latestRun ? `Gần nhất: ${module?.title ?? item.latestRun.module}` : "Chưa chạy mô-đun nào"}</CardDescription>
                 </CardHeader>
-                <CardContent><Button asChild><Link href={`/cases/${item.id}`}>Mở hồ sơ</Link></Button></CardContent>
+                <CardContent className="flex flex-wrap gap-2"><Button asChild><Link href={`/cases/${item.id}`}>Mở hồ sơ</Link></Button><DeleteCaseButton caseId={item.id} caseTitle={item.title} /></CardContent>
               </Card>
             );
           })}

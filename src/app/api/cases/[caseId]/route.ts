@@ -44,3 +44,23 @@ export async function PATCH(
     return Response.json({ error: "CASE_UPDATE_FAILED" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ caseId: string }> },
+) {
+  const parsed = caseIdSchema.safeParse((await params).caseId);
+  if (!parsed.success) {
+    return Response.json({ error: "INVALID_CASE_ID" }, { status: 400 });
+  }
+
+  try {
+    new CaseRepository(getDatabase()).deleteCase(parsed.data);
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    const knownError = databaseErrorResponse(error);
+    if (knownError) return knownError;
+    console.error("Deleting case failed", error);
+    return Response.json({ error: "CASE_DELETE_FAILED" }, { status: 500 });
+  }
+}

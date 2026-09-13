@@ -1,5 +1,5 @@
-import { ModuleWorkspace } from "@/components/module-workspace";
+import { redirect } from "next/navigation";
 
 export default function HomePage() {
-  return <ModuleWorkspace moduleId="will-validity" />;
+  redirect("/cases");
 }

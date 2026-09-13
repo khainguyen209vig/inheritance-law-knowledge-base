@@ -157,6 +157,15 @@ export class CaseRepository {
     return this.getCase(caseId);
   }
 
+  deleteCase(caseId: string): void {
+    const remove = this.database.transaction(() => {
+      this.assertCaseExists(caseId);
+      this.database.prepare("DELETE FROM inference_runs WHERE case_id = ?").run(caseId);
+      this.database.prepare("DELETE FROM cases WHERE id = ?").run(caseId);
+    });
+    remove();
+  }
+
   getCase(caseId: string): StoredCase {
     const row = this.database
       .prepare("SELECT id, title, created_at, updated_at FROM cases WHERE id = ?")

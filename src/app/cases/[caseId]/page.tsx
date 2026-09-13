@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { DeleteCaseButton } from "@/components/cases/delete-case-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +30,7 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ cas
           <h1 className="mt-4 font-serif text-4xl font-semibold">{storedCase.title}</h1>
           <p className="mt-2 text-sm text-muted-foreground">Cập nhật {new Date(storedCase.updatedAt).toLocaleString("vi-VN")}</p>
         </div>
-        <Button asChild variant="outline"><Link href="/cases">Tất cả hồ sơ</Link></Button>
+        <div className="flex flex-wrap gap-2"><Button asChild variant="outline"><Link href="/cases">Tất cả hồ sơ</Link></Button><DeleteCaseButton caseId={storedCase.id} caseTitle={storedCase.title} redirectTo="/cases" /></div>
       </div>
 
       <div className="mt-8 grid items-start gap-6 lg:grid-cols-[1fr_380px]">

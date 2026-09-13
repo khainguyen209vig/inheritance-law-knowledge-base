@@ -191,7 +191,7 @@ UI sử dụng Tailwind CSS và các shadcn source components trong `src/compone
 
 Trang `/modules` đọc module registry và hiển thị các mục tiêu phân tích cùng kiểu interaction dự kiến. Năm presenter đã triển khai là `will-validity`, `inheritance-type`, `eligibility`, `heir-rank` và `representation`; mỗi mô-đun có cách nhập và trình bày kết quả riêng. Presenter `representation` rà soát các nhánh trong graph của một hồ sơ có sẵn thay vì tạo cây quan hệ thứ hai.
 
-Trang `/cases` quản lý các hồ sơ trong SQLite. `/cases/:caseId` hiển thị facts hiện tại, mô-đun có thể chạy và lịch sử inference runs; `/cases/:caseId/runs/:runId` mở snapshot bất biến cùng trace và căn cứ pháp lý. Khi mở lại `will-validity`, presenter khôi phục answers từ facts đã lưu thay vì tạo một case mới.
+Trang gốc `/` chuyển hướng tới `/cases`, là điểm vào chính để quản lý hồ sơ trong SQLite. `/cases/:caseId` hiển thị facts hiện tại, mô-đun có thể chạy và lịch sử inference runs; `/cases/:caseId/runs/:runId` mở snapshot bất biến cùng trace và căn cứ pháp lý. Khi mở lại `will-validity`, presenter khôi phục answers từ facts đã lưu thay vì tạo một case mới. Người dùng có thể xóa hồ sơ từ danh sách hoặc trang chi tiết sau bước xác nhận; thao tác xóa đồng thời facts và toàn bộ inference snapshots liên quan.
 
 API đầu tiên nhận dữ kiện đã chuẩn hóa tại `POST /api/inference/will-validity`. Ví dụ request tối thiểu cho một di chúc bằng văn bản:
 
@@ -219,6 +219,7 @@ Response gồm `results`, `missing` và `traces`. Route chạy trên Node.js run
 | `GET` | `/api/cases` | Liệt kê vụ việc cùng kết quả gần nhất |
 | `GET` | `/api/cases/:caseId` | Đọc vụ việc và facts hiện tại |
 | `PATCH` | `/api/cases/:caseId` | Đổi tên vụ việc |
+| `DELETE` | `/api/cases/:caseId` | Xóa vụ việc, facts và toàn bộ inference snapshots liên quan |
 | `PUT` | `/api/cases/:caseId/facts` | Thay toàn bộ facts hiện tại của vụ việc |
 | `POST` | `/api/cases/:caseId/inference/will-validity` | Chạy CLIPS và lưu một snapshot mới |
 | `POST` | `/api/cases/:caseId/inference/inheritance-type` | Chạy nhóm luật A trên toàn bộ phần di sản và lưu snapshot |

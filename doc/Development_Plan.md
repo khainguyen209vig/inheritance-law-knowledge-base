@@ -325,6 +325,7 @@ Do MVP chỉ được nhóm phát triển sử dụng nội bộ, chưa ưu tiê
 - Đã tách dialog căn cứ pháp lý thành component explanation dùng chung và thêm trang `/modules` để lựa chọn mục tiêu phân tích.
 - Đã bổ sung `/cases`, trang chi tiết hồ sơ và trang inference snapshot; người dùng có thể mở lại facts hiện tại, chạy mô-đun và tra cứu lịch sử bất biến.
 - Repository và API hỗ trợ danh sách case/run theo contract tổng quát `module + predicate + value`, không khóa trang lịch sử vào một kết luận `valid-will` duy nhất.
+- Trang gốc `/` chuyển hướng tới `/cases`; danh sách và trang chi tiết đều hỗ trợ xóa hồ sơ có xác nhận, bao gồm facts và toàn bộ inference snapshots liên quan.
 - Đã kiểm thử integration qua native CLIPS process, smoke-test toàn bộ route HTTP và kiểm tra trực quan giao diện desktop/mobile.
 
 ### Backlog sau MVP — So sánh inference runs

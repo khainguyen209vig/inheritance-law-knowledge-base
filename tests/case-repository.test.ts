@@ -70,3 +70,37 @@ test("case repository rejects an unknown case", () => {
     database.close();
   }
 });
+
+test("case repository deletes a case together with facts and inference snapshots", () => {
+  const database = openDatabase(":memory:");
+  const repository = new CaseRepository(database);
+  try {
+    repository.createCase({ id: "case-delete", title: "Hồ sơ cần xóa" });
+    repository.replaceFacts("case-delete", {
+      subject: "will-delete",
+      facts: [{ id: "mental", predicate: "testator-mental-state", value: "lucid" }],
+    });
+    repository.saveInferenceRun({
+      caseId: "case-delete",
+      subject: "will-delete",
+      facts: [{ id: "mental", predicate: "testator-mental-state", value: "lucid" }],
+      output: {
+        results: [{ caseId: "case-delete", subject: "will-delete", module: "will-validity", predicate: "valid-will", value: "unknown", derivations: ["SYSTEM-INCOMPLETE"] }],
+        missing: [{ caseId: "case-delete", subject: "will-delete", module: "will-validity", predicate: "undue-influence" }],
+        traces: [{ caseId: "case-delete", subject: "will-delete", ruleId: "SYSTEM-INCOMPLETE", conclusionPredicate: "valid-will", conclusionValue: "unknown", supports: ["mental"] }],
+      },
+    });
+
+    repository.deleteCase("case-delete");
+
+    assert.throws(() => repository.getCase("case-delete"), CaseNotFoundError);
+    assert.equal(repository.listCases().length, 0);
+    assert.equal((database.prepare("SELECT COUNT(*) AS count FROM asserted_facts").get() as { count: number }).count, 0);
+    assert.equal((database.prepare("SELECT COUNT(*) AS count FROM inference_runs").get() as { count: number }).count, 0);
+    assert.equal((database.prepare("SELECT COUNT(*) AS count FROM module_results").get() as { count: number }).count, 0);
+    assert.equal((database.prepare("SELECT COUNT(*) AS count FROM missing_requirements").get() as { count: number }).count, 0);
+    assert.equal((database.prepare("SELECT COUNT(*) AS count FROM inference_traces").get() as { count: number }).count, 0);
+  } finally {
+    database.close();
+  }
+});
