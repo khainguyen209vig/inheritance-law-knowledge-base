@@ -16,6 +16,7 @@ interface GuidedEligibilityStepProps {
 }
 
 export function GuidedEligibilityStep({ state, personId, onStateChange }: GuidedEligibilityStepProps) {
+  const deceasedId = state.case.facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
   const wills = useMemo(() => [...new Set(state.case.facts.flatMap((fact) => fact.predicate === "will-type" && fact.subject ? [fact.subject] : []))], [state.case.facts]);
   const restored = useMemo(() => restoreEligibilityPeople(state.case.facts, personId, wills[0]).find((person) => person.id === personId)
     ?? { id: personId, name: personLabel(state, personId), exception: false, will: wills[0] }, [personId, state, wills]);
@@ -24,6 +25,8 @@ export function GuidedEligibilityStep({ state, personId, onStateChange }: Guided
   const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
   const selectedGround = eligibilityGrounds.find((ground) => ground.id === person.ground);
+
+  if (personId === deceasedId) return <Card className="max-w-3xl border-red-200 bg-red-50/60"><CardHeader><CardTitle className="text-lg">Không thể rà soát Điều 621 cho người để lại di sản</CardTitle><CardDescription>Người để lại di sản không phải ứng viên hưởng di sản của chính mình. Hãy tải lại hồ sơ; planner sẽ yêu cầu chọn đúng người cần đánh giá.</CardDescription></CardHeader></Card>;
 
   function chooseGround(ground: EligibilityGround) {
     setPerson((current) => ({ ...current, ground, exception: ground === "clear" ? false : current.exception }));

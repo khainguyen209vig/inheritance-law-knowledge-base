@@ -4,7 +4,7 @@ import { openDatabase } from "../src/server/db/database";
 import { CaseRepository } from "../src/server/db/case-repository";
 import { GuidedSessionRepository } from "../src/server/db/guided-session-repository";
 import { answerGuidedQuestion, createGuidedCase, getGuidedCaseState } from "../src/server/guided/service";
-import { runStoredEligibility, runStoredHeirRank, runStoredRefusalAndUnclaimed } from "../src/server/cases/service";
+import { runStoredCompulsoryShare, runStoredEligibility, runStoredHeirRank, runStoredRefusalAndUnclaimed } from "../src/server/cases/service";
 
 test("guided session persists its topic and resumes from case facts", async () => {
   const database = openDatabase(":memory:");
@@ -40,6 +40,24 @@ test("guided will answer runs CLIPS and plans the next missing requirement", asy
     assert.ok(answered.latestRunIds["will-validity"]);
     assert.notEqual(answered.next?.requirement.predicate, "will-type");
     assert.equal(new CaseRepository(database).listInferenceRuns(initial.case.id).length, 1);
+  } finally {
+    database.close();
+  }
+});
+
+test("person eligibility flow asks for a candidate and never reviews the deceased", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Rà soát quyền hưởng", topicId: "person-eligibility" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Người để lại di sản" });
+    const deceasedId = state.case.facts.find((fact) => fact.predicate === "deceased-person")?.subject;
+    assert.equal(state.next?.requirement.predicate, "guided-eligibility-person-name");
+    assert.notEqual(state.next?.requirement.subject, deceasedId);
+
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-eligibility-person-name", value: "Người cần rà soát" });
+    assert.equal(state.next?.requirement.predicate, "eligibility-review-complete");
+    assert.equal(state.next?.requirement.subject, "eligibility-guided-person");
+    assert.notEqual(state.next?.requirement.subject, deceasedId);
   } finally {
     database.close();
   }
@@ -120,6 +138,49 @@ test("guided written-will flow reaches a conclusive CLIPS result without restart
     assert.equal(state.next, undefined);
     const latest = new CaseRepository(database).listInferenceRuns(state.case.id)[0];
     assert.ok(latest?.results.some((result) => result.predicate === "valid-will" && result.value === "true"));
+  } finally {
+    database.close();
+  }
+});
+
+test("guided compulsory-share topic advances from dependencies to Article 644 review", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Suất bắt buộc", topicId: "compulsory-share" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    const deceasedId = state.case.facts.find((fact) => fact.predicate === "deceased-person")?.subject;
+    assert.ok(deceasedId);
+    const repository = new CaseRepository(database);
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      { id: "cs-deceased", subject: deceasedId, predicate: "deceased-person", value: true },
+      { id: "cs-deceased-label", subject: deceasedId, predicate: "heir-person-label", value: "Nguyễn Văn A" },
+      { id: "cs-child-label", subject: "person-child", predicate: "heir-person-label", value: "Nguyễn Văn B" },
+      { id: "cs-child-rank", subject: "person-child", predicate: "heir-rank-candidate", value: true },
+      { id: "cs-child-eligibility", subject: "person-child", predicate: "eligibility-candidate", value: true },
+      { id: "cs-child-life", subject: "person-child", predicate: "heir-life-status", value: "alive" },
+      { id: "cs-child-edge", subject: deceasedId, predicate: "biological-parent-of", value: "person-child" },
+      { id: "cs-search-complete", subject: state.case.id, predicate: "heir-search-complete", value: true },
+      { id: "cs-child-review", subject: "person-child", predicate: "eligibility-review-complete", value: true },
+      { id: "cs-child-refusal-scope", subject: "person-child", predicate: "refusal-assessment-subject", value: true },
+      { id: "cs-child-refusal-made", subject: "person-child", predicate: "refusal-made", value: false },
+    ] });
+    await runStoredEligibility(repository, state.case.id);
+    await runStoredRefusalAndUnclaimed(repository, state.case.id);
+    await runStoredHeirRank(repository, state.case.id);
+
+    state = getGuidedCaseState(database, state.case.id);
+    assert.equal(state.next?.requirement.predicate, "guided-compulsory-share-review");
+    assert.equal(state.next?.resolution?.kind, "interaction");
+
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      ...repository.getCase(state.case.id).facts,
+      { id: "cs-child-scope", subject: "person-child", predicate: "compulsory-share-assessment-subject", value: true },
+      { id: "cs-child-age", subject: "person-child", predicate: "age-group", value: "minor" },
+    ] });
+    const compulsoryRun = await runStoredCompulsoryShare(repository, state.case.id);
+    state = getGuidedCaseState(database, state.case.id);
+    assert.equal(state.next, undefined);
+    assert.ok(compulsoryRun.results.some((result) => result.subject === "person-child" && result.predicate === "compulsory-heir" && result.value === "true"));
   } finally {
     database.close();
   }

@@ -62,15 +62,16 @@ export function restoreFamilyGraph(facts: ApiFact[], token: string): FamilyGraph
 
 export function serializeFamilyGraph(caseId: string, graph: FamilyGraph, searchComplete?: boolean): ApiFact[] {
   const facts: ApiFact[] = [];
+  const candidateIds = statutoryCandidateIds(graph);
   graph.people.forEach((person, index) => {
     const personFactPrefix = `fgp-${stableToken(person.id)}`;
     facts.push({ id: `${personFactPrefix}-label`, subject: person.id, predicate: "heir-person-label", value: person.name || `Người ${index + 1}` });
     if (person.id === graph.deceasedId) facts.push({ id: "fg-deceased", subject: person.id, predicate: "deceased-person", value: true });
     else {
-      facts.push(
-        { id: `${personFactPrefix}-rank`, subject: person.id, predicate: "heir-rank-candidate", value: true },
-        { id: `${personFactPrefix}-eligibility`, subject: person.id, predicate: "eligibility-candidate", value: true },
-      );
+      if (candidateIds.has(person.id)) facts.push(
+          { id: `${personFactPrefix}-rank`, subject: person.id, predicate: "heir-rank-candidate", value: true },
+          { id: `${personFactPrefix}-eligibility`, subject: person.id, predicate: "eligibility-candidate", value: true },
+        );
       if (person.life) facts.push({ id: `${personFactPrefix}-life`, subject: person.id, predicate: "heir-life-status", value: person.life });
     }
   });
@@ -81,6 +82,45 @@ export function serializeFamilyGraph(caseId: string, graph: FamilyGraph, searchC
   });
   if (searchComplete !== undefined) facts.push({ id: "fg-search-complete", subject: caseId, predicate: "heir-search-complete", value: searchComplete });
   return facts;
+}
+
+/** Candidate scope mirrors the relationship paths represented by R-C01–R-C03. */
+export function statutoryCandidateIds(graph: FamilyGraph): Set<string> {
+  const deceased = graph.deceasedId;
+  const biologicalParentsByChild = new Map<string, Set<string>>();
+  const biologicalChildrenByParent = new Map<string, Set<string>>();
+  const candidates = new Set<string>();
+  for (const edge of graph.edges) {
+    if (edge.type === "spouse-at-opening" && (edge.from === deceased || edge.to === deceased)) candidates.add(edge.from === deceased ? edge.to : edge.from);
+    if (edge.type === "biological-parent-of") {
+      biologicalParentsByChild.set(edge.to, new Set([...(biologicalParentsByChild.get(edge.to) ?? []), edge.from]));
+      biologicalChildrenByParent.set(edge.from, new Set([...(biologicalChildrenByParent.get(edge.from) ?? []), edge.to]));
+    }
+    if ((edge.type === "biological-parent-of" || edge.type === "adoptive-parent-of") && edge.to === deceased) candidates.add(edge.from);
+    if ((edge.type === "biological-parent-of" || edge.type === "adoptive-parent-of") && edge.from === deceased) candidates.add(edge.to);
+  }
+  const biologicalParents = biologicalParentsByChild.get(deceased) ?? new Set<string>();
+  const biologicalChildren = biologicalChildrenByParent.get(deceased) ?? new Set<string>();
+  for (const parent of biologicalParents) {
+    for (const grandparent of biologicalParentsByChild.get(parent) ?? []) {
+      candidates.add(grandparent);
+      for (const greatGrandparent of biologicalParentsByChild.get(grandparent) ?? []) candidates.add(greatGrandparent);
+      for (const auntOrUncle of biologicalChildrenByParent.get(grandparent) ?? []) if (auntOrUncle !== parent) candidates.add(auntOrUncle);
+    }
+    for (const sibling of biologicalChildrenByParent.get(parent) ?? []) {
+      if (sibling === deceased) continue;
+      candidates.add(sibling);
+      for (const nieceOrNephew of biologicalChildrenByParent.get(sibling) ?? []) candidates.add(nieceOrNephew);
+    }
+  }
+  for (const child of biologicalChildren) {
+    for (const grandchild of biologicalChildrenByParent.get(child) ?? []) {
+      candidates.add(grandchild);
+      for (const greatGrandchild of biologicalChildrenByParent.get(grandchild) ?? []) candidates.add(greatGrandchild);
+    }
+  }
+  candidates.delete(deceased);
+  return candidates;
 }
 
 function stableEdgeFactId(edgeId: string): string {

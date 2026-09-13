@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { graphDiagnostics, graphWarnings, groupSpousesInRow, jointBiologicalChildren, jointChildrenOfSpouses, restoreFamilyGraph, serializeFamilyGraph, soleExistingParentOfType, type FamilyGraph } from "../src/modules/family-graph/model";
+import { graphDiagnostics, graphWarnings, groupSpousesInRow, jointBiologicalChildren, jointChildrenOfSpouses, restoreFamilyGraph, serializeFamilyGraph, soleExistingParentOfType, statutoryCandidateIds, type FamilyGraph } from "../src/modules/family-graph/model";
 
 test("family graph restores formerly hidden intermediate people as editable nodes", () => {
   const graph = restoreFamilyGraph([
@@ -100,6 +100,26 @@ test("family graph layout keeps spouses adjacent when a sibling shares their row
 
   const ordered = groupSpousesInRow(graph.people, graph).map((person) => person.id);
   assert.deepEqual(ordered, ["thanh", "thuy", "g"]);
+});
+
+test("spouse of the deceased's parent stays in the graph but is not a statutory candidate", () => {
+  const graph: FamilyGraph = {
+    deceasedId: "thanh",
+    people: [
+      { id: "thanh", name: "Thành", eligibilityReviewed: false },
+      { id: "e", name: "E", eligibilityReviewed: false },
+      { id: "g", name: "G", eligibilityReviewed: false },
+    ],
+    edges: [
+      { id: "e-thanh", from: "e", to: "thanh", type: "biological-parent-of" },
+      { id: "e-g", from: "e", to: "g", type: "spouse-at-opening" },
+    ],
+  };
+
+  assert.deepEqual(statutoryCandidateIds(graph), new Set(["e"]));
+  const facts = serializeFamilyGraph("case-scope", graph, true);
+  assert.ok(facts.some((fact) => fact.subject === "g" && fact.predicate === "heir-person-label"));
+  assert.ok(!facts.some((fact) => fact.subject === "g" && fact.predicate === "heir-rank-candidate"));
 });
 
 test("family graph stores an explicit care assessment on a step-parent relation", () => {

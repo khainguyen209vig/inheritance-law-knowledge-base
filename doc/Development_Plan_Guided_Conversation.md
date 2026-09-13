@@ -61,7 +61,7 @@ Guided Conversation UI
 
 - [x] `G-201` Component registry cho choice, Boolean ba trạng thái, number, date và text label. Renderer dùng chung nhận metadata từ question catalog; các kiểu chưa có answer mapper sẽ chưa được planner đưa ra cho người dùng.
 - [x] `G-202` Nhúng family graph vào luồng hội thoại thay vì điều hướng sang workspace khác; lưu graph facts, chạy `heir-rank` và trả quyền điều khiển cho question planner ngay trong cùng màn hình.
-- [ ] `G-203` Nhúng people review cho Điều 621, từ chối và suất bắt buộc. Đã hoàn tất presenter Điều 621 và từ chối nhận di sản; phần suất bắt buộc còn lại sẽ dùng lại người từ graph.
+- [x] `G-203` Nhúng people review cho Điều 621, từ chối và suất bắt buộc. Ba presenter dùng lại người từ graph, lưu facts nguyên tử và chạy lại các package phụ thuộc.
 - [ ] `G-204` Nhúng estate portions và beneficiaries.
 - [ ] `G-205` Nhúng timeline cho Điều 623 và Điều 661.
 - [ ] `G-206` Cho phép quay lại, sửa câu trả lời và vô hiệu hóa kết quả cũ.
@@ -104,7 +104,7 @@ Vertical slice G0/G1 tạo được đường đi:
   → đề xuất presenter tiếp theo
 ```
 
-Bước kế tiếp hoàn tất `G-203` bằng presenter suất bắt buộc, sau đó sang `G-204` cho các phần di sản và người hưởng. Đồng thời tiếp tục `G-106` khi nối từng package suy luận tiếp theo. Topic `who-inherits` là luồng demo chính vì thể hiện rõ lợi ích của việc ẩn các mô-đun kỹ thuật khỏi người dùng.
+Bước kế tiếp là `G-204`: presenter cho các phần di sản và người hưởng, bao gồm calculation ngưỡng 2/3 sau khi đã phân loại người thuộc diện suất bắt buộc. Đồng thời tiếp tục `G-106` khi nối từng package suy luận tiếp theo. Topic `who-inherits` là luồng demo chính vì thể hiện rõ lợi ích của việc ẩn các mô-đun kỹ thuật khỏi người dùng.
 
 ## 6. Tiêu chí hoàn thành
 

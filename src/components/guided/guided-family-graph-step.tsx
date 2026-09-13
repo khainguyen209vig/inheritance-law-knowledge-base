@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useReducer, useRef, useState, useTransition } from "react";
+import { useMemo, useReducer, useRef, useState } from "react";
 import { FamilyGraphEditor, type JointChildKind, type RelatedPersonRole } from "@/components/family-graph/family-graph-editor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +33,9 @@ export function GuidedFamilyGraphStep({ state, onStateChange }: GuidedFamilyGrap
   const [selectedId, setSelectedId] = useState(restored.deceasedId);
   const [searchComplete, setSearchComplete] = useState<boolean | undefined>(() => state.case.facts.find((fact) => fact.predicate === "heir-search-complete")?.value as boolean | undefined);
   const [error, setError] = useState<string>();
-  const [isPending, startTransition] = useTransition();
+  const [notice, setNotice] = useState<string>();
+  const [pendingPhase, setPendingPhase] = useState<"saving" | "inferring" | "planning">();
+  const isPending = pendingPhase !== undefined;
   const selectedPerson = graph.people.find((person) => person.id === selectedId) ?? graph.people[0];
   const diagnostics = useMemo(() => graphDiagnostics(graph), [graph]);
 
@@ -77,22 +79,34 @@ export function GuidedFamilyGraphStep({ state, onStateChange }: GuidedFamilyGrap
   function undo() { dispatch({ type: "undo" }); setSelectedId(graph.deceasedId); setSearchComplete(undefined); }
   function redo() { dispatch({ type: "redo" }); setSelectedId(graph.deceasedId); setSearchComplete(undefined); }
 
-  function saveAndContinue() {
-    startTransition(async () => {
-      setError(undefined);
-      try {
-        const ownedIds = new Set([...initialPersonIds.current, ...graph.people.map((person) => person.id)]);
-        const retained = state.case.facts.filter((fact) => !familyGraphPredicates.has(fact.predicate)
-          && !(ownedIds.has(fact.subject ?? "") && fact.predicate === "eligibility-candidate"));
-        await requestJson(`/api/cases/${state.case.id}/facts`, { method: "PUT", body: JSON.stringify({ subject: state.case.id, facts: [...retained, ...serializeFamilyGraph(state.case.id, graph, searchComplete)] }) });
-        await requestJson(`/api/cases/${state.case.id}/inference/heir-rank`, { method: "POST", body: "{}" });
-        const nextState = await requestJson<GuidedCaseState>(`/api/cases/${state.case.id}/guided`, { method: "GET" });
-        initialPersonIds.current = new Set(graph.people.map((person) => person.id));
-        onStateChange(nextState);
-      } catch (cause) {
-        setError(cause instanceof Error ? cause.message : "Không thể lưu cây gia đình.");
+  async function saveAndContinue() {
+    setError(undefined);
+    setNotice(undefined);
+    setPendingPhase("saving");
+    try {
+      const ownedIds = new Set([...initialPersonIds.current, ...graph.people.map((person) => person.id)]);
+      const retained = state.case.facts.filter((fact) => !familyGraphPredicates.has(fact.predicate)
+        && !(ownedIds.has(fact.subject ?? "") && fact.predicate === "eligibility-candidate"));
+      await requestJson(`/api/cases/${state.case.id}/facts`, { method: "PUT", body: JSON.stringify({ subject: state.case.id, facts: [...retained, ...serializeFamilyGraph(state.case.id, graph, searchComplete)] }) });
+      setPendingPhase("inferring");
+      await requestJson(`/api/cases/${state.case.id}/inference/heir-rank`, { method: "POST", body: "{}" });
+      setPendingPhase("planning");
+      const nextState = await requestJson<GuidedCaseState>(`/api/cases/${state.case.id}/guided`, { method: "GET" });
+      initialPersonIds.current = new Set(graph.people.map((person) => person.id));
+      if (nextState.next?.resolution?.kind === "interaction" && nextState.next.resolution.interaction === "family-tree") {
+        const unresolvedId = nextState.next.requirement.subject;
+        const unresolvedName = graph.people.find((person) => person.id === unresolvedId)?.name ?? unresolvedId;
+        setSelectedId(unresolvedId);
+        setNotice(nextState.next.requirement.predicate === "relationship-at-opening"
+          ? `Đã lưu và chạy suy luận. CLIPS chưa xác định được quan hệ thuộc hàng thừa kế của ${unresolvedName}. Hãy kiểm tra lại các cạnh nối người này với người để lại di sản.`
+          : `Đã lưu và chạy suy luận, nhưng vẫn cần bổ sung dữ kiện cho ${unresolvedName}.`);
       }
-    });
+      onStateChange(nextState);
+    } catch (cause) {
+      setError(cause instanceof DOMException && cause.name === "TimeoutError" ? "Yêu cầu quá thời gian 20 giây. Dữ kiện có thể đã được lưu; hãy thử tải lại hồ sơ trước khi gửi lại." : cause instanceof Error ? cause.message : "Không thể lưu cây gia đình.");
+    } finally {
+      setPendingPhase(undefined);
+    }
   }
 
   return <div className="space-y-4">
@@ -100,8 +114,9 @@ export function GuidedFamilyGraphStep({ state, onStateChange }: GuidedFamilyGrap
     {selectedPerson?.id !== graph.deceasedId ? <Card><CardHeader><CardTitle className="text-lg">Tình trạng của {selectedPerson?.name}</CardTitle><CardDescription>Tại thời điểm mở thừa kế, người này còn sống hay đã chết trước/cùng thời điểm?</CardDescription></CardHeader><CardContent className="grid gap-2 sm:grid-cols-2"><Choice selected={selectedPerson?.life === "alive"} onClick={() => updatePerson({ life: "alive" })}>Còn sống</Choice><Choice selected={selectedPerson?.life === "dead-before-or-same"} onClick={() => updatePerson({ life: "dead-before-or-same" })}>Đã chết trước/cùng thời điểm</Choice></CardContent></Card> : null}
     <Card><CardHeader><CardTitle className="text-lg">Đã nhập đủ người liên quan chưa?</CardTitle><CardDescription>Bạn vẫn có thể quay lại sửa cây sau. Chọn “chưa đủ” nếu còn người cần bổ sung.</CardDescription></CardHeader><CardContent className="grid gap-2 sm:grid-cols-2"><Choice selected={searchComplete === true} onClick={() => setSearchComplete(true)}>Đã nhập đủ</Choice><Choice selected={searchComplete === false} onClick={() => setSearchComplete(false)}>Chưa nhập đủ</Choice></CardContent></Card>
     {diagnostics.length ? <div className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{diagnostics.join(" ")}</div> : null}
+    {notice ? <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-900">{notice}</div> : null}
     {error ? <div className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</div> : null}
-    <div className="flex justify-end"><Button disabled={isPending || graph.people.length < 2 || diagnostics.length > 0 || searchComplete === undefined} onClick={saveAndContinue}>{isPending ? "Đang lưu và suy luận…" : "Lưu cây và tiếp tục"}</Button></div>
+    <div className="flex justify-end"><Button disabled={isPending || graph.people.length < 2 || diagnostics.length > 0 || searchComplete === undefined} onClick={saveAndContinue}>{pendingPhase === "saving" ? "Đang lưu cây…" : pendingPhase === "inferring" ? "CLIPS đang suy luận…" : pendingPhase === "planning" ? "Đang chọn bước tiếp theo…" : "Lưu cây và tiếp tục"}</Button></div>
   </div>;
 }
 
@@ -119,7 +134,7 @@ function graphHistoryReducer(state: GraphHistory, action: GraphAction): GraphHis
 }
 
 async function requestJson<T = unknown>(url: string, init: RequestInit): Promise<T> {
-  const response = await fetch(url, { ...init, headers: { "content-type": "application/json", ...init.headers } });
+  const response = await fetch(url, { ...init, signal: init.signal ?? AbortSignal.timeout(20_000), headers: { "content-type": "application/json", ...init.headers } });
   const data = await response.json() as T & { error?: string };
   if (!response.ok) throw new Error(data.error ?? `Request thất bại (${response.status}).`);
   return data;

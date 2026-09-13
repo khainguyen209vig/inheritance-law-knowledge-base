@@ -8,6 +8,7 @@ export const guidedTopicIdSchema = z.enum(guidedTopicIds);
 export const createGuidedSessionSchema = z.object({ title: z.string().trim().min(1).max(200), topicId: guidedTopicIdSchema });
 export const guidedAnswerSchema = z.discriminatedUnion("questionId", [
   z.object({ questionId: z.literal("guided-deceased-name"), value: z.string().trim().min(1).max(80) }),
+  z.object({ questionId: z.literal("guided-eligibility-person-name"), value: z.string().trim().min(1).max(80) }),
   z.object({ questionId: z.literal("will-type"), value: z.enum(["written", "oral"]) }),
   z.object({ questionId: z.literal("testator-mental-state"), value: z.enum(["lucid", "not-lucid"]) }),
   z.object({ questionId: z.literal("undue-influence"), value: z.enum(["none", "deception", "threat"]) }),
@@ -22,7 +23,7 @@ export const guidedAnswerSchema = z.discriminatedUnion("questionId", [
   z.object({ questionId: z.literal("certified-within-days"), value: z.number().int().min(0).max(36500) }),
 ]);
 export type GuidedAnswer = z.infer<typeof guidedAnswerSchema>;
-export const guidedAnswerQuestionIds = ["guided-deceased-name", "will-type", "testator-mental-state", "undue-influence", "prohibited-content", "formal-defect", "guardian-consent", "prepared-by-witness", "notarized-or-certified", "witness-count", "witnesses-recorded", "witnesses-signed", "certified-within-days"] as const;
+export const guidedAnswerQuestionIds = ["guided-deceased-name", "guided-eligibility-person-name", "will-type", "testator-mental-state", "undue-influence", "prohibited-content", "formal-defect", "guardian-consent", "prepared-by-witness", "notarized-or-certified", "witness-count", "witnesses-recorded", "witnesses-signed", "certified-within-days"] as const;
 
 export function isGuidedAnswerQuestionId(value: string): value is GuidedAnswer["questionId"] {
   return (guidedAnswerQuestionIds as readonly string[]).includes(value);
@@ -47,7 +48,7 @@ export const guidedTopics: Record<GuidedTopicId, GuidedTopicDefinition> = {
 };
 
 export type GuidedAnswerKind = "single-choice" | "boolean-unknown" | "date" | "number" | "text";
-export type GuidedInteraction = InteractionMode | "eligibility-review" | "refusal-review";
+export type GuidedInteraction = InteractionMode | "eligibility-review" | "refusal-review" | "compulsory-share-review";
 export interface GuidedChoice { label: string; value: string | boolean; description?: string }
 
 type GuidedRequirementTemplate =
@@ -71,6 +72,7 @@ export interface GuidedCaseState {
 
 const requirementCatalog: Record<string, GuidedRequirementTemplate> = {
   "guided-deceased-name": { kind: "question", prompt: "Trước hết, người để lại di sản là ai?", answerKind: "text", priority: 0 },
+  "guided-eligibility-person-name": { kind: "question", prompt: "Bạn muốn rà soát quyền hưởng của người nào?", answerKind: "text", priority: 5, placeholder: "Nhập tên người cần rà soát" },
   "will-type": { kind: "question", prompt: "Di chúc được lập dưới hình thức nào?", answerKind: "single-choice", priority: 20, choices: [{ label: "Bằng văn bản", value: "written" }, { label: "Bằng miệng", value: "oral" }] },
   "testator-mental-state": { kind: "question", prompt: "Khi lập di chúc, người lập có minh mẫn và sáng suốt không?", answerKind: "single-choice", priority: 30, choices: [{ label: "Minh mẫn, sáng suốt", value: "lucid" }, { label: "Không minh mẫn", value: "not-lucid" }] },
   "undue-influence": { kind: "question", prompt: "Có dấu hiệu lừa dối, đe dọa hoặc cưỡng ép khi lập di chúc không?", answerKind: "single-choice", priority: 40, choices: [{ label: "Không phát hiện", value: "none" }, { label: "Có dấu hiệu lừa dối", value: "deception" }, { label: "Có dấu hiệu đe dọa", value: "threat" }] },
@@ -87,8 +89,10 @@ const requirementCatalog: Record<string, GuidedRequirementTemplate> = {
   "relationship-at-opening": { kind: "interaction", prompt: "Hãy bổ sung quan hệ gia đình của những người liên quan.", interaction: "family-tree", priority: 10 },
   "heir-life-status": { kind: "question", prompt: "Người này còn sống tại thời điểm mở thừa kế không?", answerKind: "single-choice", priority: 20 },
   "article-621-status": { kind: "interaction", prompt: "Cần rà soát các căn cứ về quyền hưởng của người này.", interaction: "eligibility-review", priority: 30 },
+  "eligibility-review-complete": { kind: "interaction", prompt: "Cần rà soát các căn cứ về quyền hưởng của người này.", interaction: "eligibility-review", priority: 30 },
   "valid-refusal": { kind: "interaction", prompt: "Cần rà soát việc từ chối nhận di sản của người này.", interaction: "refusal-review", priority: 40 },
   "heir-search-complete": { kind: "interaction", prompt: "Hãy kiểm tra cây gia đình và xác nhận đã nhập đủ ứng viên.", interaction: "family-tree", priority: 50 },
+  "guided-compulsory-share-review": { kind: "interaction", prompt: "Hãy rà soát những người có thể thuộc diện hưởng di sản bắt buộc.", interaction: "compulsory-share-review", priority: 60 },
   "inheritance-opening-date": { kind: "question", prompt: "Ngày mở thừa kế là ngày nào?", answerKind: "date", priority: 10 },
   "limitation-request-type": { kind: "question", prompt: "Bạn đang muốn thực hiện loại yêu cầu nào?", answerKind: "single-choice", priority: 20 },
   "guided-estate-settlement": { kind: "interaction", prompt: "Hãy bổ sung các phần di sản và nghĩa vụ cần thanh toán hoặc phân chia.", interaction: "timeline", priority: 10 },
