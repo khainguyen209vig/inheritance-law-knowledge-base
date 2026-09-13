@@ -99,7 +99,13 @@ export type GuidedRequirementResolution = GuidedRequirementTemplate & { predicat
 export interface GuidedMissingRequirement {
   subject: string;
   predicate: string;
+  module?: AnalysisModuleId;
 }
+
+export type GuidedResolutionStatus =
+  | { kind: "missing-facts"; requirements: GuidedMissingRequirement[] }
+  | { kind: "missing-presenter"; requirements: GuidedMissingRequirement[] }
+  | { kind: "complete" | "unknown" | "conflict" | "unmodeled"; requirements: [] };
 
 export interface GuidedCaseState {
   case: { id: string; title: string; facts: ApiFact[] };
@@ -107,8 +113,11 @@ export interface GuidedCaseState {
   completedStepIds: string[];
   latestRunIds: Partial<Record<AnalysisModuleId, string>>;
   latestResults: Partial<Record<AnalysisModuleId, InferenceRun["results"]>>;
+  latestTraces: Partial<Record<AnalysisModuleId, InferenceRun["traces"]>>;
+  unresolvedRequirements: GuidedMissingRequirement[];
   dependencyPlan: Array<{ id: string; status: "complete" | "ready" | "skipped" | "blocked" }>;
   inferenceStatus: { status: "collecting" | "complete" | "unknown" | "conflict"; modules: AnalysisModuleId[] };
+  resolutionStatus: GuidedResolutionStatus;
   next?: { requirement: GuidedMissingRequirement; resolution?: GuidedRequirementResolution };
 }
 

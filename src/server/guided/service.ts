@@ -34,7 +34,7 @@ export function getGuidedCaseState(database: AppDatabase, caseId: string): Guide
   const runsForPlanning = hasWill === true && willRun && !willConclusionReached
     ? [["will-validity", willRun] as const]
     : [...latestRuns.entries()];
-  const requirements = runsForPlanning.flatMap(([moduleId, run]) => moduleId === "will-validity" && hasWill === false ? [] : run.missing.map(({ subject, predicate }) => ({ subject, predicate })));
+  const requirements = runsForPlanning.flatMap(([moduleId, run]) => moduleId === "will-validity" && hasWill === false ? [] : run.missing.map(({ subject, predicate }) => ({ subject, predicate, module: moduleId as typeof topic.modules[number] })));
   const activeCompulsoryHeirs = new Set(latestRuns.get("compulsory-share")?.results.filter((result) => result.predicate === "compulsory-heir" && result.value === "true").map((result) => result.subject) ?? []);
   const estatePortionIds = storedCase.facts.flatMap((fact) => fact.predicate === "estate-portion" && fact.value === true && fact.subject ? [fact.subject] : []);
   const regimeResults = latestRuns.get("inheritance-type")?.results.filter((result) => result.predicate === "inheritance-regime") ?? [];
@@ -63,14 +63,27 @@ export function getGuidedCaseState(database: AppDatabase, caseId: string): Guide
       : primaryResults.length === 0 || unknownModules.length > 0
         ? { status: "unknown", modules: primaryResults.length === 0 ? primaryGoals.map((goal) => goal.module) : unknownModules }
         : { status: "complete", modules: primaryGoals.flatMap((goal) => latestRuns.has(goal.module) ? [goal.module] : []) };
+  const unresolvedRequirements = uniqueRequirements(requirements);
+  const resolutionStatus: GuidedCaseState["resolutionStatus"] = dependencyPlan.next
+    ? { kind: dependencyPlan.next.resolution ? "missing-facts" : "missing-presenter", requirements: unresolvedRequirements.length ? unresolvedRequirements : [dependencyPlan.next.requirement] }
+    : inferenceStatus.status === "conflict"
+      ? { kind: "conflict", requirements: [] }
+      : inferenceStatus.status === "complete"
+        ? { kind: "complete", requirements: [] }
+        : primaryResults.some((result) => result.value === "unknown")
+          ? { kind: "unknown", requirements: [] }
+          : { kind: "unmodeled", requirements: [] };
   return {
     case: storedCase,
     topic,
     completedStepIds: session.completedStepIds,
     latestRunIds: Object.fromEntries([...latestRuns].map(([moduleId, run]) => [moduleId, run.id])),
     latestResults: Object.fromEntries([...latestRuns].map(([moduleId, run]) => [moduleId, run.results])),
+    latestTraces: Object.fromEntries([...latestRuns].map(([moduleId, run]) => [moduleId, run.traces])),
+    unresolvedRequirements,
     dependencyPlan: dependencyPlan.states,
     inferenceStatus,
+    resolutionStatus,
     next: dependencyPlan.next,
   };
 }
@@ -161,4 +174,8 @@ export async function runGuidedInference(database: AppDatabase, caseId: string):
 
 function needsWillContext(topicId: GuidedTopicId): boolean {
   return topicId === "who-inherits" || topicId === "person-eligibility" || topicId === "representation" || topicId === "compulsory-share";
+}
+
+function uniqueRequirements(requirements: readonly GuidedCaseState["unresolvedRequirements"][number][]): GuidedCaseState["unresolvedRequirements"] {
+  return [...new Map(requirements.map((requirement) => [`${requirement.module ?? "planner"}:${requirement.subject}:${requirement.predicate}`, requirement])).values()];
 }

@@ -21,6 +21,7 @@ const GuidedEstatePortionsStep = dynamic(() => import("@/components/guided/guide
 const GuidedInheritancePortionsStep = dynamic(() => import("@/components/guided/guided-inheritance-portions-step").then((module) => module.GuidedInheritancePortionsStep));
 const GuidedLimitationTimelineStep = dynamic(() => import("@/components/guided/guided-limitation-timeline-step").then((module) => module.GuidedLimitationTimelineStep));
 const GuidedDivisionTimelineStep = dynamic(() => import("@/components/guided/guided-division-timeline-step").then((module) => module.GuidedDivisionTimelineStep));
+const GuidedConclusion = dynamic(() => import("@/components/guided/guided-conclusion").then((module) => module.GuidedConclusion));
 
 export function GuidedSession({ initialState }: GuidedSessionProps) {
   const [state, setState] = useState(initialState);
@@ -89,15 +90,15 @@ export function GuidedSession({ initialState }: GuidedSessionProps) {
                   : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "inheritance-portions" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedInheritancePortionsStep state={state} onStateChange={setState} /></>
                     : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "timeline" && state.topic.id === "limitation" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedLimitationTimelineStep state={state} onStateChange={setState} /></>
                       : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "timeline" && state.topic.id === "estate-settlement" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedDivisionTimelineStep state={state} onStateChange={setState} /></>
-          : state.next ? <><AssistantMessage>{state.next.resolution?.prompt ?? "Cần thêm dữ kiện trước khi hệ thống có thể tiếp tục suy luận."}</AssistantMessage><Card className="max-w-2xl"><CardHeader><CardTitle className="text-lg">Bước tiếp theo</CardTitle><CardDescription>Question planner đã chọn bước này từ topic, facts và missing requirements mới nhất. Presenter tương ứng sẽ được nhúng trực tiếp trong phase kế tiếp.</CardDescription></CardHeader><CardContent><Button asChild><Link href={`/cases/${state.case.id}/modules/${state.topic.recommendedStartModule}`}>Mở phần nhập dữ kiện hiện tại</Link></Button></CardContent></Card></> : <GuidedTerminalMessage state={state} />}
+          : state.next ? <GuidedPresenterBoundary state={state} /> : <GuidedConclusion state={state} />}
     </section>
   </main>;
 }
 
-function GuidedTerminalMessage({ state }: { state: GuidedCaseState }) {
-  if (state.inferenceStatus.status === "conflict") return <><AssistantMessage>Hệ thống phát hiện các kết luận mâu thuẫn trong dữ kiện hiện tại. Luồng hỏi được dừng để bạn kiểm tra lại facts và chuỗi suy luận.</AssistantMessage><Button asChild variant="outline" className="w-fit border-red-300 text-red-700 hover:bg-red-50 hover:text-red-800"><Link href={`/cases/${state.case.id}`}>Kiểm tra mâu thuẫn và căn cứ</Link></Button></>;
-  if (state.inferenceStatus.status === "unknown") return <><AssistantMessage>Hiện chưa thể đưa ra kết luận cho mục tiêu này. Không còn câu hỏi đã được mô hình hóa để giải quyết phần chưa xác định; kết quả được giữ ở trạng thái <strong>UNKNOWN</strong>.</AssistantMessage><Button asChild variant="outline" className="w-fit"><Link href={`/cases/${state.case.id}`}>Xem dữ kiện còn thiếu và trace</Link></Button></>;
-  return <><AssistantMessage>Hệ thống đã đạt kết luận cho nhánh hiện tại. Kết quả CLIPS và căn cứ đã được lưu vào lịch sử hồ sơ.</AssistantMessage><Button asChild className="w-fit"><Link href={`/cases/${state.case.id}`}>Xem kết quả và căn cứ</Link></Button></>;
+function GuidedPresenterBoundary({ state }: { state: GuidedCaseState }) {
+  const requirements = state.resolutionStatus.kind === "missing-presenter" ? state.resolutionStatus.requirements : [state.next!.requirement];
+  const moduleId = requirements[0]?.module ?? state.topic.recommendedStartModule;
+  return <><AssistantMessage>Rule base đã xác định cần thêm dữ kiện, nhưng guided flow hiện chưa có cách hỏi phù hợp. Đây là giới hạn của giao diện prototype, không phải kết luận “không được hưởng” hoặc “không có quyền”.</AssistantMessage><Card className="max-w-2xl border-amber-300"><CardHeader><Badge variant="warning" className="w-fit">Chưa được mô hình hóa trong guided UI</Badge><CardTitle className="text-lg">Cần nhập dữ kiện ở chế độ kỹ thuật</CardTitle><CardDescription>Kết quả hiện tại được giữ ở trạng thái thiếu dữ kiện; hệ thống không tự suy đoán giá trị còn thiếu.</CardDescription></CardHeader><CardContent className="space-y-4"><ul className="space-y-2 text-sm">{requirements.map((requirement) => <li key={`${requirement.module}:${requirement.subject}:${requirement.predicate}`} className="rounded-lg bg-muted p-3"><span className="font-medium">Dữ kiện cần bổ sung</span><code className="mt-1 block text-xs text-muted-foreground">{requirement.predicate} · {personLabel(state, requirement.subject)}</code></li>)}</ul><Button asChild><Link href={`/cases/${state.case.id}/modules/${moduleId}`}>Bổ sung trong mô-đun {moduleId}</Link></Button></CardContent></Card></>;
 }
 
 function AssistantMessage({ children }: { children: React.ReactNode }) {

@@ -76,11 +76,11 @@ Guided Conversation UI
 
 ### G4 — Kết quả và explanation
 
-- [ ] `G-401` Trình bày kết luận bằng ngôn ngữ người dùng trước thông tin kỹ thuật.
-- [ ] `G-402` Hiển thị facts đã dùng, Rule ID, chuỗi suy luận và điều luật tương ứng.
-- [ ] `G-403` Cho mở toàn văn điều luật ngay trong flow.
-- [ ] `G-404` Phân biệt dữ kiện còn thiếu, kết luận chưa thể đưa ra và phạm vi chưa được mô hình hóa.
-- [ ] `G-405` Cho chuyển sang technical mode tại đúng hồ sơ và module liên quan.
+- [x] `G-401` Trình bày kết luận bằng ngôn ngữ người dùng trước thông tin kỹ thuật. Presenter kết quả ánh xạ có định trước theo từng topic, sử dụng nhãn người/phần di sản và giữ rõ trạng thái đủ điều kiện, không đủ điều kiện, chưa xác định hoặc mâu thuẫn; không dùng LLM để sinh diễn giải.
+- [x] `G-402` Hiển thị facts đã dùng, Rule ID, chuỗi suy luận và điều luật tương ứng. Mỗi conclusion card có phần mở rộng “Vì sao có kết luận này?”, lần ngược trace theo supports để liệt kê facts đầu vào và chuỗi rule theo thứ tự; vẫn có liên kết đến snapshot kỹ thuật đầy đủ.
+- [x] `G-403` Cho mở toàn văn điều luật ngay trong flow. Mỗi kết luận có nút Rule ID mở `LegalRuleDialog`, đánh dấu đúng khoản đang được dùng và giữ cảnh báo `TEAM_REVIEW` khi có.
+- [x] `G-404` Phân biệt dữ kiện còn thiếu, kết luận chưa thể đưa ra và phạm vi chưa được mô hình hóa. Guided state có `resolutionStatus` độc lập với kết quả CLIPS: `missing-facts`, `missing-presenter`, `unknown`, `unmodeled`, `conflict` hoặc `complete`; UI giải thích rõ từng trường hợp và không diễn giải sự thiếu vắng facts thành kết luận pháp lý âm.
+- [x] `G-405` Cho chuyển sang technical mode tại đúng hồ sơ và module liên quan. Missing requirement giữ lại module nguồn; boundary card mở đúng workspace cần bổ sung, còn mỗi conclusion card liên kết trực tiếp tới module và inference snapshot đã tạo ra kết quả đó.
 
 ### G5 — Kiểm thử và hoàn thiện UX
 
@@ -104,7 +104,7 @@ Vertical slice G0/G1 tạo được đường đi:
   → đề xuất presenter tiếp theo
 ```
 
-Bước kế tiếp là `G-401`: trình bày kết luận pháp lý bằng ngôn ngữ người dùng ngay trong guided flow, thay cho thông báo hoàn tất chung. Sau đó nối facts, Rule ID, trace và toàn văn điều luật ở `G-402`–`G-403`.
+Bước kế tiếp là `G-503`: bổ sung ma trận integration test cho happy path, `UNKNOWN`, `CONFLICT` và sửa câu trả lời của từng topic. Sau đó thực hiện usability review nội bộ (`G-504`) và rà accessibility/responsive (`G-505`).
 
 ## 6. Tiêu chí hoàn thành
 

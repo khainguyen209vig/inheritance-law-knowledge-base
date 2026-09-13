@@ -3,6 +3,7 @@ import test from "node:test";
 import { openDatabase } from "../src/server/db/database";
 import { CaseRepository } from "../src/server/db/case-repository";
 import { GuidedSessionRepository } from "../src/server/db/guided-session-repository";
+import { buildGuidedConclusionExplanation, buildGuidedConclusions } from "../src/domain/guided-conclusions";
 import { answerGuidedQuestion, createGuidedCase, getGuidedCaseState, runGuidedInference } from "../src/server/guided/service";
 import { runStoredCompulsoryShare, runStoredEligibility, runStoredHeirRank, runStoredRefusalAndUnclaimed } from "../src/server/cases/service";
 
@@ -209,6 +210,9 @@ test("guided written-will flow reaches a conclusive CLIPS result without restart
     assert.equal(state.next, undefined);
     const latest = new CaseRepository(database).listInferenceRuns(state.case.id)[0];
     assert.ok(latest?.results.some((result) => result.predicate === "valid-will" && result.value === "true"));
+    const conclusion = buildGuidedConclusions(state)[0];
+    assert.match(conclusion?.statement ?? "", /Di chúc đáp ứng/u);
+    assert.ok(conclusion?.ruleIds.includes("R-B03"));
   } finally {
     database.close();
   }
@@ -258,6 +262,61 @@ test("guided state ignores inference snapshots created from older facts", async 
     assert.equal(repository.listInferenceRuns(state.case.id).length, 1, "stale snapshot remains available as immutable history");
   } finally {
     database.close();
+  }
+});
+
+test("guided state distinguishes a missing presenter from an UNKNOWN conclusion", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Thiếu presenter", topicId: "limitation" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    const repository = new CaseRepository(database);
+    const facts = repository.getAllFacts(state.case.id);
+    repository.saveInferenceRun({ caseId: state.case.id, subject: state.case.id, facts, module: "limitation", output: {
+      results: [{ caseId: state.case.id, subject: "request-one", module: "limitation", predicate: "limitation-period-years", value: "unknown", derivations: [] }],
+      missing: [{ caseId: state.case.id, subject: "request-one", module: "limitation", predicate: "unmapped-observation" }],
+      traces: [],
+    } });
+
+    state = getGuidedCaseState(database, state.case.id);
+    assert.equal(state.resolutionStatus.kind, "missing-presenter");
+    assert.equal(state.inferenceStatus.status, "collecting");
+    assert.deepEqual(state.unresolvedRequirements, [{ subject: "request-one", predicate: "unmapped-observation", module: "limitation" }]);
+  } finally {
+    database.close();
+  }
+});
+
+test("guided state distinguishes UNKNOWN from an unmodeled result path", async () => {
+  const unknownDatabase = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(unknownDatabase, { title: "Kết quả unknown", topicId: "limitation" });
+    state = await answerGuidedQuestion(unknownDatabase, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    const repository = new CaseRepository(unknownDatabase);
+    const facts = repository.getAllFacts(state.case.id);
+    repository.saveInferenceRun({ caseId: state.case.id, subject: state.case.id, facts, module: "limitation", output: {
+      results: [{ caseId: state.case.id, subject: "request-one", module: "limitation", predicate: "limitation-period-years", value: "unknown", derivations: [] }],
+      missing: [], traces: [],
+    } });
+    state = getGuidedCaseState(unknownDatabase, state.case.id);
+    assert.equal(state.resolutionStatus.kind, "unknown");
+    assert.equal(state.inferenceStatus.status, "unknown");
+  } finally {
+    unknownDatabase.close();
+  }
+
+  const unmodeledDatabase = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(unmodeledDatabase, { title: "Ngoài phạm vi", topicId: "limitation" });
+    state = await answerGuidedQuestion(unmodeledDatabase, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    const repository = new CaseRepository(unmodeledDatabase);
+    const facts = repository.getAllFacts(state.case.id);
+    repository.saveInferenceRun({ caseId: state.case.id, subject: state.case.id, facts, module: "limitation", output: { results: [], missing: [], traces: [] } });
+    state = getGuidedCaseState(unmodeledDatabase, state.case.id);
+    assert.equal(state.resolutionStatus.kind, "unmodeled");
+    assert.equal(state.inferenceStatus.status, "unknown");
+  } finally {
+    unmodeledDatabase.close();
   }
 });
 
@@ -369,6 +428,12 @@ test("guided limitation timeline derives the Article 623 period and calendar dea
     assert.equal(state.inferenceStatus.status, "complete");
     assert.ok(state.latestResults.limitation?.some((result) => result.subject === "limitation-guided" && result.predicate === "limitation-period-years" && result.value === "30"));
     assert.ok(state.latestResults.limitation?.some((result) => result.subject === "limitation-guided" && result.predicate === "limitation-deadline" && result.value === "2050-02-28"));
+    const conclusion = buildGuidedConclusions(state)[0];
+    assert.match(conclusion?.statement ?? "", /30 năm.*28\/02\/2050/u);
+    assert.deepEqual(conclusion?.ruleIds, ["R-J01"]);
+    const explanation = buildGuidedConclusionExplanation(state, conclusion!);
+    assert.ok(explanation.facts.some((fact) => fact.id === "glt-type" && fact.statement.includes("Yêu cầu chia di sản")));
+    assert.ok(explanation.steps.some((step) => step.ruleId === "R-J01" && step.statement.includes("30")));
   } finally {
     database.close();
   }
@@ -395,6 +460,9 @@ test("guided Article 661 restriction timeline reaches a dated conclusion", async
     assert.equal(state.next, undefined);
     assert.equal(state.inferenceStatus.status, "complete");
     assert.ok(state.latestResults["estate-settlement"]?.some((result) => result.subject === "restriction-guided" && result.predicate === "distribution-not-before" && result.value === "2030-01-01"));
+    const conclusion = buildGuidedConclusions(state)[0];
+    assert.match(conclusion?.statement ?? "", /không được phân chia trước ngày 01\/01\/2030/u);
+    assert.deepEqual(conclusion?.ruleIds, ["R-I04"]);
   } finally {
     database.close();
   }
