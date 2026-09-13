@@ -97,7 +97,7 @@ export function GuidedFamilyGraphStep({ state, onStateChange }: GuidedFamilyGrap
         const unresolvedName = graph.people.find((person) => person.id === unresolvedId)?.name ?? unresolvedId;
         setSelectedId(unresolvedId);
         setNotice(nextState.next.requirement.predicate === "relationship-at-opening"
-          ? `Đã lưu và chạy suy luận. CLIPS chưa xác định được quan hệ thuộc hàng thừa kế của ${unresolvedName}. Hãy kiểm tra lại các cạnh nối người này với người để lại di sản.`
+          ? `Đã lưu cây. Hệ thống chưa xác định được quan hệ thuộc hàng thừa kế của ${unresolvedName}. Hãy kiểm tra lại các cạnh nối người này với người để lại di sản.`
           : `Đã lưu và chạy suy luận, nhưng vẫn cần bổ sung dữ kiện cho ${unresolvedName}.`);
       }
       onStateChange(nextState);
@@ -115,7 +115,7 @@ export function GuidedFamilyGraphStep({ state, onStateChange }: GuidedFamilyGrap
     {diagnostics.length ? <div className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{diagnostics.join(" ")}</div> : null}
     {notice ? <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm leading-6 text-amber-900">{notice}</div> : null}
     {error ? <div className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</div> : null}
-    <div className="flex justify-end"><Button disabled={isPending || graph.people.length < 2 || diagnostics.length > 0 || searchComplete === undefined} onClick={saveAndContinue}>{pendingPhase === "saving" ? "Đang lưu cây…" : pendingPhase === "inferring" ? "CLIPS đang suy luận…" : pendingPhase === "planning" ? "Đang chọn bước tiếp theo…" : "Lưu cây và tiếp tục"}</Button></div>
+    <div className="flex justify-end"><Button disabled={isPending || graph.people.length < 2 || diagnostics.length > 0 || searchComplete === undefined} onClick={saveAndContinue}>{pendingPhase === "saving" ? "Đang lưu cây…" : pendingPhase === "inferring" ? "Đang đối chiếu quy tắc…" : pendingPhase === "planning" ? "Đang chọn bước tiếp theo…" : "Lưu cây và tiếp tục"}</Button></div>
   </div>;
 }
 

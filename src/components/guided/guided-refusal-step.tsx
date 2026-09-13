@@ -38,7 +38,7 @@ export function GuidedRefusalStep({ state, personId, onStateChange }: { state: G
     });
   }
 
-  return <Card className="max-w-3xl"><CardHeader><Badge variant="outline" className="w-fit">Điều 620 · {name}</Badge><CardTitle className="text-lg">Người này có từ chối nhận di sản không?</CardTitle><CardDescription>Hệ thống thu thập từng điều kiện của việc từ chối; `valid-refusal` là kết luận do CLIPS suy ra.</CardDescription></CardHeader><CardContent className="space-y-6">
+  return <Card className="max-w-3xl"><CardHeader><Badge variant="outline" className="w-fit">Điều 620 · {name}</Badge><CardTitle className="text-lg">{name} có từ chối nhận di sản không?</CardTitle><CardDescription>Hệ thống hỏi riêng từng điều kiện và tự đối chiếu để xác định việc từ chối có hợp lệ hay không.</CardDescription></CardHeader><CardContent className="space-y-6">
     <Question title="Có thực hiện việc từ chối?" rule="R-H01" onOpen={setSelectedRule}><ChoiceGrid><Choice selected={draft.made === true} onClick={() => update({ made: true })}>Có từ chối</Choice><Choice selected={draft.made === false} onClick={() => setDraft({ made: false })}>Không từ chối</Choice></ChoiceGrid></Question>
     {draft.made ? <>
       <Question title="Mục đích của việc từ chối" rule="R-H01" onOpen={setSelectedRule}><ChoiceGrid><Choice selected={draft.intent === "ordinary"} onClick={() => update({ intent: "ordinary" })}>Không nhằm trốn nghĩa vụ</Choice><Choice selected={draft.intent === "avoid-obligation"} onClick={() => update({ intent: "avoid-obligation" })}>Nhằm trốn nghĩa vụ tài sản</Choice></ChoiceGrid></Question>

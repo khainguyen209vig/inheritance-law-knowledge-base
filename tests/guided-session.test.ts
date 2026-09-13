@@ -134,6 +134,60 @@ test("person eligibility flow asks for a candidate and never reviews the decease
   }
 });
 
+test("person eligibility guided flow reaches a conclusive Article 621 result", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Không có căn cứ loại trừ", topicId: "person-eligibility" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Người để lại di sản" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-eligibility-person-name", value: "Người cần rà soát" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "inheritance-has-will", value: false });
+    const repository = new CaseRepository(database);
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [...repository.getAllFacts(state.case.id),
+      { id: "matrix-eligibility-reviewed", subject: "eligibility-guided-person", predicate: "eligibility-review-complete", value: true },
+    ] });
+    state = await runGuidedInference(database, state.case.id);
+
+    assert.equal(state.resolutionStatus.kind, "complete");
+    assert.equal(state.next, undefined);
+    assert.ok(state.latestResults.eligibility?.some((result) => result.subject === "eligibility-guided-person" && result.predicate === "article-621-status" && result.value === "not-excluded"));
+  } finally {
+    database.close();
+  }
+});
+
+test("representation guided flow reaches a conclusive grandchild result", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Thừa kế thế vị", topicId: "representation" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Người để lại di sản" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "inheritance-has-will", value: false });
+    const deceasedId = state.case.facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
+    assert.ok(deceasedId);
+    const repository = new CaseRepository(database);
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [...repository.getAllFacts(state.case.id),
+      { id: "matrix-family-complete", subject: state.case.id, predicate: "heir-search-complete", value: true },
+      { id: "matrix-parent-edge", subject: deceasedId, predicate: "biological-parent-of", value: "represented-child" },
+      { id: "matrix-child-edge", subject: "represented-child", predicate: "biological-parent-of", value: "grandchild" },
+      { id: "matrix-parent-life", subject: "represented-child", predicate: "heir-life-status", value: "dead-before-or-same" },
+      { id: "matrix-parent-candidate", subject: "represented-child", predicate: "eligibility-candidate", value: true },
+      { id: "matrix-parent-review", subject: "represented-child", predicate: "eligibility-review-complete", value: true },
+      { id: "matrix-grandchild-candidate", subject: "grandchild", predicate: "representation-candidate", value: true },
+      { id: "matrix-grandchild-life", subject: "grandchild", predicate: "heir-life-status", value: "alive" },
+      { id: "matrix-grandchild-refusal", subject: "grandchild", predicate: "valid-refusal", value: false },
+      { id: "matrix-grandchild-eligibility", subject: "grandchild", predicate: "eligibility-candidate", value: true },
+      { id: "matrix-grandchild-review", subject: "grandchild", predicate: "eligibility-review-complete", value: true },
+      { id: "matrix-grandchild-label", subject: "grandchild", predicate: "person-label", value: "Người cháu" },
+    ] });
+    state = await runGuidedInference(database, state.case.id);
+
+    assert.equal(state.resolutionStatus.kind, "complete");
+    assert.equal(state.next, undefined);
+    assert.ok(state.latestResults.representation?.some((result) => result.subject === "grandchild" && result.predicate === "inherits-by-representation" && result.value === "true"));
+  } finally {
+    database.close();
+  }
+});
+
 test("guided family graph advances to the candidate legal review after heir-rank inference", async () => {
   const database = openDatabase(":memory:");
   try {

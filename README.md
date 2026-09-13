@@ -193,6 +193,8 @@ Trang `/modules` đọc module registry và hiển thị các mục tiêu phân 
 
 Trang gốc `/` chuyển hướng tới `/guided`, là điểm vào hội thoại có hướng dẫn cho người dùng phổ thông; kế hoạch chuyển đổi được ghi tại `doc/Development_Plan_Guided_Conversation.md`. `/cases` và `/modules` tiếp tục phục vụ quản lý hồ sơ và chế độ kỹ thuật. `/cases/:caseId` hiển thị facts hiện tại, mô-đun có thể chạy và lịch sử inference runs; `/cases/:caseId/runs/:runId` mở snapshot bất biến cùng trace và căn cứ pháp lý. Khi mở lại `will-validity`, presenter khôi phục answers từ facts đã lưu thay vì tạo một case mới. Người dùng có thể xóa hồ sơ từ danh sách hoặc trang chi tiết sau bước xác nhận; thao tác xóa đồng thời facts và toàn bộ inference snapshots liên quan.
 
+Kịch bản và phiếu ghi nhận dành cho usability test nội bộ nằm tại `doc/Usability_Test_Guided_Conversation.md`. Cần ít nhất hai thành viên không viết rules thực hiện; integration test hoặc rà soát của developer không được tính thay cho dữ liệu người dùng thật.
+
 Guided session lưu topic và danh sách bước đã hoàn thành trong bảng `guided_sessions`; nội dung câu trả lời không bị sao chép vào transcript mà tiếp tục được lưu dưới dạng asserted facts. Vertical slice đầu tiên đã hỗ trợ `tên người để lại di sản → hình thức di chúc → CLIPS run → missing requirement tiếp theo`.
 
 API đầu tiên nhận dữ kiện đã chuẩn hóa tại `POST /api/inference/will-validity`. Ví dụ request tối thiểu cho một di chúc bằng văn bản:

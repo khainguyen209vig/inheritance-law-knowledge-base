@@ -34,7 +34,7 @@ export function GuidedIntake() {
   }
 
   return <div className="mx-auto min-h-screen max-w-5xl px-4 py-10 sm:px-6">
-    <header className="mx-auto max-w-3xl text-center"><Badge variant="outline">Guided mode · không sử dụng LLM</Badge><h1 className="mt-4 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">Bạn muốn tìm hiểu vấn đề gì về thừa kế?</h1><p className="mt-4 leading-7 text-muted-foreground">Hệ thống sẽ đặt từng câu hỏi có cấu trúc, lưu facts và dùng CLIPS để suy luận.</p></header>
+    <header className="mx-auto max-w-3xl text-center"><Badge variant="outline">Hỏi đáp có hướng dẫn · không sử dụng LLM</Badge><h1 className="mt-4 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">Bạn muốn tìm hiểu vấn đề gì về thừa kế?</h1><p className="mt-4 leading-7 text-muted-foreground">Hệ thống sẽ hỏi từng thông tin cần thiết, đối chiếu với bộ quy tắc pháp lý và giải thích căn cứ của kết quả.</p></header>
     <div className="mt-10 space-y-5">
       <AssistantMessage>Chọn vấn đề gần nhất với điều bạn đang cần xác định.</AssistantMessage>
       <div className="grid gap-3 md:grid-cols-2">{Object.values(guidedTopics).map((item) => <button key={item.id} type="button" aria-pressed={topicId === item.id} onClick={() => { setTopicId(item.id); setError(undefined); }} className={cn("rounded-xl border bg-card p-4 text-left shadow-sm outline-none transition hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-ring", topicId === item.id && "border-primary bg-primary/[0.04] ring-2 ring-primary/20")}><span className="font-semibold">{item.question}</span><span className="mt-2 block text-sm leading-6 text-muted-foreground">{item.description}</span></button>)}</div>

@@ -102,7 +102,7 @@ export async function answerGuidedQuestion(database: AppDatabase, caseId: string
     if (answer.questionId === "guided-deceased-name") {
       const existingDeceased = baseFacts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
       const personId = existingDeceased ?? `person-${crypto.randomUUID()}`;
-      const retained = baseFacts.filter((fact) => fact.id !== "guided-deceased" && fact.id !== "guided-deceased-label");
+      const retained = baseFacts.filter((fact) => fact.id !== "guided-deceased-label");
       const facts: ReplaceCaseFactsInput["facts"] = [...retained,
         ...(existingDeceased ? [] : [{ id: "guided-deceased", subject: personId, predicate: "deceased-person", value: true } as const]),
         { id: "guided-deceased-label", subject: personId, predicate: "heir-person-label", value: answer.value },
