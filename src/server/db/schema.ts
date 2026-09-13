@@ -65,6 +65,14 @@ CREATE TABLE IF NOT EXISTS inference_traces (
   supports_json TEXT NOT NULL
 ) STRICT;
 
+CREATE TABLE IF NOT EXISTS guided_sessions (
+  case_id TEXT PRIMARY KEY REFERENCES cases(id) ON DELETE CASCADE,
+  topic_id TEXT NOT NULL,
+  completed_step_ids_json TEXT NOT NULL DEFAULT '[]',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+) STRICT;
+
 INSERT OR IGNORE INTO schema_migrations (version, applied_at)
 VALUES (1, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'));
 `;

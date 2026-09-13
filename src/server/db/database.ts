@@ -26,6 +26,8 @@ export function openDatabase(databasePath: string): AppDatabase {
   database.exec(schemaSql);
   migrateModuleResultValues(database);
   migrateInferenceSubjects(database);
+  database.prepare("INSERT OR IGNORE INTO schema_migrations (version, applied_at) VALUES (4, ?)")
+    .run(new Date().toISOString());
   return database;
 }
 

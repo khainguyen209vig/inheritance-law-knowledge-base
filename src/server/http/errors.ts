@@ -1,4 +1,5 @@
 import { CaseNotFoundError, InferenceRunNotFoundError } from "@/server/db/case-repository";
+import { GuidedSessionNotFoundError } from "@/server/db/guided-session-repository";
 
 export function databaseErrorResponse(error: unknown): Response | undefined {
   if (error instanceof CaseNotFoundError) {
@@ -6,6 +7,9 @@ export function databaseErrorResponse(error: unknown): Response | undefined {
   }
   if (error instanceof InferenceRunNotFoundError) {
     return Response.json({ error: "INFERENCE_RUN_NOT_FOUND" }, { status: 404 });
+  }
+  if (error instanceof GuidedSessionNotFoundError) {
+    return Response.json({ error: "GUIDED_SESSION_NOT_FOUND" }, { status: 404 });
   }
   if (isUniqueConstraintError(error)) {
     return Response.json({ error: "CASE_ALREADY_EXISTS" }, { status: 409 });

@@ -24,7 +24,7 @@ export default function CasesPage() {
           <h1 className="mt-4 font-serif text-4xl font-semibold tracking-tight">Hồ sơ vụ việc</h1>
           <p className="mt-3 text-muted-foreground">Facts hiện tại có thể thay đổi; mỗi inference run giữ một snapshot bất biến để đối chiếu.</p>
         </div>
-        <Button asChild variant="outline"><Link href="/modules">Xem các mô-đun</Link></Button>
+        <div className="flex flex-wrap gap-2"><Button asChild><Link href="/guided">Bắt đầu có hướng dẫn</Link></Button><Button asChild variant="outline"><Link href="/modules">Xem các mô-đun</Link></Button></div>
       </div>
 
       <div className="mt-8 grid items-start gap-6 lg:grid-cols-[320px_1fr]">
