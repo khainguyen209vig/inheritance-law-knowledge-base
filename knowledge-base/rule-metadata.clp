@@ -436,6 +436,12 @@
     (description "Marker completeness cho biết các nhóm căn cứ Điều 621 đã được kiểm tra và không có căn cứ loại trừ nào được dẫn xuất.")
     (status draft))
   (rule-metadata
+    (rule-id DISPOSITION-STATUS-NORMALIZED)
+    (module inheritance-type)
+    (legal-source "Quy tắc kết nối nội bộ; phục vụ áp dụng Điều 650")
+    (description "Kết hợp dữ kiện tồn tại của người hoặc tổ chức với kết quả Điều 621 và việc từ chối để tạo trạng thái trung gian cho luật phân loại phần di sản.")
+    (status draft))
+  (rule-metadata
     (rule-id R-A01)
     (module inheritance-type)
     (legal-source "Điều 649 và Điều 650 khoản 1 điểm a Bộ luật Dân sự 2015")

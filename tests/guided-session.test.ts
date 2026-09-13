@@ -12,6 +12,11 @@ test("guided session persists its topic and resumes from case facts", async () =
     const initial = createGuidedCase(database, { title: "Hồ sơ guided", topicId: "who-inherits" });
     assert.equal(initial.topic.id, "who-inherits");
     assert.equal(initial.next?.requirement.predicate, "guided-deceased-name");
+    assert.deepEqual(initial.dependencyPlan.slice(0, 3), [
+      { id: "deceased", status: "ready" },
+      { id: "conflict-gate", status: "blocked" },
+      { id: "will-context", status: "blocked" },
+    ]);
 
     const answered = await answerGuidedQuestion(database, initial.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
     assert.ok(answered.completedStepIds.includes("guided-deceased-name"));
@@ -75,10 +80,32 @@ test("who-inherits resolves the will dependency before family and eligibility re
       { id: "testamentary-will", subject: "portion-testamentary", predicate: "applicable-will", value: "will-guided" },
       { id: "testamentary-disposed", subject: "portion-testamentary", predicate: "portion-disposed", value: true },
       { id: "testamentary-beneficiary", subject: "portion-testamentary", predicate: "disposition-beneficiary", value: "beneficiary-one" },
-      { id: "testamentary-status", subject: "portion-testamentary", predicate: "disposition-status", value: "effective" },
+      { id: "testamentary-complete", subject: "portion-testamentary", predicate: "disposition-set-complete", value: true },
+      { id: "testamentary-kind", subject: "beneficiary-one", predicate: "beneficiary-kind", value: "person" },
+      { id: "testamentary-life", subject: "beneficiary-one", predicate: "beneficiary-life-status", value: "alive" },
+      { id: "testamentary-eligibility", subject: "beneficiary-one", predicate: "eligibility-candidate", value: true },
+      { id: "testamentary-refusal", subject: "beneficiary-one", predicate: "refusal-assessment-subject", value: true },
+    ] });
+    state = await runGuidedInference(database, state.case.id);
+    assert.equal(state.next?.requirement.subject, "beneficiary-one");
+    assert.equal(state.next?.requirement.predicate, "eligibility-review-complete");
+
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      ...repository.getCase(state.case.id).facts,
+      { id: "testamentary-eligibility-complete", subject: "beneficiary-one", predicate: "eligibility-review-complete", value: true },
+    ] });
+    state = await runGuidedInference(database, state.case.id);
+    assert.equal(state.next?.requirement.subject, "beneficiary-one");
+    assert.equal(state.next?.requirement.predicate, "refusal-made");
+
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      ...repository.getCase(state.case.id).facts,
+      { id: "testamentary-refusal-made", subject: "beneficiary-one", predicate: "refusal-made", value: false },
     ] });
     state = await runGuidedInference(database, state.case.id);
     assert.equal(state.next, undefined);
+    assert.ok(state.dependencyPlan.some((node) => node.id === "inheritance-regime" && node.status === "complete"));
+    assert.ok(state.dependencyPlan.some((node) => node.id === "family-graph" && node.status === "skipped"));
     assert.ok(state.latestResults["inheritance-type"]?.some((result) => result.subject === "portion-testamentary" && result.predicate === "inheritance-regime" && result.value === "testamentary"));
     assert.equal(state.latestRunIds["heir-rank"], undefined);
   } finally {
@@ -130,6 +157,8 @@ test("guided family graph advances to the candidate legal review after heir-rank
     state = await runGuidedInference(database, state.case.id);
     assert.ok(state.latestRunIds["heir-rank"]);
     assert.ok(state.latestRunIds.eligibility);
+    assert.ok(state.dependencyPlan.some((node) => node.id === "family-graph" && node.status === "complete"));
+    assert.ok(state.dependencyPlan.some((node) => node.id === "inference-requirements" && node.status === "ready"));
     assert.equal(state.next?.requirement.subject, "person-spouse");
     assert.equal(state.next?.requirement.predicate, "article-621-status");
     assert.equal(state.next?.resolution?.kind, "interaction");
@@ -183,6 +212,33 @@ test("guided written-will flow reaches a conclusive CLIPS result without restart
     assert.equal(state.next, undefined);
     const latest = new CaseRepository(database).listInferenceRuns(state.case.id)[0];
     assert.ok(latest?.results.some((result) => result.predicate === "valid-will" && result.value === "true"));
+  } finally {
+    database.close();
+  }
+});
+
+test("guided planner stops when CLIPS reports a conflicting goal", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Di chúc có dữ kiện mâu thuẫn", topicId: "will-validity" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    const repository = new CaseRepository(database);
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      ...repository.getCase(state.case.id).facts,
+      { id: "conflict-type", subject: "will-guided", predicate: "will-type", value: "written" },
+      { id: "conflict-lucid", subject: "will-guided", predicate: "testator-mental-state", value: "lucid" },
+      { id: "conflict-not-lucid", subject: "will-guided", predicate: "testator-mental-state", value: "not-lucid" },
+      { id: "conflict-influence", subject: "will-guided", predicate: "undue-influence", value: "none" },
+      { id: "conflict-content", subject: "will-guided", predicate: "prohibited-content", value: "not-detected" },
+      { id: "conflict-form", subject: "will-guided", predicate: "formal-defect", value: "not-detected" },
+    ] });
+
+    state = await runGuidedInference(database, state.case.id);
+    assert.equal(state.next, undefined);
+    assert.equal(state.inferenceStatus.status, "conflict");
+    assert.deepEqual(state.inferenceStatus.modules, ["will-validity"]);
+    assert.ok(state.dependencyPlan.some((node) => node.id === "conflict-gate" && node.status === "complete"));
+    assert.ok(state.dependencyPlan.some((node) => node.id === "will-document" && node.status === "skipped"));
   } finally {
     database.close();
   }

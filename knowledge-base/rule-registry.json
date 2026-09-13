@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v19",
+  "knowledgeBaseVersion": "inheritance-kb-v20",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -557,6 +557,20 @@
       "title": "Hoàn tất rà soát căn cứ loại trừ", "reasoning": "Marker completeness cho biết các nhóm căn cứ Điều 621 đã được kiểm tra và không có căn cứ loại trừ nào được dẫn xuất.",
       "conclusion": "Không phát hiện căn cứ loại trừ trong phạm vi mô-đun", "citation": "Quy tắc completeness nội bộ; không phải kết luận quyền hưởng cuối cùng", "provisionId": "article-621", "relevantSections": ["clause-1-intro"], "clipsMetadata": true,
       "implementations": ["ELIGIBILITY-CLEAR"]
+    },
+    "DISPOSITION-STATUS-NORMALIZED": {
+      "ruleId": "DISPOSITION-STATUS-NORMALIZED",
+      "module": "inheritance-type",
+      "kind": "internal",
+      "status": "draft",
+      "title": "Chuẩn hóa hiệu lực của định đoạt",
+      "reasoning": "Kết hợp dữ kiện tồn tại của người hoặc tổ chức với kết quả Điều 621 và việc từ chối để tạo trạng thái trung gian cho luật phân loại phần di sản.",
+      "conclusion": "Trạng thái định đoạt được dẫn xuất, không do người dùng nhập trực tiếp",
+      "citation": "Quy tắc kết nối nội bộ; phục vụ áp dụng Điều 650",
+      "provisionId": "article-650",
+      "relevantSections": ["clause-1-intro", "clause-2-intro"],
+      "clipsMetadata": true,
+      "implementations": ["DISPOSITION-EFFECTIVE-PERSON", "DISPOSITION-EFFECTIVE-ORGANIZATION", "DISPOSITION-INEFFECTIVE-LIFE", "DISPOSITION-INEFFECTIVE-DISQUALIFIED", "DISPOSITION-INEFFECTIVE-REFUSAL"]
     },
     "R-A01": {
       "ruleId": "R-A01",

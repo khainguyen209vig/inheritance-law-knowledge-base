@@ -69,10 +69,10 @@ Guided Conversation UI
 ### G3 — Điều phối suy luận đa mô-đun
 
 - [x] `G-301` Khai báo result goals cho từng topic, phân biệt kết quả chính và kết quả phụ thuộc; orchestration không còn lấy thứ tự presenter làm kế hoạch suy luận.
-- [ ] `G-302` Tính dependency plan dựa trên facts hiện có và mục tiêu người dùng. Đã có dependency gate cho trạng thái/tính hợp pháp của di chúc, ngoại lệ Điều 621 và goal `inheritance-regime`; graph/hàng thừa kế chỉ được mở khi CLIPS xác định có phần phải chia theo pháp luật. Cần mở rộng dependency graph tổng quát cho các topic còn lại.
-- [ ] `G-303` Chạy các rule package liên quan trên cùng working memory. Đã có một guided dispatcher chọn package theo goal và facts kích hoạt, thay cho việc từng presenter hard-code chuỗi endpoint; bước còn lại là hợp nhất các package trong một CLIPS session khi cần chia sẻ derived facts.
-- [ ] `G-304` Không hỏi trực tiếp derived facts như `valid-will` hoặc `article-621-status`.
-- [ ] `G-305` Dừng đúng lúc ở `TRUE`, `FALSE`, `UNKNOWN`, `CONFLICT` hoặc khi cần review ngoài phạm vi.
+- [x] `G-302` Tính dependency plan dựa trên facts hiện có và mục tiêu người dùng. Planner dùng graph có cạnh phụ thuộc tường minh và trạng thái `complete`, `ready`, `blocked`, `skipped` cho mọi topic; riêng `who-inherits`, graph/hàng thừa kế chỉ được mở khi CLIPS xác định có ít nhất một phần phải chia theo pháp luật.
+- [x] `G-303` Chạy rule goal cùng các rule phụ thuộc trên một CLIPS working memory. Registry package là nguồn cấu hình duy nhất cho driver: ví dụ `inheritance-type` nạp chung luật di chúc/từ chối, còn `heir-rank` nạp chung luật Điều 621/từ chối trước khi forward chaining. Guided dispatcher vẫn lưu snapshot riêng theo module để kết quả và trace không bị gán nhầm module.
+- [x] `G-304` Không hỏi trực tiếp derived facts như `valid-will`, `article-621-status`, `valid-refusal` hoặc `disposition-status`. Presenter phần di sản chỉ ghi nhận việc có định đoạt, loại người hưởng và trạng thái sống/tồn tại; CLIPS kết hợp kết quả Điều 621 và Điều 620 để suy ra hiệu lực trung gian. Workspace kỹ thuật cũ vẫn được giữ như compatibility boundary trong giai đoạn chuyển đổi.
+- [x] `G-305` Dừng đúng lúc ở kết quả xác định, `UNKNOWN` hoặc `CONFLICT`. Guided state trả `inferenceStatus`; conflict gate dừng dependency graph, còn UI phân biệt rõ hoàn tất, chưa thể kết luận và dữ kiện mâu thuẫn.
 
 ### G4 — Kết quả và explanation
 
@@ -104,7 +104,7 @@ Vertical slice G0/G1 tạo được đường đi:
   → đề xuất presenter tiếp theo
 ```
 
-Bước kế tiếp là hoàn thiện `G-302/G-303`: biểu diễn dependency graph tổng quát và hợp nhất các package cần chia sẻ derived facts trong cùng một CLIPS session. `G-204` đã hoàn tất cho phạm vi presenter hiện tại; sau đó triển khai `G-205` cho timeline Điều 623 và Điều 661.
+Bước kế tiếp là `G-205`: nhúng timeline Điều 623 và Điều 661 vào guided flow. Sau đó thực hiện `G-206` để sửa câu trả lời và vô hiệu hóa inference snapshot cũ.
 
 ## 6. Tiêu chí hoàn thành
 

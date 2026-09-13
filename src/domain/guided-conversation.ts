@@ -107,6 +107,8 @@ export interface GuidedCaseState {
   completedStepIds: string[];
   latestRunIds: Partial<Record<AnalysisModuleId, string>>;
   latestResults: Partial<Record<AnalysisModuleId, InferenceRun["results"]>>;
+  dependencyPlan: Array<{ id: string; status: "complete" | "ready" | "skipped" | "blocked" }>;
+  inferenceStatus: { status: "collecting" | "complete" | "unknown" | "conflict"; modules: AnalysisModuleId[] };
   next?: { requirement: GuidedMissingRequirement; resolution?: GuidedRequirementResolution };
 }
 
@@ -131,6 +133,11 @@ const requirementCatalog: Record<string, GuidedRequirementTemplate> = {
   "article-621-status": { kind: "interaction", prompt: "Cần rà soát các căn cứ về quyền hưởng của người này.", interaction: "eligibility-review", priority: 30 },
   "eligibility-review-complete": { kind: "interaction", prompt: "Cần rà soát các căn cứ về quyền hưởng của người này.", interaction: "eligibility-review", priority: 30 },
   "valid-refusal": { kind: "interaction", prompt: "Cần rà soát việc từ chối nhận di sản của người này.", interaction: "refusal-review", priority: 40 },
+  "refusal-made": { kind: "interaction", prompt: "Cần rà soát việc từ chối nhận di sản của người này.", interaction: "refusal-review", priority: 40 },
+  "refusal-intent": { kind: "interaction", prompt: "Cần rà soát việc từ chối nhận di sản của người này.", interaction: "refusal-review", priority: 40 },
+  "refusal-written": { kind: "interaction", prompt: "Cần rà soát việc từ chối nhận di sản của người này.", interaction: "refusal-review", priority: 40 },
+  "refusal-notice-recipient": { kind: "interaction", prompt: "Cần rà soát việc từ chối nhận di sản của người này.", interaction: "refusal-review", priority: 40 },
+  "refusal-before-estate-distribution": { kind: "interaction", prompt: "Cần rà soát việc từ chối nhận di sản của người này.", interaction: "refusal-review", priority: 40 },
   "heir-search-complete": { kind: "interaction", prompt: "Hãy kiểm tra cây gia đình và xác nhận đã nhập đủ ứng viên.", interaction: "family-tree", priority: 50 },
   "guided-compulsory-share-review": { kind: "interaction", prompt: "Hãy rà soát những người có thể thuộc diện hưởng di sản bắt buộc.", interaction: "compulsory-share-review", priority: 60 },
   "guided-compulsory-share-portions": { kind: "interaction", prompt: "Hãy khai các phần di sản cần đối chiếu với ngưỡng hưởng bắt buộc.", interaction: "estate-portions", priority: 70 },

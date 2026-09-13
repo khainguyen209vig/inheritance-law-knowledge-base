@@ -40,14 +40,18 @@
   (asserted-fact (case-id ?case-id) (subject ?portion) (predicate portion-disposed) (value true))
   (or
     (not (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary)))
-    (not (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status))))
+    (and
+      (not (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status)))
+      (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status)))))
   =>
   (assert (missing-requirement (case-id ?case-id) (subject ?portion) (module inheritance-type) (predicate disposition-details))))
 
 (defrule missing-disposition-completeness
   (declare (salience 300))
   (analysis-request (case-id ?case-id) (module inheritance-type))
-  (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary))
+  (or
+    (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary))
+    (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary)))
   (not (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-set-complete) (value true)))
   =>
   (assert (missing-requirement (case-id ?case-id) (subject ?portion) (module inheritance-type) (predicate disposition-set-complete))))
@@ -56,7 +60,9 @@
   (declare (salience 300))
   (analysis-request (case-id ?case-id) (module inheritance-type))
   (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-set-complete) (value true))
-  (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary))
+  (or
+    (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary))
+    (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary)))
   (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))
   (not (asserted-fact (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-life-status) (value dead-before-or-same|organization-no-longer-exists)))
   (not (derived-fact (case-id ?case-id) (subject ?beneficiary) (predicate refusal-status) (value true)))

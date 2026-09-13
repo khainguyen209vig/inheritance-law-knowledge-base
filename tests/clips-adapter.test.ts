@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { inferCompulsoryShare, inferEligibility, inferEstateSettlement, inferHeirRank, inferInheritanceType, inferLimitation, inferRefusalAndUnclaimed, inferRepresentation, inferSpouseStatus, inferWillValidity } from "../src/server/clips/adapter";
+import { clipsRulePackages, inferCompulsoryShare, inferEligibility, inferEstateSettlement, inferHeirRank, inferInheritanceType, inferLimitation, inferRefusalAndUnclaimed, inferRepresentation, inferSpouseStatus, inferWillValidity } from "../src/server/clips/adapter";
+
+test("goal packages load dependent domain rules in the same CLIPS working memory", () => {
+  assert.ok(clipsRulePackages["inheritance-type"].includes("rules/01-will-validity.clp"));
+  assert.ok(clipsRulePackages["inheritance-type"].includes("rules/03-eligibility.clp"));
+  assert.ok(clipsRulePackages["inheritance-type"].includes("rules/08-refusal-and-unclaimed.clp"));
+  assert.ok(clipsRulePackages["heir-rank"].includes("rules/03-eligibility.clp"));
+  assert.ok(clipsRulePackages["heir-rank"].includes("rules/08-refusal-and-unclaimed.clp"));
+  assert.ok(clipsRulePackages.representation.includes("rules/03-eligibility.clp"));
+});
 
 test("CLIPS adapter returns a valid-will result and trace", async () => {
   const output = await inferWillValidity({
@@ -59,6 +68,28 @@ test("inheritance adapter keeps statutory and testamentary results separate by p
   assert.deepEqual(Object.fromEntries(output.results.map((item) => [item.subject, item.value])), {
     "portion-one": "testamentary", "portion-two": "statutory",
   });
+});
+
+test("inheritance adapter derives disposition effectiveness from atomic beneficiary observations", async () => {
+  const output = await inferInheritanceType({ caseId: "adapter-atomic-disposition", subject: "adapter-atomic-disposition", facts: [
+    { id: "has-will", subject: "adapter-atomic-disposition", predicate: "has-will", value: true },
+    { id: "portion", subject: "portion-organization", predicate: "estate-portion", value: true },
+    { id: "applicable", subject: "portion-organization", predicate: "applicable-will", value: "will-atomic" },
+    { id: "disposed", subject: "portion-organization", predicate: "portion-disposed", value: true },
+    { id: "complete", subject: "portion-organization", predicate: "disposition-set-complete", value: true },
+    { id: "beneficiary", subject: "portion-organization", predicate: "disposition-beneficiary", value: "organization-one" },
+    { id: "kind", subject: "organization-one", predicate: "beneficiary-kind", value: "organization" },
+    { id: "exists", subject: "organization-one", predicate: "beneficiary-life-status", value: "organization-exists" },
+    { id: "mental", subject: "will-atomic", predicate: "testator-mental-state", value: "lucid" },
+    { id: "influence", subject: "will-atomic", predicate: "undue-influence", value: "none" },
+    { id: "type", subject: "will-atomic", predicate: "will-type", value: "written" },
+    { id: "form", subject: "will-atomic", predicate: "formal-defect", value: "not-detected" },
+    { id: "content", subject: "will-atomic", predicate: "prohibited-content", value: "not-detected" },
+  ] });
+  assert.ok(output.results.some((result) => result.subject === "portion-organization" && result.value === "testamentary"));
+  assert.equal(output.missing.length, 0);
+  assert.ok(output.traces.some((trace) => trace.ruleId === "DISPOSITION-STATUS-NORMALIZED"));
+  assert.ok(output.traces.some((trace) => trace.ruleId === "R-A03"));
 });
 
 test("eligibility adapter evaluates multiple people and safely serializes labels", async () => {

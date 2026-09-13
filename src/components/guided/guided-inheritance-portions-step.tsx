@@ -10,16 +10,15 @@ import type { GuidedCaseState } from "@/domain/guided-conversation";
 import { cn } from "@/lib/utils";
 import type { ApiFact } from "@/modules/contracts";
 
-type PortionScenario = "undisposed" | "effective" | "dead" | "organization" | "disqualified" | "refused";
+type PortionScenario = "undisposed" | "living-person" | "existing-organization" | "dead-person" | "ended-organization";
 interface PortionDraft { id: string; name: string; scenario?: PortionScenario; beneficiaryId: string; beneficiaryName: string }
 
 const scenarios: Array<{ id: PortionScenario; title: string; detail: string; ruleId: string }> = [
-  { id: "undisposed", title: "Không được định đoạt", detail: "Di chúc không phân định phần di sản này.", ruleId: "R-A06" },
-  { id: "effective", title: "Định đoạt có hiệu lực", detail: "Người hoặc tổ chức được chỉ định có thể nhận phần này.", ruleId: "R-A03" },
-  { id: "dead", title: "Người hưởng đã chết", detail: "Chết trước hoặc cùng thời điểm với người lập di chúc.", ruleId: "R-A04" },
-  { id: "organization", title: "Tổ chức không còn tồn tại", detail: "Tổ chức chấm dứt tồn tại trước thời điểm mở thừa kế.", ruleId: "R-A04" },
-  { id: "disqualified", title: "Người hưởng bị loại trừ", detail: "Đã có kết quả không có quyền hưởng và không có ngoại lệ.", ruleId: "R-A05a" },
-  { id: "refused", title: "Người hưởng đã từ chối", detail: "Đã có kết quả từ chối nhận di sản hợp lệ.", ruleId: "R-A05b" },
+  { id: "undisposed", title: "Di chúc không định đoạt phần này", detail: "Đây là dữ kiện về phạm vi nội dung di chúc.", ruleId: "R-A06" },
+  { id: "living-person", title: "Chỉ định một người đang sống", detail: "Quyền hưởng và việc từ chối sẽ được CLIPS rà soát ở bước sau.", ruleId: "R-A03" },
+  { id: "existing-organization", title: "Chỉ định tổ chức còn tồn tại", detail: "Tổ chức còn tồn tại tại thời điểm mở thừa kế.", ruleId: "R-A03" },
+  { id: "dead-person", title: "Chỉ định người đã chết", detail: "Người này chết trước hoặc cùng thời điểm với người lập di chúc.", ruleId: "R-A04" },
+  { id: "ended-organization", title: "Chỉ định tổ chức đã chấm dứt", detail: "Tổ chức không còn tồn tại tại thời điểm mở thừa kế.", ruleId: "R-A04" },
 ];
 
 export function GuidedInheritancePortionsStep({ state, onStateChange }: { state: GuidedCaseState; onStateChange: (state: GuidedCaseState) => void }) {
@@ -82,11 +81,10 @@ function restorePortions(facts: readonly ApiFact[]): PortionDraft[] {
     const beneficiaryFacts = facts.filter((item) => item.subject === beneficiaryId);
     let scenario: PortionScenario | undefined;
     if (own.some((item) => item.predicate === "portion-disposed" && item.value === false)) scenario = "undisposed";
-    else if (beneficiaryFacts.some((item) => item.predicate === "valid-refusal" && item.value === true)) scenario = "refused";
-    else if (beneficiaryFacts.some((item) => item.predicate === "beneficiary-disqualified" && item.value === true)) scenario = "disqualified";
-    else if (beneficiaryFacts.some((item) => item.predicate === "beneficiary-life-status" && item.value === "dead-before-or-same")) scenario = "dead";
-    else if (beneficiaryFacts.some((item) => item.predicate === "beneficiary-life-status" && item.value === "organization-no-longer-exists")) scenario = "organization";
-    else if (own.some((item) => item.predicate === "disposition-status" && item.value === "effective")) scenario = "effective";
+    else if (beneficiaryFacts.some((item) => item.predicate === "beneficiary-life-status" && item.value === "dead-before-or-same")) scenario = "dead-person";
+    else if (beneficiaryFacts.some((item) => item.predicate === "beneficiary-life-status" && item.value === "organization-no-longer-exists")) scenario = "ended-organization";
+    else if (beneficiaryFacts.some((item) => item.predicate === "beneficiary-kind" && item.value === "organization")) scenario = "existing-organization";
+    else if (beneficiaryFacts.some((item) => item.predicate === "beneficiary-kind" && item.value === "person") || own.some((item) => item.predicate === "disposition-status" && item.value === "effective")) scenario = "living-person";
     const beneficiaryName = String(facts.find((item) => item.subject === beneficiaryId && (item.predicate === "person-label" || item.predicate === "heir-person-label"))?.value ?? "");
     return [{ id: fact.subject, name: String(own.find((item) => item.predicate === "estate-portion-label")?.value ?? fact.subject), scenario, beneficiaryId, beneficiaryName }];
   });
@@ -108,15 +106,27 @@ function buildFacts(portions: readonly PortionDraft[], hasWill: boolean, willVal
     facts.push(
       { id: `gip-${stableToken(portion.id)}-d`, subject: portion.id, predicate: "portion-disposed", value: true },
       { id: `gip-${stableToken(portion.id)}-b`, subject: portion.id, predicate: "disposition-beneficiary", value: portion.beneficiaryId },
-      { id: `gip-${stableToken(portion.id)}-s`, subject: portion.id, predicate: "disposition-status", value: portion.scenario === "effective" ? "effective" : "ineffective-beneficiary" },
+      { id: `gip-${stableToken(portion.id)}-c`, subject: portion.id, predicate: "disposition-set-complete", value: true },
     );
     if (portion.beneficiaryName.trim()) facts.push({ id: `gip-${stableToken(portion.id)}-n`, subject: portion.beneficiaryId, predicate: "person-label", value: portion.beneficiaryName.trim() });
-    if (portion.scenario === "effective") return facts;
-    facts.push({ id: `gip-${stableToken(portion.id)}-c`, subject: portion.id, predicate: "disposition-set-complete", value: true });
-    if (portion.scenario === "dead") facts.push({ id: `gip-${stableToken(portion.id)}-x`, subject: portion.beneficiaryId, predicate: "beneficiary-life-status", value: "dead-before-or-same" });
-    if (portion.scenario === "organization") facts.push({ id: `gip-${stableToken(portion.id)}-x`, subject: portion.beneficiaryId, predicate: "beneficiary-life-status", value: "organization-no-longer-exists" });
-    if (portion.scenario === "disqualified") facts.push({ id: `gip-${stableToken(portion.id)}-q`, subject: portion.beneficiaryId, predicate: "beneficiary-disqualified", value: true }, { id: `gip-${stableToken(portion.id)}-e`, subject: portion.beneficiaryId, predicate: "disqualification-exception", value: false });
-    if (portion.scenario === "refused") facts.push({ id: `gip-${stableToken(portion.id)}-r`, subject: portion.beneficiaryId, predicate: "valid-refusal", value: true });
+    if (portion.scenario === "living-person") facts.push(
+      { id: `gip-${stableToken(portion.id)}-k`, subject: portion.beneficiaryId, predicate: "beneficiary-kind", value: "person" },
+      { id: `gip-${stableToken(portion.id)}-x`, subject: portion.beneficiaryId, predicate: "beneficiary-life-status", value: "alive" },
+      { id: `gip-${stableToken(portion.id)}-e`, subject: portion.beneficiaryId, predicate: "eligibility-candidate", value: true },
+      { id: `gip-${stableToken(portion.id)}-r`, subject: portion.beneficiaryId, predicate: "refusal-assessment-subject", value: true },
+    );
+    if (portion.scenario === "existing-organization") facts.push(
+      { id: `gip-${stableToken(portion.id)}-k`, subject: portion.beneficiaryId, predicate: "beneficiary-kind", value: "organization" },
+      { id: `gip-${stableToken(portion.id)}-x`, subject: portion.beneficiaryId, predicate: "beneficiary-life-status", value: "organization-exists" },
+    );
+    if (portion.scenario === "dead-person") facts.push(
+      { id: `gip-${stableToken(portion.id)}-k`, subject: portion.beneficiaryId, predicate: "beneficiary-kind", value: "person" },
+      { id: `gip-${stableToken(portion.id)}-x`, subject: portion.beneficiaryId, predicate: "beneficiary-life-status", value: "dead-before-or-same" },
+    );
+    if (portion.scenario === "ended-organization") facts.push(
+      { id: `gip-${stableToken(portion.id)}-k`, subject: portion.beneficiaryId, predicate: "beneficiary-kind", value: "organization" },
+      { id: `gip-${stableToken(portion.id)}-x`, subject: portion.beneficiaryId, predicate: "beneficiary-life-status", value: "organization-no-longer-exists" },
+    );
     return facts;
   });
 }

@@ -1,10 +1,11 @@
-import { guidedInferenceGoals, guidedTopics, resolveGuidedRequirement, selectNextGuidedRequirement, type GuidedAnswer, type GuidedCaseState, type GuidedMissingRequirement, type GuidedTopicId } from "@/domain/guided-conversation";
+import { guidedInferenceGoals, guidedTopics, type GuidedAnswer, type GuidedCaseState, type GuidedTopicId } from "@/domain/guided-conversation";
 import { replaceCaseFactsSchema, type ReplaceCaseFactsInput } from "@/domain/case";
 import type { ApiFact } from "@/modules/contracts";
 import type { AppDatabase } from "@/server/db/database";
 import { CaseRepository } from "@/server/db/case-repository";
 import { GuidedAnswerNotCurrentError, GuidedSessionRepository } from "@/server/db/guided-session-repository";
 import { runStoredCompulsoryShare, runStoredEligibility, runStoredEstateSettlement, runStoredHeirRank, runStoredInheritanceType, runStoredLimitation, runStoredRefusalAndUnclaimed, runStoredRepresentation, runStoredWillValidity } from "@/server/cases/service";
+import { buildGuidedDependencyPlan } from "@/server/guided/dependency-plan";
 
 export function createGuidedCase(database: AppDatabase, input: { title: string; topicId: GuidedTopicId }): GuidedCaseState {
   const create = database.transaction(() => {
@@ -38,14 +39,38 @@ export function getGuidedCaseState(database: AppDatabase, caseId: string): Guide
   const regimeResults = latestRuns.get("inheritance-type")?.results.filter((result) => result.predicate === "inheritance-regime") ?? [];
   const inheritanceGoalComplete = estatePortionIds.length > 0 && estatePortionIds.every((portionId) => regimeResults.some((result) => result.subject === portionId && result.value !== "unknown"));
   const hasStatutoryPortion = regimeResults.some((result) => result.value === "statutory");
-  const next = chooseNextStep(caseId, topic.id, storedCase.facts, requirements, new Set(latestRuns.keys()), activeCompulsoryHeirs, hasWill === true && Boolean(willRun) && !willConclusionReached, inheritanceGoalComplete, hasStatutoryPortion);
+  const primaryGoals = guidedInferenceGoals[topic.id].filter((goal) => goal.role === "result");
+  const primaryResults = primaryGoals.flatMap((goal) => latestRuns.get(goal.module)?.results.filter((result) => goal.resultPredicates.includes(result.predicate)) ?? []);
+  const conflictModules = [...latestRuns].flatMap(([moduleId, run]) => run.results.some((result) => result.value === "conflict") ? [moduleId as typeof topic.modules[number]] : []);
+  const dependencyPlan = buildGuidedDependencyPlan({
+    caseId,
+    topicId: topic.id,
+    facts: storedCase.facts,
+    requirements,
+    completedModules: new Set(latestRuns.keys()),
+    activeCompulsoryHeirs,
+    willDependencyPending: hasWill === true && Boolean(willRun) && !willConclusionReached,
+    inheritanceGoalComplete,
+    hasStatutoryPortion,
+    hasConflict: conflictModules.length > 0,
+  });
+  const unknownModules = primaryGoals.flatMap((goal) => latestRuns.get(goal.module)?.results.some((result) => goal.resultPredicates.includes(result.predicate) && result.value === "unknown") ? [goal.module] : []);
+  const inferenceStatus: GuidedCaseState["inferenceStatus"] = dependencyPlan.next
+    ? { status: "collecting", modules: [] }
+    : conflictModules.length > 0
+      ? { status: "conflict", modules: conflictModules }
+      : primaryResults.length === 0 || unknownModules.length > 0
+        ? { status: "unknown", modules: primaryResults.length === 0 ? primaryGoals.map((goal) => goal.module) : unknownModules }
+        : { status: "complete", modules: primaryGoals.flatMap((goal) => latestRuns.has(goal.module) ? [goal.module] : []) };
   return {
     case: storedCase,
     topic,
     completedStepIds: session.completedStepIds,
     latestRunIds: Object.fromEntries([...latestRuns].map(([moduleId, run]) => [moduleId, run.id])),
     latestResults: Object.fromEntries([...latestRuns].map(([moduleId, run]) => [moduleId, run.results])),
-    next,
+    dependencyPlan: dependencyPlan.states,
+    inferenceStatus,
+    next: dependencyPlan.next,
   };
 }
 
@@ -121,72 +146,6 @@ export async function runGuidedInference(database: AppDatabase, caseId: string):
   return getGuidedCaseState(database, caseId);
 }
 
-function chooseNextStep(caseId: string, topicId: GuidedTopicId, facts: ApiFact[], requirements: GuidedMissingRequirement[], completedModules: ReadonlySet<string>, activeCompulsoryHeirs: ReadonlySet<string>, willDependencyPending: boolean, inheritanceGoalComplete: boolean, hasStatutoryPortion: boolean): GuidedCaseState["next"] {
-  const deceasedId = facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
-  if (!deceasedId) return planned({ subject: "case", predicate: "guided-deceased-name" });
-  if (topicId === "person-eligibility" && !facts.some((fact) => fact.predicate === "eligibility-candidate" && fact.value === true && fact.subject !== deceasedId)) {
-    return planned({ subject: "eligibility-guided-person", predicate: "guided-eligibility-person-name" });
-  }
-  if (needsWillContext(topicId)) {
-    const hasWill = facts.find((fact) => fact.subject === caseId && fact.predicate === "has-will")?.value;
-    if (typeof hasWill !== "boolean") return planned({ subject: caseId, predicate: "inheritance-has-will" });
-    if (hasWill && !facts.some((fact) => fact.predicate === "will-type")) return planned({ subject: "will-guided", predicate: "will-type" });
-  }
-  if (willDependencyPending) {
-    const nextWillRequirement = selectNextGuidedRequirement(requirements);
-    if (nextWillRequirement) return nextWillRequirement;
-  }
-  if (topicId === "who-inherits") {
-    if (!inheritanceGoalComplete) return planned({ subject: caseId, predicate: "guided-inheritance-portions" });
-    if (!hasStatutoryPortion) return undefined;
-  }
-  if (needsFamilyGraph(topicId) && !facts.some((fact) => fact.predicate === "heir-search-complete" && fact.value === true)) {
-    return planned({ subject: deceasedId, predicate: "relationship-at-opening" });
-  }
-  const fromInference = selectNextGuidedRequirement(requirements.filter((requirement) => !isEligibilityRequirement(requirement.predicate) || requirement.subject !== deceasedId));
-  if (fromInference) return fromInference;
-  if (topicId === "compulsory-share" && completedModules.has("heir-rank") && !completedModules.has("compulsory-share")) {
-    return planned({ subject: deceasedId, predicate: "guided-compulsory-share-review" });
-  }
-  if (topicId === "compulsory-share" && completedModules.has("compulsory-share") && activeCompulsoryHeirs.size > 0 && compulsoryCalculationsIncomplete(facts, activeCompulsoryHeirs)) {
-    return planned({ subject: deceasedId, predicate: "guided-compulsory-share-portions" });
-  }
-  if (completedModules.size > 0) return undefined;
-  const initialByTopic: Record<GuidedTopicId, GuidedMissingRequirement> = {
-    "who-inherits": { subject: deceasedId, predicate: "relationship-at-opening" },
-    "will-validity": { subject: deceasedId, predicate: "will-type" },
-    "person-eligibility": { subject: "eligibility-guided-person", predicate: "guided-eligibility-person-name" },
-    representation: { subject: deceasedId, predicate: "relationship-at-opening" },
-    "compulsory-share": { subject: deceasedId, predicate: "relationship-at-opening" },
-    "estate-settlement": { subject: deceasedId, predicate: "guided-estate-settlement" },
-    limitation: { subject: deceasedId, predicate: "inheritance-opening-date" },
-  };
-  return planned(initialByTopic[topicId]);
-}
-
 function needsWillContext(topicId: GuidedTopicId): boolean {
   return topicId === "who-inherits" || topicId === "person-eligibility" || topicId === "representation" || topicId === "compulsory-share";
-}
-
-function needsFamilyGraph(topicId: GuidedTopicId): boolean {
-  return topicId === "who-inherits" || topicId === "representation" || topicId === "compulsory-share";
-}
-
-function compulsoryCalculationsIncomplete(facts: readonly ApiFact[], activePeople: ReadonlySet<string>): boolean {
-  const portions = facts.flatMap((fact) => fact.predicate === "estate-portion" && fact.value === true && fact.subject ? [fact.subject] : []);
-  if (portions.length === 0) return true;
-  const calculations = facts.flatMap((fact) => fact.predicate === "compulsory-share-calculation" && fact.value === true && fact.subject ? [fact.subject] : []);
-  return [...activePeople].some((personId) => portions.some((portionId) => !calculations.some((calculationId) =>
-    facts.some((fact) => fact.subject === calculationId && fact.predicate === "calculation-person" && fact.value === personId)
-    && facts.some((fact) => fact.subject === calculationId && fact.predicate === "calculation-estate-portion" && fact.value === portionId)
-    && facts.some((fact) => fact.subject === calculationId && fact.predicate === "hypothetical-statutory-share")
-    && facts.some((fact) => fact.subject === calculationId && fact.predicate === "testamentary-share-received"))));
-}
-
-function isEligibilityRequirement(predicate: string): boolean {
-  return predicate === "article-621-status" || predicate === "eligibility-review-complete";
-}
-
-function planned(requirement: GuidedMissingRequirement): NonNullable<GuidedCaseState["next"]> {
-  return { requirement, resolution: resolveGuidedRequirement(requirement) };
 }

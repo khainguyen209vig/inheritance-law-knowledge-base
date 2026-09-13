@@ -3,6 +3,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
+import type { AnalysisModuleId } from "@/domain/analysis-modules";
 import type { WillValidityRequest } from "@/domain/will-validity";
 import type { StoredCase } from "@/server/db/case-repository";
 import { addCalendarYears } from "@/domain/temporal";
@@ -12,8 +13,22 @@ import type { InferenceOutput } from "./types";
 const execFileAsync = promisify(execFile);
 const knowledgeBaseDirectory = path.join(process.cwd(), "knowledge-base");
 
+/** Each package is one CLIPS working memory containing its goal rules and required dependency rules. */
+export const clipsRulePackages: Record<AnalysisModuleId, readonly string[]> = {
+  "will-validity": ["rules/01-will-validity.clp", "rules/90-will-validity-completeness.clp", "rules/98-explanation.clp", "rules/99-result-projection.clp"],
+  "inheritance-type": ["rules/01-will-validity.clp", "rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/02-inheritance-type.clp", "rules/91-inheritance-type-completeness.clp", "rules/97-inheritance-type-projection.clp", "rules/98-explanation.clp"],
+  eligibility: ["rules/03-eligibility.clp", "rules/92-eligibility-completeness.clp", "rules/96-eligibility-projection.clp", "rules/98-explanation.clp"],
+  "heir-rank": ["rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/04-heir-rank.clp", "rules/93-heir-rank-completeness.clp", "rules/95-heir-rank-projection.clp", "rules/98-explanation.clp"],
+  representation: ["rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/05-representation.clp", "rules/94-representation-completeness.clp", "rules/95-representation-projection.clp", "rules/98-explanation.clp"],
+  "compulsory-share": ["rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/06-compulsory-share.clp", "rules/96-compulsory-share-completeness.clp", "rules/97-compulsory-share-projection.clp", "rules/98-explanation.clp"],
+  "spouse-status": ["rules/07-spouse-status.clp", "rules/97-spouse-status-completeness.clp", "rules/98-spouse-status-projection.clp", "rules/98-explanation.clp"],
+  "refusal-and-unclaimed": ["rules/03-eligibility.clp", "rules/04-heir-rank.clp", "rules/08-refusal-and-unclaimed.clp", "rules/98-refusal-and-unclaimed-completeness.clp", "rules/99-refusal-and-unclaimed-projection.clp", "rules/98-explanation.clp"],
+  "estate-settlement": ["rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/04-heir-rank.clp", "rules/09-estate-settlement.clp", "rules/99-estate-settlement-completeness.clp", "rules/99-estate-settlement-projection.clp", "rules/98-explanation.clp"],
+  limitation: ["rules/10-limitation.clp", "rules/99-limitation-completeness.clp", "rules/99-limitation-projection.clp", "rules/98-explanation.clp"],
+};
+
 export async function inferWillValidity(input: WillValidityRequest): Promise<InferenceOutput> {
-  return inferWithClips(serializeWillFacts(input), createWillValidityDriver);
+  return inferWithClips(serializeWillFacts(input), "will-validity");
 }
 
 export async function inferInheritanceType(input: {
@@ -21,39 +36,39 @@ export async function inferInheritanceType(input: {
   subject: string;
   facts: StoredCase["facts"];
 }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "inheritance-type" }), createInheritanceTypeDriver);
+  return inferWithClips(serializeCaseFacts({ ...input, module: "inheritance-type" }), "inheritance-type");
 }
 
 export async function inferEligibility(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "eligibility" }), createEligibilityDriver);
+  return inferWithClips(serializeCaseFacts({ ...input, module: "eligibility" }), "eligibility");
 }
 
 export async function inferHeirRank(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "heir-rank" }), createHeirRankDriver);
+  return inferWithClips(serializeCaseFacts({ ...input, module: "heir-rank" }), "heir-rank");
 }
 
 export async function inferRepresentation(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "representation" }), createRepresentationDriver);
+  return inferWithClips(serializeCaseFacts({ ...input, module: "representation" }), "representation");
 }
 
 export async function inferCompulsoryShare(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "compulsory-share" }), createCompulsoryShareDriver);
+  return inferWithClips(serializeCaseFacts({ ...input, module: "compulsory-share" }), "compulsory-share");
 }
 
 export async function inferSpouseStatus(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "spouse-status" }), createSpouseStatusDriver);
+  return inferWithClips(serializeCaseFacts({ ...input, module: "spouse-status" }), "spouse-status");
 }
 
 export async function inferRefusalAndUnclaimed(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "refusal-and-unclaimed" }), createRefusalAndUnclaimedDriver);
+  return inferWithClips(serializeCaseFacts({ ...input, module: "refusal-and-unclaimed" }), "refusal-and-unclaimed");
 }
 
 export async function inferEstateSettlement(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "estate-settlement" }), createEstateSettlementDriver);
+  return inferWithClips(serializeCaseFacts({ ...input, module: "estate-settlement" }), "estate-settlement");
 }
 
 export async function inferLimitation(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  const output = await inferWithClips(serializeCaseFacts({ ...input, module: "limitation" }), createLimitationDriver);
+  const output = await inferWithClips(serializeCaseFacts({ ...input, module: "limitation" }), "limitation");
   const openingDates = new Map(input.facts
     .filter((fact) => fact.predicate === "inheritance-opening-date" && typeof fact.value === "string")
     .map((fact) => [fact.subject, String(fact.value)]));
@@ -68,7 +83,7 @@ export async function inferLimitation(input: { caseId: string; subject: string; 
 
 async function inferWithClips(
   serializedFacts: string,
-  createDriverFile: (factsPath: string) => string,
+  moduleId: AnalysisModuleId,
 ): Promise<InferenceOutput> {
   const workingDirectory = await mkdtemp(path.join(tmpdir(), "inheritance-clips-"));
   const factsPath = path.join(workingDirectory, "case-facts.clp");
@@ -77,7 +92,7 @@ async function inferWithClips(
   try {
     await Promise.all([
       writeFile(factsPath, serializedFacts, "utf8"),
-      writeFile(driverPath, createDriverFile(factsPath), "utf8"),
+      writeFile(driverPath, createPackageDriver(factsPath, moduleId), "utf8"),
     ]);
 
     const { stdout, stderr } = await execFileAsync("clips", ["-f2", driverPath], {
@@ -144,16 +159,12 @@ function serializeCaseFactValue(fact: StoredCase["facts"][number]): string {
   return String(fact.value);
 }
 
-function createWillValidityDriver(factsPath: string): string {
+function createPackageDriver(factsPath: string, moduleId: AnalysisModuleId): string {
   const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
-
   return [
     `(load ${clipsPath("templates.clp")})`,
     `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/01-will-validity.clp")})`,
-    `(load ${clipsPath("rules/90-will-validity-completeness.clp")})`,
-    `(load ${clipsPath("rules/98-explanation.clp")})`,
-    `(load ${clipsPath("rules/99-result-projection.clp")})`,
+    ...clipsRulePackages[moduleId].map((file) => `(load ${clipsPath(file)})`),
     `(load ${clipsPath("machine-output.clp")})`,
     "(reset)",
     `(load-facts ${quoteClipsPath(factsPath)})`,
@@ -161,118 +172,6 @@ function createWillValidityDriver(factsPath: string): string {
     "(emit-machine-output)",
     "(exit)",
     "",
-  ].join("\n");
-}
-
-function createInheritanceTypeDriver(factsPath: string): string {
-  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
-  return [
-    `(load ${clipsPath("templates.clp")})`,
-    `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/01-will-validity.clp")})`,
-    `(load ${clipsPath("rules/08-refusal-and-unclaimed.clp")})`,
-    `(load ${clipsPath("rules/02-inheritance-type.clp")})`,
-    `(load ${clipsPath("rules/91-inheritance-type-completeness.clp")})`,
-    `(load ${clipsPath("rules/97-inheritance-type-projection.clp")})`,
-    `(load ${clipsPath("rules/98-explanation.clp")})`,
-    `(load ${clipsPath("machine-output.clp")})`,
-    "(reset)",
-    `(load-facts ${quoteClipsPath(factsPath)})`,
-    "(run)",
-    "(emit-machine-output)",
-    "(exit)",
-    "",
-  ].join("\n");
-}
-
-function createEligibilityDriver(factsPath: string): string {
-  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
-  return [
-    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/92-eligibility-completeness.clp")})`,
-    `(load ${clipsPath("rules/96-eligibility-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
-    `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
-    "(run)", "(emit-machine-output)", "(exit)", "",
-  ].join("\n");
-}
-
-function createHeirRankDriver(factsPath: string): string {
-  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
-  return [
-    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/08-refusal-and-unclaimed.clp")})`, `(load ${clipsPath("rules/04-heir-rank.clp")})`,
-    `(load ${clipsPath("rules/93-heir-rank-completeness.clp")})`,
-    `(load ${clipsPath("rules/95-heir-rank-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
-    `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
-    "(run)", "(emit-machine-output)", "(exit)", "",
-  ].join("\n");
-}
-
-function createRepresentationDriver(factsPath: string): string {
-  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
-  return [
-    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/08-refusal-and-unclaimed.clp")})`, `(load ${clipsPath("rules/05-representation.clp")})`,
-    `(load ${clipsPath("rules/94-representation-completeness.clp")})`, `(load ${clipsPath("rules/95-representation-projection.clp")})`,
-    `(load ${clipsPath("rules/98-explanation.clp")})`, `(load ${clipsPath("machine-output.clp")})`,
-    "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`, "(run)", "(emit-machine-output)", "(exit)", "",
-  ].join("\n");
-}
-
-function createCompulsoryShareDriver(factsPath: string): string {
-  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
-  return [
-    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/08-refusal-and-unclaimed.clp")})`, `(load ${clipsPath("rules/06-compulsory-share.clp")})`,
-    `(load ${clipsPath("rules/96-compulsory-share-completeness.clp")})`, `(load ${clipsPath("rules/97-compulsory-share-projection.clp")})`,
-    `(load ${clipsPath("rules/98-explanation.clp")})`, `(load ${clipsPath("machine-output.clp")})`,
-    "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`, "(run)", "(emit-machine-output)", "(exit)", "",
-  ].join("\n");
-}
-
-function createSpouseStatusDriver(factsPath: string): string {
-  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
-  return [
-    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/07-spouse-status.clp")})`, `(load ${clipsPath("rules/97-spouse-status-completeness.clp")})`,
-    `(load ${clipsPath("rules/98-spouse-status-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
-    `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
-    "(run)", "(emit-machine-output)", "(exit)", "",
-  ].join("\n");
-}
-
-function createRefusalAndUnclaimedDriver(factsPath: string): string {
-  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
-  return [
-    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/04-heir-rank.clp")})`,
-    `(load ${clipsPath("rules/08-refusal-and-unclaimed.clp")})`, `(load ${clipsPath("rules/98-refusal-and-unclaimed-completeness.clp")})`,
-    `(load ${clipsPath("rules/99-refusal-and-unclaimed-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
-    `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
-    "(run)", "(emit-machine-output)", "(exit)", "",
-  ].join("\n");
-}
-
-function createEstateSettlementDriver(factsPath: string): string {
-  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
-  return [
-    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/03-eligibility.clp")})`, `(load ${clipsPath("rules/08-refusal-and-unclaimed.clp")})`, `(load ${clipsPath("rules/04-heir-rank.clp")})`,
-    `(load ${clipsPath("rules/09-estate-settlement.clp")})`, `(load ${clipsPath("rules/99-estate-settlement-completeness.clp")})`,
-    `(load ${clipsPath("rules/99-estate-settlement-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
-    `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
-    "(run)", "(emit-machine-output)", "(exit)", "",
-  ].join("\n");
-}
-
-function createLimitationDriver(factsPath: string): string {
-  const clipsPath = (file: string) => quoteClipsPath(path.join(knowledgeBaseDirectory, file));
-  return [
-    `(load ${clipsPath("templates.clp")})`, `(load ${clipsPath("rule-metadata.clp")})`,
-    `(load ${clipsPath("rules/10-limitation.clp")})`, `(load ${clipsPath("rules/99-limitation-completeness.clp")})`,
-    `(load ${clipsPath("rules/99-limitation-projection.clp")})`, `(load ${clipsPath("rules/98-explanation.clp")})`,
-    `(load ${clipsPath("machine-output.clp")})`, "(reset)", `(load-facts ${quoteClipsPath(factsPath)})`,
-    "(run)", "(emit-machine-output)", "(exit)", "",
   ].join("\n");
 }
 
