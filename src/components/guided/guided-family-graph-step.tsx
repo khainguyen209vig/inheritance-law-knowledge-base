@@ -89,9 +89,8 @@ export function GuidedFamilyGraphStep({ state, onStateChange }: GuidedFamilyGrap
         && !(ownedIds.has(fact.subject ?? "") && fact.predicate === "eligibility-candidate"));
       await requestJson(`/api/cases/${state.case.id}/facts`, { method: "PUT", body: JSON.stringify({ subject: state.case.id, facts: [...retained, ...serializeFamilyGraph(state.case.id, graph, searchComplete)] }) });
       setPendingPhase("inferring");
-      await requestJson(`/api/cases/${state.case.id}/inference/heir-rank`, { method: "POST", body: "{}" });
       setPendingPhase("planning");
-      const nextState = await requestJson<GuidedCaseState>(`/api/cases/${state.case.id}/guided`, { method: "GET" });
+      const nextState = await requestJson<GuidedCaseState>(`/api/cases/${state.case.id}/guided/inference`, { method: "POST", body: "{}" });
       initialPersonIds.current = new Set(graph.people.map((person) => person.id));
       if (nextState.next?.resolution?.kind === "interaction" && nextState.next.resolution.interaction === "family-tree") {
         const unresolvedId = nextState.next.requirement.subject;

@@ -31,9 +31,7 @@ export function GuidedRefusalStep({ state, personId, onStateChange }: { state: G
       try {
         const retained = state.case.facts.filter((fact) => fact.subject !== personId || !refusalPredicates.has(fact.predicate));
         await requestJson(`/api/cases/${state.case.id}/facts`, { method: "PUT", body: JSON.stringify({ subject: state.case.id, facts: [...retained, ...buildFacts(personId, draft)] }) });
-        await requestJson(`/api/cases/${state.case.id}/inference/refusal-and-unclaimed`, { method: "POST", body: "{}" });
-        if (state.topic.modules.includes("heir-rank")) await requestJson(`/api/cases/${state.case.id}/inference/heir-rank`, { method: "POST", body: "{}" });
-        onStateChange(await requestJson<GuidedCaseState>(`/api/cases/${state.case.id}/guided`, { method: "GET" }));
+        onStateChange(await requestJson<GuidedCaseState>(`/api/cases/${state.case.id}/guided/inference`, { method: "POST", body: "{}" }));
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : "Không thể lưu đánh giá từ chối.");
       }

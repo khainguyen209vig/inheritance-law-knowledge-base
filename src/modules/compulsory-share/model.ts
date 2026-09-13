@@ -12,7 +12,11 @@ export interface CompulsoryPersonDraft {
   workCapacity?: CompulsoryWorkCapacity;
 }
 
+export interface CompulsoryPortionDraft { id: string; name: string }
+export interface CompulsoryCalculationDraft { id: string; personId: string; portionId: string; statutoryShare?: number; testamentaryShare?: number }
+
 export const compulsoryAssessmentPredicates = new Set(["compulsory-share-assessment-subject", "age-group", "work-capacity-status"]);
+export const compulsoryCalculationPredicates = new Set(["compulsory-share-calculation", "calculation-person", "calculation-estate-portion", "hypothetical-statutory-share", "testamentary-share-received"]);
 
 export function restoreCompulsoryPeople(facts: readonly ApiFact[]): CompulsoryPersonDraft[] {
   const deceased = facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
@@ -39,6 +43,40 @@ export function buildCompulsoryAssessmentFacts(people: readonly CompulsoryPerson
 
 export function compulsoryRoleLabel(role: CompulsoryFamilyRole): string {
   return ({ "biological-child": "Con đẻ", "adopted-child": "Con nuôi", parent: "Cha/mẹ", spouse: "Vợ/chồng", other: "Quan hệ khác" } as const)[role];
+}
+
+export function restoreCompulsoryPortions(facts: readonly ApiFact[]): CompulsoryPortionDraft[] {
+  return facts.flatMap((fact): CompulsoryPortionDraft[] => fact.predicate === "estate-portion" && fact.value === true && fact.subject
+    ? [{ id: fact.subject, name: String(facts.find((item) => item.subject === fact.subject && item.predicate === "estate-portion-label")?.value ?? fact.subject) }]
+    : []);
+}
+
+export function restoreCompulsoryCalculations(facts: readonly ApiFact[], people: readonly { id: string }[], portions: readonly CompulsoryPortionDraft[]): CompulsoryCalculationDraft[] {
+  const stored = facts.flatMap((fact): CompulsoryCalculationDraft[] => {
+    if (fact.predicate !== "compulsory-share-calculation" || fact.value !== true || !fact.subject) return [];
+    const personId = facts.find((item) => item.subject === fact.subject && item.predicate === "calculation-person")?.value;
+    const portionId = facts.find((item) => item.subject === fact.subject && item.predicate === "calculation-estate-portion")?.value;
+    if (typeof personId !== "string" || typeof portionId !== "string") return [];
+    const statutoryShare = facts.find((item) => item.subject === fact.subject && item.predicate === "hypothetical-statutory-share")?.value;
+    const testamentaryShare = facts.find((item) => item.subject === fact.subject && item.predicate === "testamentary-share-received")?.value;
+    return [{ id: fact.subject, personId, portionId, statutoryShare: typeof statutoryShare === "number" ? statutoryShare : undefined, testamentaryShare: typeof testamentaryShare === "number" ? testamentaryShare : undefined }];
+  });
+  const byPair = new Map(stored.map((calculation) => [`${calculation.personId}:${calculation.portionId}`, calculation]));
+  return people.flatMap((person, personIndex) => portions.map((portion, portionIndex) => byPair.get(`${person.id}:${portion.id}`) ?? { id: `guided-calc-${personIndex + 1}-${portionIndex + 1}`, personId: person.id, portionId: portion.id }));
+}
+
+export function buildCompulsoryCalculationFacts(calculations: readonly CompulsoryCalculationDraft[]): ApiFact[] {
+  return calculations.flatMap((calculation): ApiFact[] => {
+    if (calculation.statutoryShare === undefined && calculation.testamentaryShare === undefined) return [];
+    const facts: ApiFact[] = [
+      { id: `${calculation.id}-scope`, subject: calculation.id, predicate: "compulsory-share-calculation", value: true },
+      { id: `${calculation.id}-person`, subject: calculation.id, predicate: "calculation-person", value: calculation.personId },
+      { id: `${calculation.id}-portion`, subject: calculation.id, predicate: "calculation-estate-portion", value: calculation.portionId },
+    ];
+    if (calculation.statutoryShare !== undefined && calculation.statutoryShare > 0) facts.push({ id: `${calculation.id}-statutory`, subject: calculation.id, predicate: "hypothetical-statutory-share", value: calculation.statutoryShare });
+    if (calculation.testamentaryShare !== undefined && calculation.testamentaryShare >= 0) facts.push({ id: `${calculation.id}-testamentary`, subject: calculation.id, predicate: "testamentary-share-received", value: calculation.testamentaryShare });
+    return facts;
+  });
 }
 
 function compulsoryFamilyRole(facts: readonly ApiFact[], deceased: string, person: string): CompulsoryFamilyRole {

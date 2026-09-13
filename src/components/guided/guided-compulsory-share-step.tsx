@@ -28,8 +28,7 @@ export function GuidedCompulsoryShareStep({ state, onStateChange }: { state: Gui
       try {
         const retained = state.case.facts.filter((fact) => !compulsoryAssessmentPredicates.has(fact.predicate));
         await requestJson(`/api/cases/${state.case.id}/facts`, { method: "PUT", body: JSON.stringify({ subject: state.case.id, facts: [...retained, ...buildCompulsoryAssessmentFacts(people)] }) });
-        await requestJson(`/api/cases/${state.case.id}/inference/compulsory-share`, { method: "POST", body: "{}" });
-        onStateChange(await requestJson<GuidedCaseState>(`/api/cases/${state.case.id}/guided`, { method: "GET" }));
+        onStateChange(await requestJson<GuidedCaseState>(`/api/cases/${state.case.id}/guided/inference`, { method: "POST", body: "{}" }));
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : "Không thể lưu rà soát Điều 644.");
       }

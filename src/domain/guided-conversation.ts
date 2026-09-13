@@ -1,6 +1,6 @@
 import type { AnalysisModuleId, InteractionMode } from "./analysis-modules";
 import { z } from "zod";
-import type { ApiFact } from "@/modules/contracts";
+import type { ApiFact, InferenceRun } from "@/modules/contracts";
 
 export const guidedTopicIds = ["who-inherits", "will-validity", "person-eligibility", "representation", "compulsory-share", "estate-settlement", "limitation"] as const;
 export type GuidedTopicId = (typeof guidedTopicIds)[number];
@@ -9,6 +9,7 @@ export const createGuidedSessionSchema = z.object({ title: z.string().trim().min
 export const guidedAnswerSchema = z.discriminatedUnion("questionId", [
   z.object({ questionId: z.literal("guided-deceased-name"), value: z.string().trim().min(1).max(80) }),
   z.object({ questionId: z.literal("guided-eligibility-person-name"), value: z.string().trim().min(1).max(80) }),
+  z.object({ questionId: z.literal("inheritance-has-will"), value: z.boolean() }),
   z.object({ questionId: z.literal("will-type"), value: z.enum(["written", "oral"]) }),
   z.object({ questionId: z.literal("testator-mental-state"), value: z.enum(["lucid", "not-lucid"]) }),
   z.object({ questionId: z.literal("undue-influence"), value: z.enum(["none", "deception", "threat"]) }),
@@ -23,7 +24,7 @@ export const guidedAnswerSchema = z.discriminatedUnion("questionId", [
   z.object({ questionId: z.literal("certified-within-days"), value: z.number().int().min(0).max(36500) }),
 ]);
 export type GuidedAnswer = z.infer<typeof guidedAnswerSchema>;
-export const guidedAnswerQuestionIds = ["guided-deceased-name", "guided-eligibility-person-name", "will-type", "testator-mental-state", "undue-influence", "prohibited-content", "formal-defect", "guardian-consent", "prepared-by-witness", "notarized-or-certified", "witness-count", "witnesses-recorded", "witnesses-signed", "certified-within-days"] as const;
+export const guidedAnswerQuestionIds = ["guided-deceased-name", "guided-eligibility-person-name", "inheritance-has-will", "will-type", "testator-mental-state", "undue-influence", "prohibited-content", "formal-defect", "guardian-consent", "prepared-by-witness", "notarized-or-certified", "witness-count", "witnesses-recorded", "witnesses-signed", "certified-within-days"] as const;
 
 export function isGuidedAnswerQuestionId(value: string): value is GuidedAnswer["questionId"] {
   return (guidedAnswerQuestionIds as readonly string[]).includes(value);
@@ -38,17 +39,55 @@ export interface GuidedTopicDefinition {
 }
 
 export const guidedTopics: Record<GuidedTopicId, GuidedTopicDefinition> = {
-  "who-inherits": { id: "who-inherits", question: "Ai có thể được hưởng di sản?", description: "Xác định người liên quan, hàng thừa kế và trường hợp thế vị.", modules: ["inheritance-type", "eligibility", "refusal-and-unclaimed", "heir-rank", "representation"], recommendedStartModule: "heir-rank" },
+  "who-inherits": { id: "who-inherits", question: "Ai có thể được hưởng di sản?", description: "Xác định người liên quan, hàng thừa kế và trường hợp thế vị.", modules: ["will-validity", "inheritance-type", "eligibility", "refusal-and-unclaimed", "heir-rank", "representation"], recommendedStartModule: "heir-rank" },
   "will-validity": { id: "will-validity", question: "Di chúc có hợp pháp không?", description: "Rà soát ý chí, nội dung, hình thức và trường hợp đặc biệt.", modules: ["will-validity"], recommendedStartModule: "will-validity" },
-  "person-eligibility": { id: "person-eligibility", question: "Một người có bị mất quyền hưởng không?", description: "Rà soát các căn cứ tại Điều 621 và ngoại lệ theo di chúc.", modules: ["eligibility"], recommendedStartModule: "eligibility" },
-  representation: { id: "representation", question: "Con hoặc cháu có được hưởng thế vị không?", description: "Dựng nhánh gia đình và kiểm tra điều kiện thừa kế thế vị.", modules: ["heir-rank", "eligibility", "refusal-and-unclaimed", "representation"], recommendedStartModule: "heir-rank" },
+  "person-eligibility": { id: "person-eligibility", question: "Một người có bị mất quyền hưởng không?", description: "Rà soát các căn cứ tại Điều 621 và ngoại lệ theo di chúc.", modules: ["will-validity", "eligibility"], recommendedStartModule: "eligibility" },
+  representation: { id: "representation", question: "Con hoặc cháu có được hưởng thế vị không?", description: "Dựng nhánh gia đình và kiểm tra điều kiện thừa kế thế vị.", modules: ["will-validity", "heir-rank", "eligibility", "refusal-and-unclaimed", "representation"], recommendedStartModule: "heir-rank" },
   "compulsory-share": { id: "compulsory-share", question: "Ai vẫn được hưởng dù di chúc không cho hưởng?", description: "Xác định người thuộc diện hưởng suất bắt buộc.", modules: ["heir-rank", "will-validity", "eligibility", "compulsory-share"], recommendedStartModule: "heir-rank" },
   "estate-settlement": { id: "estate-settlement", question: "Di sản và nghĩa vụ được thanh toán hoặc chia thế nào?", description: "Rà soát thứ tự thanh toán, nguyên tắc và hạn chế phân chia.", modules: ["estate-settlement"], recommendedStartModule: "estate-settlement" },
   limitation: { id: "limitation", question: "Còn thời hiệu yêu cầu về thừa kế không?", description: "Xác định mốc thời hiệu và hậu quả sau thời hiệu.", modules: ["limitation"], recommendedStartModule: "limitation" },
 };
 
+export interface GuidedInferenceGoal {
+  module: AnalysisModuleId;
+  resultPredicates: readonly string[];
+  role: "result" | "dependency";
+}
+
+/** Legal outcomes drive orchestration; UI presenter order does not. */
+export const guidedInferenceGoals: Record<GuidedTopicId, readonly GuidedInferenceGoal[]> = {
+  "who-inherits": [
+    { module: "inheritance-type", resultPredicates: ["inheritance-regime"], role: "result" },
+    { module: "heir-rank", resultPredicates: ["called-to-inherit", "candidate-heir-rank"], role: "result" },
+    { module: "representation", resultPredicates: ["inherits-by-representation"], role: "result" },
+    { module: "will-validity", resultPredicates: ["valid-will"], role: "dependency" },
+    { module: "eligibility", resultPredicates: ["article-621-status"], role: "dependency" },
+    { module: "refusal-and-unclaimed", resultPredicates: ["valid-refusal"], role: "dependency" },
+  ],
+  "will-validity": [{ module: "will-validity", resultPredicates: ["valid-will"], role: "result" }],
+  "person-eligibility": [
+    { module: "eligibility", resultPredicates: ["article-621-status"], role: "result" },
+    { module: "will-validity", resultPredicates: ["valid-will"], role: "dependency" },
+  ],
+  representation: [
+    { module: "representation", resultPredicates: ["inherits-by-representation"], role: "result" },
+    { module: "heir-rank", resultPredicates: ["candidate-heir-rank"], role: "dependency" },
+    { module: "eligibility", resultPredicates: ["article-621-status"], role: "dependency" },
+    { module: "refusal-and-unclaimed", resultPredicates: ["valid-refusal"], role: "dependency" },
+    { module: "will-validity", resultPredicates: ["valid-will"], role: "dependency" },
+  ],
+  "compulsory-share": [
+    { module: "compulsory-share", resultPredicates: ["compulsory-heir", "minimum-compulsory-share", "compulsory-share-shortfall"], role: "result" },
+    { module: "heir-rank", resultPredicates: ["candidate-heir-rank"], role: "dependency" },
+    { module: "eligibility", resultPredicates: ["article-621-status"], role: "dependency" },
+    { module: "will-validity", resultPredicates: ["valid-will"], role: "dependency" },
+  ],
+  "estate-settlement": [{ module: "estate-settlement", resultPredicates: ["payment-priority", "distribution-not-before-date"], role: "result" }],
+  limitation: [{ module: "limitation", resultPredicates: ["limitation-period", "post-limitation-recipient"], role: "result" }],
+};
+
 export type GuidedAnswerKind = "single-choice" | "boolean-unknown" | "date" | "number" | "text";
-export type GuidedInteraction = InteractionMode | "eligibility-review" | "refusal-review" | "compulsory-share-review";
+export type GuidedInteraction = InteractionMode | "eligibility-review" | "refusal-review" | "compulsory-share-review" | "estate-portions";
 export interface GuidedChoice { label: string; value: string | boolean; description?: string }
 
 type GuidedRequirementTemplate =
@@ -67,6 +106,7 @@ export interface GuidedCaseState {
   topic: GuidedTopicDefinition;
   completedStepIds: string[];
   latestRunIds: Partial<Record<AnalysisModuleId, string>>;
+  latestResults: Partial<Record<AnalysisModuleId, InferenceRun["results"]>>;
   next?: { requirement: GuidedMissingRequirement; resolution?: GuidedRequirementResolution };
 }
 
@@ -85,7 +125,7 @@ const requirementCatalog: Record<string, GuidedRequirementTemplate> = {
   "witnesses-recorded": { kind: "question", prompt: "Ý chí cuối cùng đã được người làm chứng ghi chép lại chưa?", answerKind: "single-choice", priority: 70, choices: [{ label: "Đã ghi chép", value: true }, { label: "Chưa ghi chép", value: false }] },
   "witnesses-signed": { kind: "question", prompt: "Những người làm chứng đã ký tên hoặc điểm chỉ chưa?", answerKind: "single-choice", priority: 80, choices: [{ label: "Đã ký hoặc điểm chỉ", value: true }, { label: "Chưa", value: false }] },
   "certified-within-days": { kind: "question", prompt: "Sau bao nhiêu ngày lời di chúc được công chứng hoặc chứng thực?", answerKind: "number", priority: 90, min: 0, max: 36500, placeholder: "Số ngày" },
-  "inheritance-has-will": { kind: "question", prompt: "Người để lại di sản có lập di chúc không?", answerKind: "boolean-unknown", priority: 10 },
+  "inheritance-has-will": { kind: "question", prompt: "Có di chúc liên quan đến hồ sơ này không?", answerKind: "single-choice", priority: 10, choices: [{ label: "Có di chúc", value: true }, { label: "Không có di chúc", value: false }] },
   "relationship-at-opening": { kind: "interaction", prompt: "Hãy bổ sung quan hệ gia đình của những người liên quan.", interaction: "family-tree", priority: 10 },
   "heir-life-status": { kind: "question", prompt: "Người này còn sống tại thời điểm mở thừa kế không?", answerKind: "single-choice", priority: 20 },
   "article-621-status": { kind: "interaction", prompt: "Cần rà soát các căn cứ về quyền hưởng của người này.", interaction: "eligibility-review", priority: 30 },
@@ -93,6 +133,7 @@ const requirementCatalog: Record<string, GuidedRequirementTemplate> = {
   "valid-refusal": { kind: "interaction", prompt: "Cần rà soát việc từ chối nhận di sản của người này.", interaction: "refusal-review", priority: 40 },
   "heir-search-complete": { kind: "interaction", prompt: "Hãy kiểm tra cây gia đình và xác nhận đã nhập đủ ứng viên.", interaction: "family-tree", priority: 50 },
   "guided-compulsory-share-review": { kind: "interaction", prompt: "Hãy rà soát những người có thể thuộc diện hưởng di sản bắt buộc.", interaction: "compulsory-share-review", priority: 60 },
+  "guided-compulsory-share-portions": { kind: "interaction", prompt: "Hãy khai các phần di sản cần đối chiếu với ngưỡng hưởng bắt buộc.", interaction: "estate-portions", priority: 70 },
   "inheritance-opening-date": { kind: "question", prompt: "Ngày mở thừa kế là ngày nào?", answerKind: "date", priority: 10 },
   "limitation-request-type": { kind: "question", prompt: "Bạn đang muốn thực hiện loại yêu cầu nào?", answerKind: "single-choice", priority: 20 },
   "guided-estate-settlement": { kind: "interaction", prompt: "Hãy bổ sung các phần di sản và nghĩa vụ cần thanh toán hoặc phân chia.", interaction: "timeline", priority: 10 },

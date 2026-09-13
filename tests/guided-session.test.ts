@@ -3,7 +3,7 @@ import test from "node:test";
 import { openDatabase } from "../src/server/db/database";
 import { CaseRepository } from "../src/server/db/case-repository";
 import { GuidedSessionRepository } from "../src/server/db/guided-session-repository";
-import { answerGuidedQuestion, createGuidedCase, getGuidedCaseState } from "../src/server/guided/service";
+import { answerGuidedQuestion, createGuidedCase, getGuidedCaseState, runGuidedInference } from "../src/server/guided/service";
 import { runStoredCompulsoryShare, runStoredEligibility, runStoredHeirRank, runStoredRefusalAndUnclaimed } from "../src/server/cases/service";
 
 test("guided session persists its topic and resumes from case facts", async () => {
@@ -17,12 +17,14 @@ test("guided session persists its topic and resumes from case facts", async () =
     assert.ok(answered.completedStepIds.includes("guided-deceased-name"));
     assert.ok(answered.case.facts.some((fact) => fact.predicate === "deceased-person" && fact.value === true));
     assert.ok(answered.case.facts.some((fact) => fact.predicate === "heir-person-label" && fact.value === "Nguyễn Văn A"));
-    assert.equal(answered.next?.requirement.predicate, "relationship-at-opening");
-    assert.equal(answered.next?.resolution?.kind, "interaction");
+    assert.equal(answered.next?.requirement.predicate, "inheritance-has-will");
+    const willAnswered = await answerGuidedQuestion(database, initial.case.id, { questionId: "inheritance-has-will", value: false });
+    assert.equal(willAnswered.next?.requirement.predicate, "relationship-at-opening");
+    assert.equal(willAnswered.next?.resolution?.kind, "interaction");
 
     const resumed = getGuidedCaseState(database, initial.case.id);
     assert.equal(resumed.topic.id, "who-inherits");
-    assert.deepEqual(resumed.completedStepIds, ["guided-deceased-name"]);
+    assert.deepEqual(resumed.completedStepIds, ["guided-deceased-name", "inheritance-has-will"]);
   } finally {
     database.close();
   }
@@ -45,6 +47,30 @@ test("guided will answer runs CLIPS and plans the next missing requirement", asy
   }
 });
 
+test("who-inherits resolves the will dependency before family and eligibility review", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Có di chúc", topicId: "who-inherits" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "inheritance-has-will", value: true });
+    assert.equal(state.next?.requirement.predicate, "will-type");
+
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "will-type", value: "written" });
+    assert.equal(state.next?.requirement.predicate, "testator-mental-state");
+    assert.ok(state.latestRunIds["will-validity"]);
+    assert.notEqual(state.next?.requirement.predicate, "relationship-at-opening");
+
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "testator-mental-state", value: "lucid" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "undue-influence", value: "none" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "prohibited-content", value: "not-detected" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "formal-defect", value: "not-detected" });
+    assert.equal(state.next?.requirement.predicate, "relationship-at-opening");
+    assert.equal(state.next?.resolution?.kind, "interaction");
+  } finally {
+    database.close();
+  }
+});
+
 test("person eligibility flow asks for a candidate and never reviews the deceased", async () => {
   const database = openDatabase(":memory:");
   try {
@@ -55,6 +81,8 @@ test("person eligibility flow asks for a candidate and never reviews the decease
     assert.notEqual(state.next?.requirement.subject, deceasedId);
 
     state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-eligibility-person-name", value: "Người cần rà soát" });
+    assert.equal(state.next?.requirement.predicate, "inheritance-has-will");
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "inheritance-has-will", value: false });
     assert.equal(state.next?.requirement.predicate, "eligibility-review-complete");
     assert.equal(state.next?.requirement.subject, "eligibility-guided-person");
     assert.notEqual(state.next?.requirement.subject, deceasedId);
@@ -72,6 +100,7 @@ test("guided family graph advances to the candidate legal review after heir-rank
     assert.ok(deceasedId);
     const repository = new CaseRepository(database);
     repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      { id: "fg-no-will", subject: state.case.id, predicate: "has-will", value: false },
       { id: "fg-deceased", subject: deceasedId, predicate: "deceased-person", value: true },
       { id: "fg-deceased-label", subject: deceasedId, predicate: "heir-person-label", value: "Nguyễn Văn A" },
       { id: "fg-spouse-label", subject: "person-spouse", predicate: "heir-person-label", value: "Nguyễn Thị B" },
@@ -81,10 +110,9 @@ test("guided family graph advances to the candidate legal review after heir-rank
       { id: "fg-spouse-edge", subject: deceasedId, predicate: "spouse-at-opening", value: "person-spouse" },
       { id: "fg-search-complete", subject: state.case.id, predicate: "heir-search-complete", value: true },
     ] });
-    await runStoredHeirRank(repository, state.case.id);
-
-    state = getGuidedCaseState(database, state.case.id);
+    state = await runGuidedInference(database, state.case.id);
     assert.ok(state.latestRunIds["heir-rank"]);
+    assert.ok(state.latestRunIds.eligibility);
     assert.equal(state.next?.requirement.subject, "person-spouse");
     assert.equal(state.next?.requirement.predicate, "article-621-status");
     assert.equal(state.next?.resolution?.kind, "interaction");
@@ -152,6 +180,7 @@ test("guided compulsory-share topic advances from dependencies to Article 644 re
     assert.ok(deceasedId);
     const repository = new CaseRepository(database);
     repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      { id: "cs-no-will", subject: state.case.id, predicate: "has-will", value: false },
       { id: "cs-deceased", subject: deceasedId, predicate: "deceased-person", value: true },
       { id: "cs-deceased-label", subject: deceasedId, predicate: "heir-person-label", value: "Nguyễn Văn A" },
       { id: "cs-child-label", subject: "person-child", predicate: "heir-person-label", value: "Nguyễn Văn B" },
@@ -179,8 +208,25 @@ test("guided compulsory-share topic advances from dependencies to Article 644 re
     ] });
     const compulsoryRun = await runStoredCompulsoryShare(repository, state.case.id);
     state = getGuidedCaseState(database, state.case.id);
-    assert.equal(state.next, undefined);
+    assert.equal(state.next?.requirement.predicate, "guided-compulsory-share-portions");
+    assert.equal(state.next?.resolution?.kind, "interaction");
     assert.ok(compulsoryRun.results.some((result) => result.subject === "person-child" && result.predicate === "compulsory-heir" && result.value === "true"));
+
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      ...repository.getCase(state.case.id).facts,
+      { id: "cs-portion", subject: "portion-house", predicate: "estate-portion", value: true },
+      { id: "cs-portion-label", subject: "portion-house", predicate: "estate-portion-label", value: "Căn nhà" },
+      { id: "cs-calculation", subject: "calculation-child-house", predicate: "compulsory-share-calculation", value: true },
+      { id: "cs-calculation-person", subject: "calculation-child-house", predicate: "calculation-person", value: "person-child" },
+      { id: "cs-calculation-portion", subject: "calculation-child-house", predicate: "calculation-estate-portion", value: "portion-house" },
+      { id: "cs-calculation-statutory", subject: "calculation-child-house", predicate: "hypothetical-statutory-share", value: 300 },
+      { id: "cs-calculation-testamentary", subject: "calculation-child-house", predicate: "testamentary-share-received", value: 100 },
+    ] });
+    const calculatedRun = await runStoredCompulsoryShare(repository, state.case.id);
+    state = getGuidedCaseState(database, state.case.id);
+    assert.equal(state.next, undefined);
+    assert.ok(calculatedRun.results.some((result) => result.subject === "calculation-child-house" && result.predicate === "minimum-compulsory-share" && Number(result.value) === 200));
+    assert.ok(calculatedRun.results.some((result) => result.subject === "calculation-child-house" && result.predicate === "compulsory-share-shortfall" && Number(result.value) === 100));
   } finally {
     database.close();
   }
