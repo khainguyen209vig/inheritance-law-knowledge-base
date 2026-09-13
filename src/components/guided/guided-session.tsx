@@ -1,46 +1,37 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useState, useTransition } from "react";
+import { GuidedQuestionCard } from "@/components/guided/guided-question-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import type { GuidedCaseState } from "@/domain/guided-conversation";
+import { isGuidedAnswerQuestionId, type GuidedCaseState } from "@/domain/guided-conversation";
 
 interface GuidedSessionProps {
   initialState: GuidedCaseState;
 }
 
+const GuidedFamilyGraphStep = dynamic(() => import("@/components/guided/guided-family-graph-step").then((module) => module.GuidedFamilyGraphStep));
+const GuidedEligibilityStep = dynamic(() => import("@/components/guided/guided-eligibility-step").then((module) => module.GuidedEligibilityStep));
+const GuidedRefusalStep = dynamic(() => import("@/components/guided/guided-refusal-step").then((module) => module.GuidedRefusalStep));
+
 export function GuidedSession({ initialState }: GuidedSessionProps) {
   const [state, setState] = useState(initialState);
-  const [name, setName] = useState("");
   const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
   const deceased = state.case.facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
   const deceasedName = deceased ? String(state.case.facts.find((fact) => fact.subject === deceased && fact.predicate === "heir-person-label")?.value ?? deceased) : undefined;
   const willType = state.case.facts.find((fact) => fact.subject === "will-guided" && fact.predicate === "will-type")?.value;
 
-  function saveDeceased(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!name.trim()) return;
+  function submitAnswer(value: string | number | boolean) {
+    const questionId = state.next?.requirement.predicate;
+    if (!questionId || !isGuidedAnswerQuestionId(questionId)) return;
     startTransition(async () => {
       setError(undefined);
       try {
-        const response = await fetch(`/api/cases/${state.case.id}/guided/answers`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ questionId: "guided-deceased-name", value: name.trim() }) });
-        if (!response.ok) throw new Error(`Không thể lưu câu trả lời (${response.status}).`);
-        setState(await response.json() as GuidedCaseState);
-      } catch (cause) {
-        setError(cause instanceof Error ? cause.message : "Không thể lưu câu trả lời.");
-      }
-    });
-  }
-
-  function saveWillType(value: "written" | "oral") {
-    startTransition(async () => {
-      setError(undefined);
-      try {
-        const response = await fetch(`/api/cases/${state.case.id}/guided/answers`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ questionId: "will-type", value }) });
+        const response = await fetch(`/api/cases/${state.case.id}/guided/answers`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ questionId, value }) });
         if (!response.ok) throw new Error(`Không thể lưu câu trả lời (${response.status}).`);
         setState(await response.json() as GuidedCaseState);
       } catch (cause) {
@@ -55,7 +46,11 @@ export function GuidedSession({ initialState }: GuidedSessionProps) {
       <AssistantMessage>Bạn muốn xác định: <strong>{state.topic.question}</strong></AssistantMessage>
       {deceasedName ? <div className="ml-auto max-w-2xl rounded-2xl rounded-br-sm bg-primary px-4 py-3 text-sm text-primary-foreground">Người để lại di sản là {deceasedName}.</div> : null}
       {willType ? <div className="ml-auto max-w-2xl rounded-2xl rounded-br-sm bg-primary px-4 py-3 text-sm text-primary-foreground">Di chúc được lập {willType === "written" ? "bằng văn bản" : "bằng miệng"}.</div> : null}
-      {state.next?.requirement.predicate === "guided-deceased-name" ? <><AssistantMessage>{state.next.resolution?.prompt}</AssistantMessage><Card className="ml-auto max-w-2xl"><CardHeader><CardTitle className="text-lg">Người để lại di sản</CardTitle><CardDescription>Thông tin này tạo node gốc dùng chung cho các bước sau.</CardDescription></CardHeader><CardContent><form className="space-y-3" onSubmit={saveDeceased}><Input autoFocus value={name} onChange={(event) => setName(event.target.value)} maxLength={80} placeholder="Nhập họ tên" />{error ? <p className="text-sm text-red-700">{error}</p> : null}<Button className="w-full" type="submit" disabled={isPending || !name.trim()}>{isPending ? "Đang lưu…" : "Lưu và tiếp tục"}</Button></form></CardContent></Card></> : state.next?.requirement.predicate === "will-type" ? <><AssistantMessage>{state.next.resolution?.prompt}</AssistantMessage><Card className="ml-auto max-w-2xl"><CardHeader><CardTitle className="text-lg">Hình thức di chúc</CardTitle><CardDescription>Câu trả lời được lưu thành fact `will-type`; CLIPS sẽ chạy ngay để xác định dữ kiện tiếp theo.</CardDescription></CardHeader><CardContent className="grid gap-2 sm:grid-cols-2"><Button type="button" variant="outline" disabled={isPending} onClick={() => saveWillType("written")}>Di chúc bằng văn bản</Button><Button type="button" variant="outline" disabled={isPending} onClick={() => saveWillType("oral")}>Di chúc bằng miệng</Button>{isPending ? <p className="col-span-full text-sm text-muted-foreground">Đang lưu và chạy CLIPS…</p> : null}{error ? <p className="col-span-full text-sm text-red-700">{error}</p> : null}</CardContent></Card></> : <><AssistantMessage>{state.next?.resolution?.prompt ?? "Cần thêm dữ kiện trước khi hệ thống có thể tiếp tục suy luận."}</AssistantMessage><Card className="max-w-2xl"><CardHeader><CardTitle className="text-lg">Bước tiếp theo</CardTitle><CardDescription>Question planner đã chọn bước này từ topic, facts và missing requirements mới nhất. Presenter tương ứng sẽ được nhúng trực tiếp trong phase kế tiếp.</CardDescription></CardHeader><CardContent><Button asChild><Link href={`/cases/${state.case.id}/modules/${state.topic.recommendedStartModule}`}>Mở phần nhập dữ kiện hiện tại</Link></Button></CardContent></Card></>}
+      {state.next?.resolution?.kind === "question" && isGuidedAnswerQuestionId(state.next.requirement.predicate) ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedQuestionCard key={state.next.requirement.predicate} question={state.next.resolution} pending={isPending} error={error} onAnswer={submitAnswer} /></>
+        : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "family-tree" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedFamilyGraphStep key={state.latestRunIds["heir-rank"] ?? "initial-family-graph"} state={state} onStateChange={setState} /></>
+          : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "eligibility-review" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedEligibilityStep key={state.next.requirement.subject} state={state} personId={state.next.requirement.subject} onStateChange={setState} /></>
+            : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "refusal-review" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedRefusalStep key={state.next.requirement.subject} state={state} personId={state.next.requirement.subject} onStateChange={setState} /></>
+          : state.next ? <><AssistantMessage>{state.next.resolution?.prompt ?? "Cần thêm dữ kiện trước khi hệ thống có thể tiếp tục suy luận."}</AssistantMessage><Card className="max-w-2xl"><CardHeader><CardTitle className="text-lg">Bước tiếp theo</CardTitle><CardDescription>Question planner đã chọn bước này từ topic, facts và missing requirements mới nhất. Presenter tương ứng sẽ được nhúng trực tiếp trong phase kế tiếp.</CardDescription></CardHeader><CardContent><Button asChild><Link href={`/cases/${state.case.id}/modules/${state.topic.recommendedStartModule}`}>Mở phần nhập dữ kiện hiện tại</Link></Button></CardContent></Card></> : <><AssistantMessage>Hệ thống không còn yêu cầu dữ kiện nào trong nhánh hiện tại. Kết quả CLIPS và căn cứ đã được lưu vào lịch sử hồ sơ.</AssistantMessage><Button asChild className="w-fit"><Link href={`/cases/${state.case.id}`}>Xem kết quả và căn cứ</Link></Button></>}
     </section>
   </main>;
 }

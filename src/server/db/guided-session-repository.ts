@@ -2,6 +2,7 @@ import type { GuidedTopicId } from "@/domain/guided-conversation";
 import type { AppDatabase } from "./database";
 
 export class GuidedSessionNotFoundError extends Error {}
+export class GuidedAnswerNotCurrentError extends Error {}
 
 export interface StoredGuidedSession {
   caseId: string;

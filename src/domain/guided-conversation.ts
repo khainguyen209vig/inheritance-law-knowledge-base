@@ -9,8 +9,24 @@ export const createGuidedSessionSchema = z.object({ title: z.string().trim().min
 export const guidedAnswerSchema = z.discriminatedUnion("questionId", [
   z.object({ questionId: z.literal("guided-deceased-name"), value: z.string().trim().min(1).max(80) }),
   z.object({ questionId: z.literal("will-type"), value: z.enum(["written", "oral"]) }),
+  z.object({ questionId: z.literal("testator-mental-state"), value: z.enum(["lucid", "not-lucid"]) }),
+  z.object({ questionId: z.literal("undue-influence"), value: z.enum(["none", "deception", "threat"]) }),
+  z.object({ questionId: z.literal("prohibited-content"), value: z.enum(["detected", "not-detected"]) }),
+  z.object({ questionId: z.literal("formal-defect"), value: z.enum(["detected", "not-detected"]) }),
+  z.object({ questionId: z.literal("guardian-consent"), value: z.boolean() }),
+  z.object({ questionId: z.literal("prepared-by-witness"), value: z.boolean() }),
+  z.object({ questionId: z.literal("notarized-or-certified"), value: z.boolean() }),
+  z.object({ questionId: z.literal("witness-count"), value: z.number().int().min(0).max(100) }),
+  z.object({ questionId: z.literal("witnesses-recorded"), value: z.boolean() }),
+  z.object({ questionId: z.literal("witnesses-signed"), value: z.boolean() }),
+  z.object({ questionId: z.literal("certified-within-days"), value: z.number().int().min(0).max(36500) }),
 ]);
 export type GuidedAnswer = z.infer<typeof guidedAnswerSchema>;
+export const guidedAnswerQuestionIds = ["guided-deceased-name", "will-type", "testator-mental-state", "undue-influence", "prohibited-content", "formal-defect", "guardian-consent", "prepared-by-witness", "notarized-or-certified", "witness-count", "witnesses-recorded", "witnesses-signed", "certified-within-days"] as const;
+
+export function isGuidedAnswerQuestionId(value: string): value is GuidedAnswer["questionId"] {
+  return (guidedAnswerQuestionIds as readonly string[]).includes(value);
+}
 
 export interface GuidedTopicDefinition {
   id: GuidedTopicId;
@@ -32,9 +48,10 @@ export const guidedTopics: Record<GuidedTopicId, GuidedTopicDefinition> = {
 
 export type GuidedAnswerKind = "single-choice" | "boolean-unknown" | "date" | "number" | "text";
 export type GuidedInteraction = InteractionMode | "eligibility-review" | "refusal-review";
+export interface GuidedChoice { label: string; value: string | boolean; description?: string }
 
 type GuidedRequirementTemplate =
-  | { kind: "question"; prompt: string; answerKind: GuidedAnswerKind; priority: number }
+  | { kind: "question"; prompt: string; answerKind: GuidedAnswerKind; priority: number; choices?: readonly GuidedChoice[]; min?: number; max?: number; placeholder?: string }
   | { kind: "interaction"; prompt: string; interaction: GuidedInteraction; priority: number };
 
 export type GuidedRequirementResolution = GuidedRequirementTemplate & { predicate: string };
@@ -54,9 +71,18 @@ export interface GuidedCaseState {
 
 const requirementCatalog: Record<string, GuidedRequirementTemplate> = {
   "guided-deceased-name": { kind: "question", prompt: "Trước hết, người để lại di sản là ai?", answerKind: "text", priority: 0 },
-  "will-type": { kind: "question", prompt: "Di chúc được lập dưới hình thức nào?", answerKind: "single-choice", priority: 20 },
-  "testator-mental-state": { kind: "question", prompt: "Khi lập di chúc, người lập có minh mẫn và sáng suốt không?", answerKind: "single-choice", priority: 30 },
-  "undue-influence": { kind: "question", prompt: "Có dấu hiệu lừa dối, đe dọa hoặc cưỡng ép khi lập di chúc không?", answerKind: "boolean-unknown", priority: 40 },
+  "will-type": { kind: "question", prompt: "Di chúc được lập dưới hình thức nào?", answerKind: "single-choice", priority: 20, choices: [{ label: "Bằng văn bản", value: "written" }, { label: "Bằng miệng", value: "oral" }] },
+  "testator-mental-state": { kind: "question", prompt: "Khi lập di chúc, người lập có minh mẫn và sáng suốt không?", answerKind: "single-choice", priority: 30, choices: [{ label: "Minh mẫn, sáng suốt", value: "lucid" }, { label: "Không minh mẫn", value: "not-lucid" }] },
+  "undue-influence": { kind: "question", prompt: "Có dấu hiệu lừa dối, đe dọa hoặc cưỡng ép khi lập di chúc không?", answerKind: "single-choice", priority: 40, choices: [{ label: "Không phát hiện", value: "none" }, { label: "Có dấu hiệu lừa dối", value: "deception" }, { label: "Có dấu hiệu đe dọa", value: "threat" }] },
+  "prohibited-content": { kind: "question", prompt: "Có phát hiện nội dung của di chúc vi phạm điều cấm không?", answerKind: "single-choice", priority: 50, choices: [{ label: "Không phát hiện", value: "not-detected" }, { label: "Có phát hiện", value: "detected" }] },
+  "formal-defect": { kind: "question", prompt: "Có phát hiện vi phạm về hình thức của di chúc không?", answerKind: "single-choice", priority: 60, choices: [{ label: "Không phát hiện", value: "not-detected" }, { label: "Có phát hiện", value: "detected" }] },
+  "guardian-consent": { kind: "question", prompt: "Cha, mẹ hoặc người giám hộ có đồng ý việc lập di chúc không?", answerKind: "single-choice", priority: 60, choices: [{ label: "Có", value: true }, { label: "Không", value: false }] },
+  "prepared-by-witness": { kind: "question", prompt: "Di chúc có được người làm chứng lập thành văn bản không?", answerKind: "single-choice", priority: 60, choices: [{ label: "Có", value: true }, { label: "Không", value: false }] },
+  "notarized-or-certified": { kind: "question", prompt: "Di chúc đã được công chứng hoặc chứng thực chưa?", answerKind: "single-choice", priority: 70, choices: [{ label: "Có", value: true }, { label: "Không", value: false }] },
+  "witness-count": { kind: "question", prompt: "Có bao nhiêu người làm chứng cho di chúc miệng?", answerKind: "number", priority: 60, min: 0, max: 100, placeholder: "Ví dụ: 2" },
+  "witnesses-recorded": { kind: "question", prompt: "Ý chí cuối cùng đã được người làm chứng ghi chép lại chưa?", answerKind: "single-choice", priority: 70, choices: [{ label: "Đã ghi chép", value: true }, { label: "Chưa ghi chép", value: false }] },
+  "witnesses-signed": { kind: "question", prompt: "Những người làm chứng đã ký tên hoặc điểm chỉ chưa?", answerKind: "single-choice", priority: 80, choices: [{ label: "Đã ký hoặc điểm chỉ", value: true }, { label: "Chưa", value: false }] },
+  "certified-within-days": { kind: "question", prompt: "Sau bao nhiêu ngày lời di chúc được công chứng hoặc chứng thực?", answerKind: "number", priority: 90, min: 0, max: 36500, placeholder: "Số ngày" },
   "inheritance-has-will": { kind: "question", prompt: "Người để lại di sản có lập di chúc không?", answerKind: "boolean-unknown", priority: 10 },
   "relationship-at-opening": { kind: "interaction", prompt: "Hãy bổ sung quan hệ gia đình của những người liên quan.", interaction: "family-tree", priority: 10 },
   "heir-life-status": { kind: "question", prompt: "Người này còn sống tại thời điểm mở thừa kế không?", answerKind: "single-choice", priority: 20 },

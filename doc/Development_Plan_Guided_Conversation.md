@@ -55,13 +55,13 @@ Guided Conversation UI
 - [x] `G-103` Lưu topic và danh sách bước đã hoàn thành vào `guided_sessions` trong SQLite; facts tiếp tục là nguồn sự thật của câu trả lời.
 - [x] `G-104` Thêm API lấy guided state gồm facts, latest runs, unresolved requirements và bước kế tiếp.
 - [x] `G-105` Hoàn thành vertical slice API ghi answer theo transaction và trả state mới: `guided-deceased-name` ghi node gốc; `will-type` ghi observation, chạy CLIPS, lưu snapshot và chọn missing requirement tiếp theo.
-- [ ] `G-106` Mở rộng answer mapper và inference dispatcher cho toàn bộ predicates trong question catalog; chỉ chạy lại rule package bị ảnh hưởng.
+- [ ] `G-106` Mở rộng answer mapper và inference dispatcher cho toàn bộ predicates trong question catalog; chỉ chạy lại rule package bị ảnh hưởng. Đã hoàn tất mapper cho toàn bộ `missing-requirement` hiện được package `will-validity` phát ra; các package còn lại tiếp tục được bổ sung theo từng vertical slice.
 
 ### G2 — Thu thập facts theo component
 
-- [ ] `G-201` Component registry cho choice, Boolean ba trạng thái, number, date và text label. Đã có renderer đầu tiên cho text label và lựa chọn `will-type`.
-- [ ] `G-202` Nhúng family graph vào luồng hội thoại thay vì điều hướng sang workspace khác.
-- [ ] `G-203` Nhúng people review cho Điều 621, từ chối và suất bắt buộc.
+- [x] `G-201` Component registry cho choice, Boolean ba trạng thái, number, date và text label. Renderer dùng chung nhận metadata từ question catalog; các kiểu chưa có answer mapper sẽ chưa được planner đưa ra cho người dùng.
+- [x] `G-202` Nhúng family graph vào luồng hội thoại thay vì điều hướng sang workspace khác; lưu graph facts, chạy `heir-rank` và trả quyền điều khiển cho question planner ngay trong cùng màn hình.
+- [ ] `G-203` Nhúng people review cho Điều 621, từ chối và suất bắt buộc. Đã hoàn tất presenter Điều 621 và từ chối nhận di sản; phần suất bắt buộc còn lại sẽ dùng lại người từ graph.
 - [ ] `G-204` Nhúng estate portions và beneficiaries.
 - [ ] `G-205` Nhúng timeline cho Điều 623 và Điều 661.
 - [ ] `G-206` Cho phép quay lại, sửa câu trả lời và vô hiệu hóa kết quả cũ.
@@ -85,7 +85,7 @@ Guided Conversation UI
 ### G5 — Kiểm thử và hoàn thiện UX
 
 - [x] `G-501` Unit tests cho topic catalog và question planner nền tảng.
-- [ ] `G-502` Integration tests cho tạo hồ sơ → trả lời → lưu facts → chọn bước tiếp theo.
+- [x] `G-502` Integration tests cho tạo hồ sơ → trả lời → lưu facts → chọn bước tiếp theo. Đã bao phủ tạo/resume session và happy path di chúc viết đến kết luận từ CLIPS.
 - [ ] `G-503` Test mỗi topic với happy path, unknown path và sửa câu trả lời.
 - [ ] `G-504` Usability test nội bộ với thành viên không viết rule.
 - [ ] `G-505` Review responsive, keyboard navigation và screen reader labels.
@@ -104,7 +104,7 @@ Vertical slice G0/G1 tạo được đường đi:
   → đề xuất presenter tiếp theo
 ```
 
-Bước kế tiếp ưu tiên `G-106` và `G-201`, sau đó nhúng graph bằng `G-202` cho topic `who-inherits`. Đây là topic demo chính vì thể hiện rõ lợi ích của việc ẩn các mô-đun kỹ thuật khỏi người dùng.
+Bước kế tiếp hoàn tất `G-203` bằng presenter suất bắt buộc, sau đó sang `G-204` cho các phần di sản và người hưởng. Đồng thời tiếp tục `G-106` khi nối từng package suy luận tiếp theo. Topic `who-inherits` là luồng demo chính vì thể hiện rõ lợi ích của việc ẩn các mô-đun kỹ thuật khỏi người dùng.
 
 ## 6. Tiêu chí hoàn thành
 

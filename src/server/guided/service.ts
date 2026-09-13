@@ -1,9 +1,9 @@
 import { guidedTopics, resolveGuidedRequirement, selectNextGuidedRequirement, type GuidedAnswer, type GuidedCaseState, type GuidedMissingRequirement, type GuidedTopicId } from "@/domain/guided-conversation";
-import type { ReplaceCaseFactsInput } from "@/domain/case";
+import { replaceCaseFactsSchema, type ReplaceCaseFactsInput } from "@/domain/case";
 import type { ApiFact } from "@/modules/contracts";
 import type { AppDatabase } from "@/server/db/database";
 import { CaseRepository } from "@/server/db/case-repository";
-import { GuidedSessionRepository } from "@/server/db/guided-session-repository";
+import { GuidedAnswerNotCurrentError, GuidedSessionRepository } from "@/server/db/guided-session-repository";
 import { runStoredWillValidity } from "@/server/cases/service";
 
 export function createGuidedCase(database: AppDatabase, input: { title: string; topicId: GuidedTopicId }): GuidedCaseState {
@@ -27,7 +27,7 @@ export function getGuidedCaseState(database: AppDatabase, caseId: string): Guide
     }
   }
   const requirements = [...latestRuns.values()].flatMap((run) => run.missing.map(({ subject, predicate }) => ({ subject, predicate })));
-  const next = chooseNextStep(topic.id, storedCase.facts, requirements);
+  const next = chooseNextStep(topic.id, storedCase.facts, requirements, latestRuns.size > 0);
   return {
     case: storedCase,
     topic,
@@ -38,6 +38,10 @@ export function getGuidedCaseState(database: AppDatabase, caseId: string): Guide
 }
 
 export async function answerGuidedQuestion(database: AppDatabase, caseId: string, answer: GuidedAnswer): Promise<GuidedCaseState> {
+  const currentState = getGuidedCaseState(database, caseId);
+  if (currentState.next?.requirement.predicate !== answer.questionId) {
+    throw new GuidedAnswerNotCurrentError(answer.questionId);
+  }
   const save = database.transaction(() => {
     const caseRepository = new CaseRepository(database);
     const storedCase = caseRepository.getCase(caseId);
@@ -51,24 +55,28 @@ export async function answerGuidedQuestion(database: AppDatabase, caseId: string
       ];
       caseRepository.replaceFacts(caseId, { subject: caseId, facts });
     }
-    if (answer.questionId === "will-type") {
+    if (answer.questionId !== "guided-deceased-name") {
       const willId = "will-guided";
-      const retained = storedCase.facts.filter((fact) => !(fact.subject === willId && fact.predicate === "will-type"));
-      const facts: ReplaceCaseFactsInput["facts"] = [...retained, { id: "guided-will-type", subject: willId, predicate: "will-type", value: answer.value }];
-      caseRepository.replaceFacts(caseId, { subject: caseId, facts });
+      const retained = storedCase.facts.filter((fact) => !(fact.subject === willId && fact.predicate === answer.questionId));
+      const input = replaceCaseFactsSchema.parse({
+        subject: caseId,
+        facts: [...retained, { id: `guided-${answer.questionId}`, subject: willId, predicate: answer.questionId, value: answer.value }],
+      });
+      caseRepository.replaceFacts(caseId, input);
     }
     new GuidedSessionRepository(database).completeStep(caseId, answer.questionId);
   });
   save();
-  if (answer.questionId === "will-type") await runStoredWillValidity(new CaseRepository(database), caseId, "will-guided");
+  if (answer.questionId !== "guided-deceased-name") await runStoredWillValidity(new CaseRepository(database), caseId, "will-guided");
   return getGuidedCaseState(database, caseId);
 }
 
-function chooseNextStep(topicId: GuidedTopicId, facts: ApiFact[], requirements: GuidedMissingRequirement[]): GuidedCaseState["next"] {
+function chooseNextStep(topicId: GuidedTopicId, facts: ApiFact[], requirements: GuidedMissingRequirement[], hasRelevantRun: boolean): GuidedCaseState["next"] {
   const deceasedId = facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
   if (!deceasedId) return planned({ subject: "case", predicate: "guided-deceased-name" });
   const fromInference = selectNextGuidedRequirement(requirements);
   if (fromInference) return fromInference;
+  if (hasRelevantRun) return undefined;
   const initialByTopic: Record<GuidedTopicId, GuidedMissingRequirement> = {
     "who-inherits": { subject: deceasedId, predicate: "relationship-at-opening" },
     "will-validity": { subject: deceasedId, predicate: "will-type" },
