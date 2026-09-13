@@ -148,6 +148,39 @@ export function graphLevels(graph: FamilyGraph): Map<string, number | undefined>
   return levels;
 }
 
+/** Keep spouse-connected people contiguous after a row has been sorted by ancestry. */
+export function groupSpousesInRow(people: readonly FamilyPerson[], graph: FamilyGraph): FamilyPerson[] {
+  const peopleById = new Map(people.map((person) => [person.id, person]));
+  const insertionIndex = new Map(people.map((person, index) => [person.id, index]));
+  const spouses = new Map<string, string[]>();
+  for (const edge of graph.edges) {
+    if (edge.type !== "spouse-at-opening" || !peopleById.has(edge.from) || !peopleById.has(edge.to)) continue;
+    spouses.set(edge.from, [...(spouses.get(edge.from) ?? []), edge.to]);
+    spouses.set(edge.to, [...(spouses.get(edge.to) ?? []), edge.from]);
+  }
+  const visited = new Set<string>();
+  const grouped: FamilyPerson[] = [];
+  for (const person of people) {
+    if (visited.has(person.id)) continue;
+    const component: FamilyPerson[] = [];
+    const pending = [person.id];
+    visited.add(person.id);
+    while (pending.length) {
+      const id = pending.shift()!;
+      const member = peopleById.get(id);
+      if (member) component.push(member);
+      for (const spouseId of spouses.get(id) ?? []) {
+        if (visited.has(spouseId)) continue;
+        visited.add(spouseId);
+        pending.push(spouseId);
+      }
+    }
+    component.sort((left, right) => (insertionIndex.get(left.id) ?? 0) - (insertionIndex.get(right.id) ?? 0));
+    grouped.push(...component);
+  }
+  return grouped;
+}
+
 export function edgeLabel(edge: FamilyEdge, people: Map<string, FamilyPerson>): string {
   const from = people.get(edge.from)?.name ?? edge.from;
   const to = people.get(edge.to)?.name ?? edge.to;

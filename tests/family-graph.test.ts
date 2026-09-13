@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { graphDiagnostics, graphWarnings, jointBiologicalChildren, jointChildrenOfSpouses, restoreFamilyGraph, serializeFamilyGraph, soleExistingParentOfType, type FamilyGraph } from "../src/modules/family-graph/model";
+import { graphDiagnostics, graphWarnings, groupSpousesInRow, jointBiologicalChildren, jointChildrenOfSpouses, restoreFamilyGraph, serializeFamilyGraph, soleExistingParentOfType, type FamilyGraph } from "../src/modules/family-graph/model";
 
 test("family graph restores formerly hidden intermediate people as editable nodes", () => {
   const graph = restoreFamilyGraph([
@@ -85,6 +85,21 @@ test("family graph treats reverse spouse edges as duplicates", () => {
     ],
   };
   assert.ok(graphDiagnostics(graph).some((message) => message.includes("trùng")));
+});
+
+test("family graph layout keeps spouses adjacent when a sibling shares their row", () => {
+  const graph: FamilyGraph = {
+    deceasedId: "thanh",
+    people: [
+      { id: "thanh", name: "Thành", eligibilityReviewed: false },
+      { id: "g", name: "G", eligibilityReviewed: false },
+      { id: "thuy", name: "Thủy", eligibilityReviewed: false },
+    ],
+    edges: [{ id: "thanh-thuy", from: "thanh", to: "thuy", type: "spouse-at-opening" }],
+  };
+
+  const ordered = groupSpousesInRow(graph.people, graph).map((person) => person.id);
+  assert.deepEqual(ordered, ["thanh", "thuy", "g"]);
 });
 
 test("family graph stores an explicit care assessment on a step-parent relation", () => {

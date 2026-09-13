@@ -10,6 +10,7 @@ import {
   edgeLabel,
   graphDiagnostics,
   graphLevels,
+  groupSpousesInRow,
   jointChildrenOfSpouses,
   type FamilyEdgeType,
   type FamilyGraph,
@@ -267,14 +268,14 @@ function createGraphLayout(graph: FamilyGraph): GraphLayout {
   const positions = new Map<string, NodePosition>();
   ordered.forEach(([, people], rowIndex) => {
     const insertionOrder = new Map(people.map((person, index) => [person.id, index]));
-    const sortedPeople = [...people].sort((left, right) => {
+    const sortedPeople = groupSpousesInRow([...people].sort((left, right) => {
       const leftAnchor = parentAnchorX(graph, left.id, positions);
       const rightAnchor = parentAnchorX(graph, right.id, positions);
       if (leftAnchor === undefined && rightAnchor === undefined) return (insertionOrder.get(left.id) ?? 0) - (insertionOrder.get(right.id) ?? 0);
       if (leftAnchor === undefined) return 1;
       if (rightAnchor === undefined) return -1;
       return leftAnchor - rightAnchor || (insertionOrder.get(left.id) ?? 0) - (insertionOrder.get(right.id) ?? 0);
-    });
+    }), graph);
     const rowWidth = people.length * NODE_WIDTH + Math.max(0, people.length - 1) * COLUMN_GAP;
     const startX = (width - rowWidth) / 2;
     sortedPeople.forEach((person, columnIndex) => positions.set(person.id, { x: startX + columnIndex * (NODE_WIDTH + COLUMN_GAP), y: CANVAS_PADDING_Y + rowIndex * (NODE_HEIGHT + ROW_GAP) }));
