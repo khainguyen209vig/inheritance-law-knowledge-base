@@ -7,7 +7,7 @@ import { GuidedQuestionCard } from "@/components/guided/guided-question-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { isGuidedAnswerQuestionId, type GuidedCaseState } from "@/domain/guided-conversation";
+import { isGuidedAnswerQuestionId, resolveGuidedRequirement, type GuidedCaseState, type GuidedRequirementResolution } from "@/domain/guided-conversation";
 
 interface GuidedSessionProps {
   initialState: GuidedCaseState;
@@ -19,10 +19,13 @@ const GuidedRefusalStep = dynamic(() => import("@/components/guided/guided-refus
 const GuidedCompulsoryShareStep = dynamic(() => import("@/components/guided/guided-compulsory-share-step").then((module) => module.GuidedCompulsoryShareStep));
 const GuidedEstatePortionsStep = dynamic(() => import("@/components/guided/guided-estate-portions-step").then((module) => module.GuidedEstatePortionsStep));
 const GuidedInheritancePortionsStep = dynamic(() => import("@/components/guided/guided-inheritance-portions-step").then((module) => module.GuidedInheritancePortionsStep));
+const GuidedLimitationTimelineStep = dynamic(() => import("@/components/guided/guided-limitation-timeline-step").then((module) => module.GuidedLimitationTimelineStep));
+const GuidedDivisionTimelineStep = dynamic(() => import("@/components/guided/guided-division-timeline-step").then((module) => module.GuidedDivisionTimelineStep));
 
 export function GuidedSession({ initialState }: GuidedSessionProps) {
   const [state, setState] = useState(initialState);
   const [error, setError] = useState<string>();
+  const [editingQuestionId, setEditingQuestionId] = useState<string>();
   const [isPending, startTransition] = useTransition();
   const deceased = state.case.facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
   const deceasedName = deceased ? String(state.case.facts.find((fact) => fact.subject === deceased && fact.predicate === "heir-person-label")?.value ?? deceased) : undefined;
@@ -30,6 +33,12 @@ export function GuidedSession({ initialState }: GuidedSessionProps) {
   const hasWill = state.case.facts.find((fact) => fact.subject === state.case.id && fact.predicate === "has-will")?.value;
   const eligibilityPersonName = state.case.facts.find((fact) => fact.subject === "eligibility-guided-person" && fact.predicate === "person-label")?.value;
   const nextPersonName = state.next ? personLabel(state, state.next.requirement.subject) : undefined;
+  const editableAnswers = state.completedStepIds.flatMap((questionId) => {
+    const resolution = resolveGuidedRequirement({ subject: state.case.id, predicate: questionId });
+    const value = guidedAnswerValue(state, questionId);
+    return resolution?.kind === "question" && value !== undefined ? [{ questionId, resolution, value }] : [];
+  });
+  const editingAnswer = editableAnswers.find((answer) => answer.questionId === editingQuestionId);
 
   function submitAnswer(value: string | number | boolean) {
     const questionId = state.next?.requirement.predicate;
@@ -46,6 +55,21 @@ export function GuidedSession({ initialState }: GuidedSessionProps) {
     });
   }
 
+  function reviseAnswer(value: string | number | boolean) {
+    if (!editingQuestionId || !isGuidedAnswerQuestionId(editingQuestionId)) return;
+    startTransition(async () => {
+      setError(undefined);
+      try {
+        const response = await fetch(`/api/cases/${state.case.id}/guided/answers`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ questionId: editingQuestionId, value }) });
+        if (!response.ok) throw new Error(`Không thể sửa câu trả lời (${response.status}).`);
+        setState(await response.json() as GuidedCaseState);
+        setEditingQuestionId(undefined);
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Không thể sửa câu trả lời.");
+      }
+    });
+  }
+
   return <main className="mx-auto min-h-screen max-w-4xl px-4 py-8 sm:px-6">
     <header className="flex flex-wrap items-center justify-between gap-3"><div><Badge variant="outline">Guided case · đã lưu</Badge><h1 className="mt-2 font-serif text-3xl font-semibold">{state.case.title}</h1></div><div className="flex gap-2"><Button asChild variant="ghost" size="sm"><Link href="/guided">Vấn đề khác</Link></Button><Button asChild variant="outline" size="sm"><Link href={`/cases/${state.case.id}`}>Chế độ kỹ thuật</Link></Button></div></header>
     <section className="mt-8 space-y-5">
@@ -54,13 +78,17 @@ export function GuidedSession({ initialState }: GuidedSessionProps) {
       {typeof hasWill === "boolean" ? <div className="ml-auto max-w-2xl rounded-2xl rounded-br-sm bg-primary px-4 py-3 text-sm text-primary-foreground">{hasWill ? "Hồ sơ có di chúc." : "Hồ sơ không có di chúc."}</div> : null}
       {willType ? <div className="ml-auto max-w-2xl rounded-2xl rounded-br-sm bg-primary px-4 py-3 text-sm text-primary-foreground">Di chúc được lập {willType === "written" ? "bằng văn bản" : "bằng miệng"}.</div> : null}
       {eligibilityPersonName ? <div className="ml-auto max-w-2xl rounded-2xl rounded-br-sm bg-primary px-4 py-3 text-sm text-primary-foreground">Tôi muốn rà soát quyền hưởng của {String(eligibilityPersonName)}.</div> : null}
-      {state.next?.resolution?.kind === "question" && isGuidedAnswerQuestionId(state.next.requirement.predicate) ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedQuestionCard key={state.next.requirement.predicate} question={state.next.resolution} pending={isPending} error={error} onAnswer={submitAnswer} /></>
+      {editableAnswers.length ? <Card className="max-w-2xl"><CardHeader><CardTitle className="text-base">Thông tin đã cung cấp</CardTitle><CardDescription>Bạn có thể sửa một câu trả lời. Các bước phụ thuộc phía sau sẽ được hỏi lại và kết quả cũ không được dùng cho facts mới.</CardDescription></CardHeader><CardContent className="space-y-2">{editableAnswers.map((answer) => <div key={answer.questionId} className="flex items-start justify-between gap-3 rounded-lg border p-3"><div><p className="text-sm text-muted-foreground">{answer.resolution.prompt}</p><p className="mt-1 text-sm font-semibold">{guidedAnswerLabel(answer.resolution, answer.value)}</p></div><Button type="button" size="sm" variant="ghost" onClick={() => { setError(undefined); setEditingQuestionId(answer.questionId); }}>Sửa</Button></div>)}</CardContent></Card> : null}
+      {editingAnswer ? <><AssistantMessage>Đang sửa: {editingAnswer.resolution.prompt}</AssistantMessage><div className="flex max-w-2xl justify-end"><Button type="button" size="sm" variant="ghost" onClick={() => { setEditingQuestionId(undefined); setError(undefined); }}>Hủy sửa</Button></div><GuidedQuestionCard key={`edit-${editingAnswer.questionId}-${String(editingAnswer.value)}`} question={editingAnswer.resolution} initialValue={editingAnswer.value} submitLabel="Lưu thay đổi" pending={isPending} error={error} onAnswer={reviseAnswer} /></>
+      : state.next?.resolution?.kind === "question" && isGuidedAnswerQuestionId(state.next.requirement.predicate) ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedQuestionCard key={state.next.requirement.predicate} question={state.next.resolution} pending={isPending} error={error} onAnswer={submitAnswer} /></>
         : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "family-tree" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedFamilyGraphStep key={state.case.id} state={state} onStateChange={setState} /></>
           : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "eligibility-review" ? <><AssistantMessage>Cần rà soát các căn cứ về quyền hưởng của <strong>{nextPersonName}</strong>.</AssistantMessage><GuidedEligibilityStep key={state.next.requirement.subject} state={state} personId={state.next.requirement.subject} onStateChange={setState} /></>
             : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "refusal-review" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedRefusalStep key={state.next.requirement.subject} state={state} personId={state.next.requirement.subject} onStateChange={setState} /></>
               : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "compulsory-share-review" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedCompulsoryShareStep state={state} onStateChange={setState} /></>
                 : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "estate-portions" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedEstatePortionsStep state={state} onStateChange={setState} /></>
                   : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "inheritance-portions" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedInheritancePortionsStep state={state} onStateChange={setState} /></>
+                    : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "timeline" && state.topic.id === "limitation" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedLimitationTimelineStep state={state} onStateChange={setState} /></>
+                      : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "timeline" && state.topic.id === "estate-settlement" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedDivisionTimelineStep state={state} onStateChange={setState} /></>
           : state.next ? <><AssistantMessage>{state.next.resolution?.prompt ?? "Cần thêm dữ kiện trước khi hệ thống có thể tiếp tục suy luận."}</AssistantMessage><Card className="max-w-2xl"><CardHeader><CardTitle className="text-lg">Bước tiếp theo</CardTitle><CardDescription>Question planner đã chọn bước này từ topic, facts và missing requirements mới nhất. Presenter tương ứng sẽ được nhúng trực tiếp trong phase kế tiếp.</CardDescription></CardHeader><CardContent><Button asChild><Link href={`/cases/${state.case.id}/modules/${state.topic.recommendedStartModule}`}>Mở phần nhập dữ kiện hiện tại</Link></Button></CardContent></Card></> : <GuidedTerminalMessage state={state} />}
     </section>
   </main>;
@@ -78,4 +106,20 @@ function AssistantMessage({ children }: { children: React.ReactNode }) {
 
 function personLabel(state: GuidedCaseState, personId: string): string {
   return String(state.case.facts.find((fact) => fact.subject === personId && (fact.predicate === "person-label" || fact.predicate === "heir-person-label"))?.value ?? personId);
+}
+
+type GuidedQuestionResolution = Extract<GuidedRequirementResolution, { kind: "question" }>;
+
+function guidedAnswerValue(state: GuidedCaseState, questionId: string): string | number | boolean | undefined {
+  if (questionId === "guided-deceased-name") {
+    const deceased = state.case.facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
+    return state.case.facts.find((fact) => fact.subject === deceased && fact.predicate === "heir-person-label")?.value;
+  }
+  if (questionId === "guided-eligibility-person-name") return state.case.facts.find((fact) => fact.subject === "eligibility-guided-person" && fact.predicate === "person-label")?.value;
+  if (questionId === "inheritance-has-will") return state.case.facts.find((fact) => fact.subject === state.case.id && fact.predicate === "has-will")?.value;
+  return state.case.facts.find((fact) => fact.subject === "will-guided" && fact.predicate === questionId)?.value;
+}
+
+function guidedAnswerLabel(question: GuidedQuestionResolution, value: string | number | boolean): string {
+  return question.choices?.find((choice) => choice.value === value)?.label ?? (typeof value === "boolean" ? value ? "Có" : "Không" : String(value));
 }

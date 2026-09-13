@@ -24,7 +24,8 @@ export function getGuidedCaseState(database: AppDatabase, caseId: string): Guide
   const latestRuns = new Map<string, ReturnType<CaseRepository["getInferenceRun"]>>();
   for (const summary of caseRepository.listInferenceRuns(caseId)) {
     if (topic.modules.some((moduleId) => moduleId === summary.module) && !latestRuns.has(summary.module)) {
-      latestRuns.set(summary.module, caseRepository.getInferenceRun(caseId, summary.id));
+      const run = caseRepository.getInferenceRun(caseId, summary.id);
+      if (run.factsRevision === storedCase.factsRevision) latestRuns.set(summary.module, run);
     }
   }
   const hasWill = storedCase.facts.find((fact) => fact.subject === caseId && fact.predicate === "has-will")?.value;
@@ -74,18 +75,21 @@ export function getGuidedCaseState(database: AppDatabase, caseId: string): Guide
   };
 }
 
-export async function answerGuidedQuestion(database: AppDatabase, caseId: string, answer: GuidedAnswer): Promise<GuidedCaseState> {
+export async function answerGuidedQuestion(database: AppDatabase, caseId: string, answer: GuidedAnswer, options: { revision?: boolean } = {}): Promise<GuidedCaseState> {
   const currentState = getGuidedCaseState(database, caseId);
-  if (currentState.next?.requirement.predicate !== answer.questionId) {
+  const completedIndex = currentState.completedStepIds.indexOf(answer.questionId);
+  if (options.revision ? completedIndex < 0 : currentState.next?.requirement.predicate !== answer.questionId) {
     throw new GuidedAnswerNotCurrentError(answer.questionId);
   }
+  const discardedQuestionIds = options.revision ? currentState.completedStepIds.slice(completedIndex + 1) : [];
   const save = database.transaction(() => {
     const caseRepository = new CaseRepository(database);
     const storedCase = caseRepository.getCase(caseId);
+    const baseFacts = storedCase.facts.filter((fact) => !discardedQuestionIds.some((questionId) => factBelongsToGuidedAnswer(fact, questionId)));
     if (answer.questionId === "guided-deceased-name") {
-      const existingDeceased = storedCase.facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
+      const existingDeceased = baseFacts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
       const personId = existingDeceased ?? `person-${crypto.randomUUID()}`;
-      const retained = storedCase.facts.filter((fact) => fact.id !== "guided-deceased" && fact.id !== "guided-deceased-label");
+      const retained = baseFacts.filter((fact) => fact.id !== "guided-deceased" && fact.id !== "guided-deceased-label");
       const facts: ReplaceCaseFactsInput["facts"] = [...retained,
         ...(existingDeceased ? [] : [{ id: "guided-deceased", subject: personId, predicate: "deceased-person", value: true } as const]),
         { id: "guided-deceased-label", subject: personId, predicate: "heir-person-label", value: answer.value },
@@ -94,31 +98,40 @@ export async function answerGuidedQuestion(database: AppDatabase, caseId: string
     }
     if (answer.questionId === "guided-eligibility-person-name") {
       const personId = "eligibility-guided-person";
-      const retained = storedCase.facts.filter((fact) => fact.subject !== personId);
+      const retained = baseFacts.filter((fact) => fact.subject !== personId);
       caseRepository.replaceFacts(caseId, { subject: caseId, facts: [...retained,
         { id: "guided-eligibility-candidate", subject: personId, predicate: "eligibility-candidate", value: true },
         { id: "guided-eligibility-person-label", subject: personId, predicate: "person-label", value: answer.value },
       ] });
     }
     if (answer.questionId === "inheritance-has-will") {
-      const retained = storedCase.facts.filter((fact) => !(fact.subject === caseId && fact.predicate === "has-will"));
+      const retained = baseFacts.filter((fact) => !(fact.subject === caseId && fact.predicate === "has-will"));
       caseRepository.replaceFacts(caseId, { subject: caseId, facts: [...retained,
         { id: "guided-has-will", subject: caseId, predicate: "has-will", value: answer.value },
       ] });
     }
     if (answer.questionId !== "guided-deceased-name" && answer.questionId !== "guided-eligibility-person-name" && answer.questionId !== "inheritance-has-will") {
       const willId = "will-guided";
-      const retained = storedCase.facts.filter((fact) => !(fact.subject === willId && fact.predicate === answer.questionId));
+      const retained = baseFacts.filter((fact) => !(fact.subject === willId && fact.predicate === answer.questionId));
       const input = replaceCaseFactsSchema.parse({
         subject: caseId,
         facts: [...retained, { id: `guided-${answer.questionId}`, subject: willId, predicate: answer.questionId, value: answer.value }],
       });
       caseRepository.replaceFacts(caseId, input);
     }
-    new GuidedSessionRepository(database).completeStep(caseId, answer.questionId);
+    const sessions = new GuidedSessionRepository(database);
+    if (options.revision) sessions.rewindAfter(caseId, answer.questionId);
+    else sessions.completeStep(caseId, answer.questionId);
   });
   save();
   return runGuidedInference(database, caseId);
+}
+
+function factBelongsToGuidedAnswer(fact: ApiFact, questionId: string): boolean {
+  if (questionId === "guided-eligibility-person-name") return fact.subject === "eligibility-guided-person";
+  if (questionId === "inheritance-has-will") return fact.predicate === "has-will";
+  if (questionId === "guided-deceased-name") return fact.id === "guided-deceased" || fact.id === "guided-deceased-label";
+  return fact.subject === "will-guided" && fact.predicate === questionId;
 }
 
 /** Runs only packages that contribute to the selected topic and have enough scoped facts to start. */

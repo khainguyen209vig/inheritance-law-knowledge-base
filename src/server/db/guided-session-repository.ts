@@ -56,4 +56,15 @@ export class GuidedSessionRepository {
     `).run(JSON.stringify(completedStepIds), now, caseId);
     return this.get(caseId);
   }
+
+  rewindAfter(caseId: string, stepId: string): StoredGuidedSession {
+    const session = this.get(caseId);
+    const index = session.completedStepIds.indexOf(stepId);
+    if (index < 0) throw new GuidedAnswerNotCurrentError(stepId);
+    const now = new Date().toISOString();
+    this.database.prepare(`
+      UPDATE guided_sessions SET completed_step_ids_json = ?, updated_at = ? WHERE case_id = ?
+    `).run(JSON.stringify(session.completedStepIds.slice(0, index + 1)), now, caseId);
+    return this.get(caseId);
+  }
 }

@@ -181,10 +181,7 @@ test("guided family graph advances to the candidate legal review after heir-rank
       { id: "person-spouse-refusal-scope", subject: "person-spouse", predicate: "refusal-assessment-subject", value: true },
       { id: "person-spouse-refusal-made", subject: "person-spouse", predicate: "refusal-made", value: false },
     ] });
-    await runStoredRefusalAndUnclaimed(repository, state.case.id);
-    await runStoredHeirRank(repository, state.case.id);
-
-    state = getGuidedCaseState(database, state.case.id);
+    state = await runGuidedInference(database, state.case.id);
     assert.ok(state.latestRunIds["refusal-and-unclaimed"]);
     assert.equal(state.next, undefined);
     const latestRank = repository.getInferenceRun(state.case.id, state.latestRunIds["heir-rank"]!);
@@ -239,6 +236,50 @@ test("guided planner stops when CLIPS reports a conflicting goal", async () => {
     assert.deepEqual(state.inferenceStatus.modules, ["will-validity"]);
     assert.ok(state.dependencyPlan.some((node) => node.id === "conflict-gate" && node.status === "complete"));
     assert.ok(state.dependencyPlan.some((node) => node.id === "will-document" && node.status === "skipped"));
+  } finally {
+    database.close();
+  }
+});
+
+test("guided state ignores inference snapshots created from older facts", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Sửa dữ kiện", topicId: "will-validity" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "will-type", value: "written" });
+    assert.ok(state.latestRunIds["will-validity"]);
+
+    const repository = new CaseRepository(database);
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: repository.getCase(state.case.id).facts.map((fact) => fact.predicate === "will-type" ? { ...fact, value: "oral" } : fact) });
+    state = getGuidedCaseState(database, state.case.id);
+
+    assert.equal(state.latestRunIds["will-validity"], undefined);
+    assert.equal(state.inferenceStatus.status, "collecting");
+    assert.equal(repository.listInferenceRuns(state.case.id).length, 1, "stale snapshot remains available as immutable history");
+  } finally {
+    database.close();
+  }
+});
+
+test("revising a guided answer removes dependent answers and reruns on the new facts revision", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Sửa loại di chúc", topicId: "will-validity" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "will-type", value: "written" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "testator-mental-state", value: "lucid" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "undue-influence", value: "none" });
+    const runCountBeforeRevision = new CaseRepository(database).listInferenceRuns(state.case.id).length;
+
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "will-type", value: "oral" }, { revision: true });
+
+    assert.deepEqual(state.completedStepIds, ["guided-deceased-name", "will-type"]);
+    assert.equal(state.case.facts.find((fact) => fact.subject === "will-guided" && fact.predicate === "will-type")?.value, "oral");
+    assert.equal(state.case.facts.some((fact) => fact.subject === "will-guided" && fact.predicate === "testator-mental-state"), false);
+    assert.equal(state.case.facts.some((fact) => fact.subject === "will-guided" && fact.predicate === "undue-influence"), false);
+    assert.equal(state.next?.requirement.predicate, "testator-mental-state");
+    assert.ok(state.latestRunIds["will-validity"]);
+    assert.ok(new CaseRepository(database).listInferenceRuns(state.case.id).length > runCountBeforeRevision, "old runs remain in the audit history");
   } finally {
     database.close();
   }
@@ -300,6 +341,88 @@ test("guided compulsory-share topic advances from dependencies to Article 644 re
     assert.equal(state.next, undefined);
     assert.ok(calculatedRun.results.some((result) => result.subject === "calculation-child-house" && result.predicate === "minimum-compulsory-share" && Number(result.value) === 200));
     assert.ok(calculatedRun.results.some((result) => result.subject === "calculation-child-house" && result.predicate === "compulsory-share-shortfall" && Number(result.value) === 100));
+  } finally {
+    database.close();
+  }
+});
+
+test("guided limitation timeline derives the Article 623 period and calendar deadline", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Thời hiệu chia nhà", topicId: "limitation" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    assert.equal(state.next?.requirement.predicate, "guided-limitation-timeline");
+    assert.equal(state.next?.resolution?.kind, "interaction");
+    if (state.next?.resolution?.kind === "interaction") assert.equal(state.next.resolution.interaction, "timeline");
+
+    const repository = new CaseRepository(database);
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      ...repository.getCase(state.case.id).facts,
+      { id: "glt-scope", subject: "limitation-guided", predicate: "limitation-assessment-subject", value: true },
+      { id: "glt-type", subject: "limitation-guided", predicate: "request-type", value: "divide-estate" },
+      { id: "glt-asset", subject: "limitation-guided", predicate: "asset-type", value: "immovable" },
+      { id: "glt-date", subject: "limitation-guided", predicate: "inheritance-opening-date", value: "2020-02-29" },
+    ] });
+    state = await runGuidedInference(database, state.case.id);
+
+    assert.equal(state.next, undefined);
+    assert.equal(state.inferenceStatus.status, "complete");
+    assert.ok(state.latestResults.limitation?.some((result) => result.subject === "limitation-guided" && result.predicate === "limitation-period-years" && result.value === "30"));
+    assert.ok(state.latestResults.limitation?.some((result) => result.subject === "limitation-guided" && result.predicate === "limitation-deadline" && result.value === "2050-02-28"));
+  } finally {
+    database.close();
+  }
+});
+
+test("guided Article 661 restriction timeline reaches a dated conclusion", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Hạn chế phân chia", topicId: "estate-settlement" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    assert.equal(state.next?.requirement.predicate, "guided-estate-settlement");
+    assert.equal(state.next?.resolution?.kind, "interaction");
+    if (state.next?.resolution?.kind === "interaction") assert.equal(state.next.resolution.interaction, "timeline");
+
+    const repository = new CaseRepository(database);
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      ...repository.getCase(state.case.id).facts,
+      { id: "gdt-restriction-scope", subject: "restriction-guided", predicate: "division-restriction-assessment-subject", value: true },
+      { id: "gdt-restriction-basis", subject: "restriction-guided", predicate: "division-restriction-basis", value: "will-instruction" },
+      { id: "gdt-restriction-date", subject: "restriction-guided", predicate: "specified-division-date", value: "2030-01-01" },
+    ] });
+    state = await runGuidedInference(database, state.case.id);
+
+    assert.equal(state.next, undefined);
+    assert.equal(state.inferenceStatus.status, "complete");
+    assert.ok(state.latestResults["estate-settlement"]?.some((result) => result.subject === "restriction-guided" && result.predicate === "distribution-not-before" && result.value === "2030-01-01"));
+  } finally {
+    database.close();
+  }
+});
+
+test("guided Article 661 hardship timeline derives the surviving spouse request right", async () => {
+  const database = openDatabase(":memory:");
+  try {
+    let state = createGuidedCase(database, { title: "Trì hoãn phân chia", topicId: "estate-settlement" });
+    state = await answerGuidedQuestion(database, state.case.id, { questionId: "guided-deceased-name", value: "Nguyễn Văn A" });
+    const deceasedId = state.case.facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
+    assert.ok(deceasedId);
+
+    const repository = new CaseRepository(database);
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      ...repository.getCase(state.case.id).facts,
+      { id: "gdt-hardship-scope", subject: "person-spouse", predicate: "division-hardship-assessment-subject", value: true },
+      { id: "gdt-spouse-edge", subject: deceasedId, predicate: "spouse-at-opening", value: "person-spouse" },
+      { id: "gdt-spouse-life", subject: "person-spouse", predicate: "heir-life-status", value: "alive" },
+      { id: "gdt-requested", subject: "person-spouse", predicate: "estate-division-requested", value: true },
+      { id: "gdt-impact", subject: "person-spouse", predicate: "serious-division-impact", value: true },
+      { id: "gdt-prior-expired", subject: "person-spouse", predicate: "prior-court-deferral-expired", value: false },
+    ] });
+    state = await runGuidedInference(database, state.case.id);
+
+    assert.equal(state.next, undefined);
+    assert.equal(state.inferenceStatus.status, "complete");
+    assert.ok(state.latestResults["estate-settlement"]?.some((result) => result.subject === "person-spouse" && result.predicate === "court-deferral-may-be-requested" && result.value === "true"));
   } finally {
     database.close();
   }

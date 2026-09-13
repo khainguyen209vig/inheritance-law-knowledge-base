@@ -181,7 +181,7 @@ function initialRequirement(context: PlanContext): GuidedMissingRequirement {
     representation: { subject, predicate: "relationship-at-opening" },
     "compulsory-share": { subject, predicate: "relationship-at-opening" },
     "estate-settlement": { subject, predicate: "guided-estate-settlement" },
-    limitation: { subject, predicate: "inheritance-opening-date" },
+    limitation: { subject, predicate: "guided-limitation-timeline" },
   };
   return initialByTopic[context.topicId];
 }

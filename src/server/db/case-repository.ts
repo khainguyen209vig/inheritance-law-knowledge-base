@@ -14,6 +14,7 @@ export interface StoredCase {
   title: string;
   createdAt: string;
   updatedAt: string;
+  factsRevision: number;
   facts: Array<ReplaceCaseFactsInput["facts"][number] & { subject: string }>;
 }
 
@@ -48,6 +49,7 @@ export interface StoredInferenceRun extends InferenceOutput {
   module: string;
   subject: string;
   knowledgeBaseVersion: string;
+  factsRevision: number;
   inputSnapshot: Array<ReplaceCaseFactsInput["facts"][number] & { subject?: string }>;
   createdAt: string;
 }
@@ -57,6 +59,7 @@ interface CaseRow {
   title: string;
   created_at: string;
   updated_at: string;
+  facts_revision: number;
 }
 
 interface FactRow {
@@ -73,10 +76,11 @@ interface RunRow {
   subject: string;
   knowledge_base_version: string;
   input_snapshot_json: string;
+  facts_revision: number;
   created_at: string;
 }
 
-interface RunSummaryRow extends Omit<RunRow, "input_snapshot_json"> {
+interface RunSummaryRow extends Omit<RunRow, "input_snapshot_json" | "facts_revision"> {
   result_predicate: string | null;
   result_value: ModuleResultValue | null;
 }
@@ -90,7 +94,7 @@ export class CaseRepository {
     this.database
       .prepare("INSERT INTO cases (id, title, created_at, updated_at) VALUES (?, ?, ?, ?)")
       .run(id, input.title, now, now);
-    return { id, title: input.title, createdAt: now, updatedAt: now, facts: [] };
+    return { id, title: input.title, createdAt: now, updatedAt: now, factsRevision: 0, facts: [] };
   }
 
   listCases(): StoredCaseSummary[] {
@@ -168,7 +172,7 @@ export class CaseRepository {
 
   getCase(caseId: string): StoredCase {
     const row = this.database
-      .prepare("SELECT id, title, created_at, updated_at FROM cases WHERE id = ?")
+      .prepare("SELECT id, title, created_at, updated_at, facts_revision FROM cases WHERE id = ?")
       .get(caseId) as CaseRow | undefined;
     if (!row) throw new CaseNotFoundError(caseId);
 
@@ -181,6 +185,7 @@ export class CaseRepository {
       title: row.title,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
+      factsRevision: row.facts_revision,
       facts: facts.map((fact) => ({
         ...caseFactSchema.parse({
           id: fact.fact_id,
@@ -205,7 +210,7 @@ export class CaseRepository {
       for (const fact of input.facts) {
         insert.run(caseId, fact.id, fact.subject ?? input.subject, fact.predicate, JSON.stringify(fact.value), now, now);
       }
-      this.database.prepare("UPDATE cases SET updated_at = ? WHERE id = ?").run(now, caseId);
+      this.database.prepare("UPDATE cases SET updated_at = ?, facts_revision = facts_revision + 1 WHERE id = ?").run(now, caseId);
     });
     replace();
     return this.getCase(caseId);
@@ -241,13 +246,15 @@ export class CaseRepository {
   }): StoredInferenceRun {
     const runId = `run-${randomUUID()}`;
     const createdAt = new Date().toISOString();
+    const factsRevision = (this.database.prepare("SELECT facts_revision FROM cases WHERE id = ?").get(input.caseId) as { facts_revision: number } | undefined)?.facts_revision;
+    if (factsRevision === undefined) throw new CaseNotFoundError(input.caseId);
 
     const save = this.database.transaction(() => {
       this.assertCaseExists(input.caseId);
       this.database.prepare(`
         INSERT INTO inference_runs
-          (id, case_id, module, subject, knowledge_base_version, input_snapshot_json, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+          (id, case_id, module, subject, knowledge_base_version, input_snapshot_json, facts_revision, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         runId,
         input.caseId,
@@ -255,6 +262,7 @@ export class CaseRepository {
         input.subject,
         input.knowledgeBaseVersion ?? KNOWLEDGE_BASE_VERSION,
         JSON.stringify(input.facts),
+        factsRevision,
         createdAt,
       );
 
@@ -296,7 +304,7 @@ export class CaseRepository {
 
   getInferenceRun(caseId: string, runId: string): StoredInferenceRun {
     const run = this.database.prepare(`
-      SELECT id, case_id, module, subject, knowledge_base_version, input_snapshot_json, created_at
+      SELECT id, case_id, module, subject, knowledge_base_version, input_snapshot_json, facts_revision, created_at
       FROM inference_runs WHERE id = ? AND case_id = ?
     `).get(runId, caseId) as RunRow | undefined;
     if (!run) throw new InferenceRunNotFoundError(runId);
@@ -324,6 +332,7 @@ export class CaseRepository {
       module: run.module,
       subject: run.subject,
       knowledgeBaseVersion: run.knowledge_base_version,
+      factsRevision: run.facts_revision,
       inputSnapshot: (JSON.parse(run.input_snapshot_json) as Array<Record<string, unknown>>).map((fact) => ({
         ...caseFactSchema.parse(fact),
         ...(typeof fact.subject === "string" ? { subject: fact.subject } : {}),

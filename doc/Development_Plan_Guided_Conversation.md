@@ -63,8 +63,8 @@ Guided Conversation UI
 - [x] `G-202` Nhúng family graph vào luồng hội thoại thay vì điều hướng sang workspace khác; lưu graph facts, chạy `heir-rank` và trả quyền điều khiển cho question planner ngay trong cùng màn hình.
 - [x] `G-203` Nhúng people review cho Điều 621, từ chối và suất bắt buộc. Ba presenter dùng lại người từ graph, lưu facts nguyên tử và chạy lại các package phụ thuộc.
 - [x] `G-204` Nhúng estate portions và beneficiaries. Topic `compulsory-share` hỗ trợ nhiều phần và calculation ngưỡng `2/3`; topic `who-inherits` hỗ trợ nhiều phần, người/tổ chức được chỉ định và các nhánh R-A01–R-A06 trước khi quyết định có cần mở cây thừa kế theo pháp luật hay không.
-- [ ] `G-205` Nhúng timeline cho Điều 623 và Điều 661.
-- [ ] `G-206` Cho phép quay lại, sửa câu trả lời và vô hiệu hóa kết quả cũ.
+- [x] `G-205` Nhúng timeline cho Điều 623 và Điều 661. Presenter Điều 623 thu thập loại yêu cầu, loại tài sản và ngày mở thừa kế để CLIPS chọn thời hạn rồi temporal adapter tính ngày kết thúc. Presenter Điều 661 tách rõ nhánh mốc hạn chế phân chia và nhánh vợ/chồng yêu cầu Tòa án trì hoãn; cả hai lưu facts nguyên tử và mở được căn cứ R-I04/R-I05 ngay trong flow.
+- [x] `G-206` Cho phép quay lại, sửa câu trả lời và vô hiệu hóa kết quả cũ. Guided UI liệt kê các câu trả lời có cấu trúc và cho sửa trực tiếp; khi sửa một bước, các answer facts và completed steps phụ thuộc phía sau bị loại bỏ để planner hỏi lại. Mỗi inference snapshot mang `facts_revision`: lịch sử cũ vẫn được giữ để audit nhưng không được coi là kết quả hiện hành sau khi facts thay đổi.
 
 ### G3 — Điều phối suy luận đa mô-đun
 
@@ -104,7 +104,7 @@ Vertical slice G0/G1 tạo được đường đi:
   → đề xuất presenter tiếp theo
 ```
 
-Bước kế tiếp là `G-205`: nhúng timeline Điều 623 và Điều 661 vào guided flow. Sau đó thực hiện `G-206` để sửa câu trả lời và vô hiệu hóa inference snapshot cũ.
+Bước kế tiếp là `G-401`: trình bày kết luận pháp lý bằng ngôn ngữ người dùng ngay trong guided flow, thay cho thông báo hoàn tất chung. Sau đó nối facts, Rule ID, trace và toàn văn điều luật ở `G-402`–`G-403`.
 
 ## 6. Tiêu chí hoàn thành
 

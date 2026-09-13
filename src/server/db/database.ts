@@ -28,7 +28,21 @@ export function openDatabase(databasePath: string): AppDatabase {
   migrateInferenceSubjects(database);
   database.prepare("INSERT OR IGNORE INTO schema_migrations (version, applied_at) VALUES (4, ?)")
     .run(new Date().toISOString());
+  migrateFactRevisions(database);
   return database;
+}
+
+function migrateFactRevisions(database: AppDatabase): void {
+  const caseColumns = database.pragma("table_info(cases)") as Array<{ name: string }>;
+  if (!caseColumns.some((column) => column.name === "facts_revision")) {
+    database.exec("ALTER TABLE cases ADD COLUMN facts_revision INTEGER NOT NULL DEFAULT 0");
+  }
+  const runColumns = database.pragma("table_info(inference_runs)") as Array<{ name: string }>;
+  if (!runColumns.some((column) => column.name === "facts_revision")) {
+    database.exec("ALTER TABLE inference_runs ADD COLUMN facts_revision INTEGER NOT NULL DEFAULT 0");
+  }
+  database.prepare("INSERT OR IGNORE INTO schema_migrations (version, applied_at) VALUES (5, ?)")
+    .run(new Date().toISOString());
 }
 
 function migrateModuleResultValues(database: AppDatabase): void {

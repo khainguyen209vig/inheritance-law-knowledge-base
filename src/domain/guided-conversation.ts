@@ -82,8 +82,8 @@ export const guidedInferenceGoals: Record<GuidedTopicId, readonly GuidedInferenc
     { module: "eligibility", resultPredicates: ["article-621-status"], role: "dependency" },
     { module: "will-validity", resultPredicates: ["valid-will"], role: "dependency" },
   ],
-  "estate-settlement": [{ module: "estate-settlement", resultPredicates: ["payment-priority", "distribution-not-before-date"], role: "result" }],
-  limitation: [{ module: "limitation", resultPredicates: ["limitation-period", "post-limitation-recipient"], role: "result" }],
+  "estate-settlement": [{ module: "estate-settlement", resultPredicates: ["payment-priority", "distribution-not-before", "court-deferral-may-be-requested", "court-extension-may-be-requested"], role: "result" }],
+  limitation: [{ module: "limitation", resultPredicates: ["limitation-period-years", "limitation-deadline", "post-limitation-recipient"], role: "result" }],
 };
 
 export type GuidedAnswerKind = "single-choice" | "boolean-unknown" | "date" | "number" | "text";
@@ -144,7 +144,8 @@ const requirementCatalog: Record<string, GuidedRequirementTemplate> = {
   "guided-inheritance-portions": { kind: "interaction", prompt: "Hãy mô tả từng phần di sản và việc định đoạt theo di chúc.", interaction: "inheritance-portions", priority: 15 },
   "inheritance-opening-date": { kind: "question", prompt: "Ngày mở thừa kế là ngày nào?", answerKind: "date", priority: 10 },
   "limitation-request-type": { kind: "question", prompt: "Bạn đang muốn thực hiện loại yêu cầu nào?", answerKind: "single-choice", priority: 20 },
-  "guided-estate-settlement": { kind: "interaction", prompt: "Hãy bổ sung các phần di sản và nghĩa vụ cần thanh toán hoặc phân chia.", interaction: "timeline", priority: 10 },
+  "guided-estate-settlement": { kind: "interaction", prompt: "Hãy chọn vấn đề hạn chế hoặc trì hoãn phân chia di sản cần đánh giá theo Điều 661.", interaction: "timeline", priority: 10 },
+  "guided-limitation-timeline": { kind: "interaction", prompt: "Hãy mô tả yêu cầu và ngày mở thừa kế để xác định mốc thời hiệu.", interaction: "timeline", priority: 10 },
 };
 
 export function getGuidedTopic(topicId: string | undefined): GuidedTopicDefinition | undefined {
