@@ -62,14 +62,14 @@ Guided Conversation UI
 - [x] `G-201` Component registry cho choice, Boolean ba trạng thái, number, date và text label. Renderer dùng chung nhận metadata từ question catalog; các kiểu chưa có answer mapper sẽ chưa được planner đưa ra cho người dùng.
 - [x] `G-202` Nhúng family graph vào luồng hội thoại thay vì điều hướng sang workspace khác; lưu graph facts, chạy `heir-rank` và trả quyền điều khiển cho question planner ngay trong cùng màn hình.
 - [x] `G-203` Nhúng people review cho Điều 621, từ chối và suất bắt buộc. Ba presenter dùng lại người từ graph, lưu facts nguyên tử và chạy lại các package phụ thuộc.
-- [ ] `G-204` Nhúng estate portions và beneficiaries. Đã hoàn tất lát cắt đầu tiên cho topic `compulsory-share`: sau khi CLIPS xác định người thuộc diện Điều 644, guided flow cho thêm/xóa nhiều phần di sản, nhập suất pháp luật giả định và phần đã nhận theo di chúc cho từng cặp người–phần di sản, rồi chạy lại CLIPS để tính ngưỡng `2/3` và phần thiếu. Presenter người hưởng theo di chúc và phần di sản chưa được định đoạt còn lại ở lát cắt tiếp theo.
+- [x] `G-204` Nhúng estate portions và beneficiaries. Topic `compulsory-share` hỗ trợ nhiều phần và calculation ngưỡng `2/3`; topic `who-inherits` hỗ trợ nhiều phần, người/tổ chức được chỉ định và các nhánh R-A01–R-A06 trước khi quyết định có cần mở cây thừa kế theo pháp luật hay không.
 - [ ] `G-205` Nhúng timeline cho Điều 623 và Điều 661.
 - [ ] `G-206` Cho phép quay lại, sửa câu trả lời và vô hiệu hóa kết quả cũ.
 
 ### G3 — Điều phối suy luận đa mô-đun
 
 - [x] `G-301` Khai báo result goals cho từng topic, phân biệt kết quả chính và kết quả phụ thuộc; orchestration không còn lấy thứ tự presenter làm kế hoạch suy luận.
-- [ ] `G-302` Tính dependency plan dựa trên facts hiện có và mục tiêu người dùng. Đã triển khai dependency gate cho trạng thái/tính hợp pháp của di chúc trước ngoại lệ Điều 621; cần mở rộng thành graph dependency tổng quát cho toàn bộ topic.
+- [ ] `G-302` Tính dependency plan dựa trên facts hiện có và mục tiêu người dùng. Đã có dependency gate cho trạng thái/tính hợp pháp của di chúc, ngoại lệ Điều 621 và goal `inheritance-regime`; graph/hàng thừa kế chỉ được mở khi CLIPS xác định có phần phải chia theo pháp luật. Cần mở rộng dependency graph tổng quát cho các topic còn lại.
 - [ ] `G-303` Chạy các rule package liên quan trên cùng working memory. Đã có một guided dispatcher chọn package theo goal và facts kích hoạt, thay cho việc từng presenter hard-code chuỗi endpoint; bước còn lại là hợp nhất các package trong một CLIPS session khi cần chia sẻ derived facts.
 - [ ] `G-304` Không hỏi trực tiếp derived facts như `valid-will` hoặc `article-621-status`.
 - [ ] `G-305` Dừng đúng lúc ở `TRUE`, `FALSE`, `UNKNOWN`, `CONFLICT` hoặc khi cần review ngoài phạm vi.
@@ -104,7 +104,7 @@ Vertical slice G0/G1 tạo được đường đi:
   → đề xuất presenter tiếp theo
 ```
 
-Bước kế tiếp là mở rộng `G-302/G-303` sang goal `inheritance-regime` trong khi hoàn thiện `G-204`: nối presenter người hưởng theo di chúc/phần di sản chưa được định đoạt vào topic `who-inherits`. Lát cắt calculation ngưỡng `2/3` của topic `compulsory-share` đã chạy end-to-end trong guided flow. Sau đó triển khai `G-205` cho timeline Điều 623 và Điều 661.
+Bước kế tiếp là hoàn thiện `G-302/G-303`: biểu diễn dependency graph tổng quát và hợp nhất các package cần chia sẻ derived facts trong cùng một CLIPS session. `G-204` đã hoàn tất cho phạm vi presenter hiện tại; sau đó triển khai `G-205` cho timeline Điều 623 và Điều 661.
 
 ## 6. Tiêu chí hoàn thành
 

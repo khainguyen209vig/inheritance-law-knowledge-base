@@ -19,7 +19,7 @@ test("guided session persists its topic and resumes from case facts", async () =
     assert.ok(answered.case.facts.some((fact) => fact.predicate === "heir-person-label" && fact.value === "Nguyễn Văn A"));
     assert.equal(answered.next?.requirement.predicate, "inheritance-has-will");
     const willAnswered = await answerGuidedQuestion(database, initial.case.id, { questionId: "inheritance-has-will", value: false });
-    assert.equal(willAnswered.next?.requirement.predicate, "relationship-at-opening");
+    assert.equal(willAnswered.next?.requirement.predicate, "guided-inheritance-portions");
     assert.equal(willAnswered.next?.resolution?.kind, "interaction");
 
     const resumed = getGuidedCaseState(database, initial.case.id);
@@ -64,8 +64,23 @@ test("who-inherits resolves the will dependency before family and eligibility re
     state = await answerGuidedQuestion(database, state.case.id, { questionId: "undue-influence", value: "none" });
     state = await answerGuidedQuestion(database, state.case.id, { questionId: "prohibited-content", value: "not-detected" });
     state = await answerGuidedQuestion(database, state.case.id, { questionId: "formal-defect", value: "not-detected" });
-    assert.equal(state.next?.requirement.predicate, "relationship-at-opening");
+    assert.equal(state.next?.requirement.predicate, "guided-inheritance-portions");
     assert.equal(state.next?.resolution?.kind, "interaction");
+
+    const repository = new CaseRepository(database);
+    repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
+      ...repository.getCase(state.case.id).facts,
+      { id: "testamentary-portion", subject: "portion-testamentary", predicate: "estate-portion", value: true },
+      { id: "testamentary-label", subject: "portion-testamentary", predicate: "estate-portion-label", value: "Căn nhà" },
+      { id: "testamentary-will", subject: "portion-testamentary", predicate: "applicable-will", value: "will-guided" },
+      { id: "testamentary-disposed", subject: "portion-testamentary", predicate: "portion-disposed", value: true },
+      { id: "testamentary-beneficiary", subject: "portion-testamentary", predicate: "disposition-beneficiary", value: "beneficiary-one" },
+      { id: "testamentary-status", subject: "portion-testamentary", predicate: "disposition-status", value: "effective" },
+    ] });
+    state = await runGuidedInference(database, state.case.id);
+    assert.equal(state.next, undefined);
+    assert.ok(state.latestResults["inheritance-type"]?.some((result) => result.subject === "portion-testamentary" && result.predicate === "inheritance-regime" && result.value === "testamentary"));
+    assert.equal(state.latestRunIds["heir-rank"], undefined);
   } finally {
     database.close();
   }
@@ -101,6 +116,8 @@ test("guided family graph advances to the candidate legal review after heir-rank
     const repository = new CaseRepository(database);
     repository.replaceFacts(state.case.id, { subject: state.case.id, facts: [
       { id: "fg-no-will", subject: state.case.id, predicate: "has-will", value: false },
+      { id: "fg-portion", subject: "portion-statutory", predicate: "estate-portion", value: true },
+      { id: "fg-portion-label", subject: "portion-statutory", predicate: "estate-portion-label", value: "Di sản" },
       { id: "fg-deceased", subject: deceasedId, predicate: "deceased-person", value: true },
       { id: "fg-deceased-label", subject: deceasedId, predicate: "heir-person-label", value: "Nguyễn Văn A" },
       { id: "fg-spouse-label", subject: "person-spouse", predicate: "heir-person-label", value: "Nguyễn Thị B" },

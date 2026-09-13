@@ -18,6 +18,7 @@ const GuidedEligibilityStep = dynamic(() => import("@/components/guided/guided-e
 const GuidedRefusalStep = dynamic(() => import("@/components/guided/guided-refusal-step").then((module) => module.GuidedRefusalStep));
 const GuidedCompulsoryShareStep = dynamic(() => import("@/components/guided/guided-compulsory-share-step").then((module) => module.GuidedCompulsoryShareStep));
 const GuidedEstatePortionsStep = dynamic(() => import("@/components/guided/guided-estate-portions-step").then((module) => module.GuidedEstatePortionsStep));
+const GuidedInheritancePortionsStep = dynamic(() => import("@/components/guided/guided-inheritance-portions-step").then((module) => module.GuidedInheritancePortionsStep));
 
 export function GuidedSession({ initialState }: GuidedSessionProps) {
   const [state, setState] = useState(initialState);
@@ -59,6 +60,7 @@ export function GuidedSession({ initialState }: GuidedSessionProps) {
             : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "refusal-review" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedRefusalStep key={state.next.requirement.subject} state={state} personId={state.next.requirement.subject} onStateChange={setState} /></>
               : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "compulsory-share-review" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedCompulsoryShareStep state={state} onStateChange={setState} /></>
                 : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "estate-portions" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedEstatePortionsStep state={state} onStateChange={setState} /></>
+                  : state.next?.resolution?.kind === "interaction" && state.next.resolution.interaction === "inheritance-portions" ? <><AssistantMessage>{state.next.resolution.prompt}</AssistantMessage><GuidedInheritancePortionsStep state={state} onStateChange={setState} /></>
           : state.next ? <><AssistantMessage>{state.next.resolution?.prompt ?? "Cần thêm dữ kiện trước khi hệ thống có thể tiếp tục suy luận."}</AssistantMessage><Card className="max-w-2xl"><CardHeader><CardTitle className="text-lg">Bước tiếp theo</CardTitle><CardDescription>Question planner đã chọn bước này từ topic, facts và missing requirements mới nhất. Presenter tương ứng sẽ được nhúng trực tiếp trong phase kế tiếp.</CardDescription></CardHeader><CardContent><Button asChild><Link href={`/cases/${state.case.id}/modules/${state.topic.recommendedStartModule}`}>Mở phần nhập dữ kiện hiện tại</Link></Button></CardContent></Card></> : <><AssistantMessage>Hệ thống không còn yêu cầu dữ kiện nào trong nhánh hiện tại. Kết quả CLIPS và căn cứ đã được lưu vào lịch sử hồ sơ.</AssistantMessage><Button asChild className="w-fit"><Link href={`/cases/${state.case.id}`}>Xem kết quả và căn cứ</Link></Button></>}
     </section>
   </main>;

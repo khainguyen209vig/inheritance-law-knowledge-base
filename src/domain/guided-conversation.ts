@@ -87,7 +87,7 @@ export const guidedInferenceGoals: Record<GuidedTopicId, readonly GuidedInferenc
 };
 
 export type GuidedAnswerKind = "single-choice" | "boolean-unknown" | "date" | "number" | "text";
-export type GuidedInteraction = InteractionMode | "eligibility-review" | "refusal-review" | "compulsory-share-review" | "estate-portions";
+export type GuidedInteraction = InteractionMode | "eligibility-review" | "refusal-review" | "compulsory-share-review" | "estate-portions" | "inheritance-portions";
 export interface GuidedChoice { label: string; value: string | boolean; description?: string }
 
 type GuidedRequirementTemplate =
@@ -134,6 +134,7 @@ const requirementCatalog: Record<string, GuidedRequirementTemplate> = {
   "heir-search-complete": { kind: "interaction", prompt: "Hãy kiểm tra cây gia đình và xác nhận đã nhập đủ ứng viên.", interaction: "family-tree", priority: 50 },
   "guided-compulsory-share-review": { kind: "interaction", prompt: "Hãy rà soát những người có thể thuộc diện hưởng di sản bắt buộc.", interaction: "compulsory-share-review", priority: 60 },
   "guided-compulsory-share-portions": { kind: "interaction", prompt: "Hãy khai các phần di sản cần đối chiếu với ngưỡng hưởng bắt buộc.", interaction: "estate-portions", priority: 70 },
+  "guided-inheritance-portions": { kind: "interaction", prompt: "Hãy mô tả từng phần di sản và việc định đoạt theo di chúc.", interaction: "inheritance-portions", priority: 15 },
   "inheritance-opening-date": { kind: "question", prompt: "Ngày mở thừa kế là ngày nào?", answerKind: "date", priority: 10 },
   "limitation-request-type": { kind: "question", prompt: "Bạn đang muốn thực hiện loại yêu cầu nào?", answerKind: "single-choice", priority: 20 },
   "guided-estate-settlement": { kind: "interaction", prompt: "Hãy bổ sung các phần di sản và nghĩa vụ cần thanh toán hoặc phân chia.", interaction: "timeline", priority: 10 },

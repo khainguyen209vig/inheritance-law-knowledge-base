@@ -34,7 +34,11 @@ export function getGuidedCaseState(database: AppDatabase, caseId: string): Guide
     : [...latestRuns.entries()];
   const requirements = runsForPlanning.flatMap(([moduleId, run]) => moduleId === "will-validity" && hasWill === false ? [] : run.missing.map(({ subject, predicate }) => ({ subject, predicate })));
   const activeCompulsoryHeirs = new Set(latestRuns.get("compulsory-share")?.results.filter((result) => result.predicate === "compulsory-heir" && result.value === "true").map((result) => result.subject) ?? []);
-  const next = chooseNextStep(caseId, topic.id, storedCase.facts, requirements, new Set(latestRuns.keys()), activeCompulsoryHeirs, hasWill === true && Boolean(willRun) && !willConclusionReached);
+  const estatePortionIds = storedCase.facts.flatMap((fact) => fact.predicate === "estate-portion" && fact.value === true && fact.subject ? [fact.subject] : []);
+  const regimeResults = latestRuns.get("inheritance-type")?.results.filter((result) => result.predicate === "inheritance-regime") ?? [];
+  const inheritanceGoalComplete = estatePortionIds.length > 0 && estatePortionIds.every((portionId) => regimeResults.some((result) => result.subject === portionId && result.value !== "unknown"));
+  const hasStatutoryPortion = regimeResults.some((result) => result.value === "statutory");
+  const next = chooseNextStep(caseId, topic.id, storedCase.facts, requirements, new Set(latestRuns.keys()), activeCompulsoryHeirs, hasWill === true && Boolean(willRun) && !willConclusionReached, inheritanceGoalComplete, hasStatutoryPortion);
   return {
     case: storedCase,
     topic,
@@ -117,7 +121,7 @@ export async function runGuidedInference(database: AppDatabase, caseId: string):
   return getGuidedCaseState(database, caseId);
 }
 
-function chooseNextStep(caseId: string, topicId: GuidedTopicId, facts: ApiFact[], requirements: GuidedMissingRequirement[], completedModules: ReadonlySet<string>, activeCompulsoryHeirs: ReadonlySet<string>, willDependencyPending: boolean): GuidedCaseState["next"] {
+function chooseNextStep(caseId: string, topicId: GuidedTopicId, facts: ApiFact[], requirements: GuidedMissingRequirement[], completedModules: ReadonlySet<string>, activeCompulsoryHeirs: ReadonlySet<string>, willDependencyPending: boolean, inheritanceGoalComplete: boolean, hasStatutoryPortion: boolean): GuidedCaseState["next"] {
   const deceasedId = facts.find((fact) => fact.predicate === "deceased-person" && fact.value === true)?.subject;
   if (!deceasedId) return planned({ subject: "case", predicate: "guided-deceased-name" });
   if (topicId === "person-eligibility" && !facts.some((fact) => fact.predicate === "eligibility-candidate" && fact.value === true && fact.subject !== deceasedId)) {
@@ -131,6 +135,10 @@ function chooseNextStep(caseId: string, topicId: GuidedTopicId, facts: ApiFact[]
   if (willDependencyPending) {
     const nextWillRequirement = selectNextGuidedRequirement(requirements);
     if (nextWillRequirement) return nextWillRequirement;
+  }
+  if (topicId === "who-inherits") {
+    if (!inheritanceGoalComplete) return planned({ subject: caseId, predicate: "guided-inheritance-portions" });
+    if (!hasStatutoryPortion) return undefined;
   }
   if (needsFamilyGraph(topicId) && !facts.some((fact) => fact.predicate === "heir-search-complete" && fact.value === true)) {
     return planned({ subject: deceasedId, predicate: "relationship-at-opening" });
