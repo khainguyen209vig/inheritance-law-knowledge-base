@@ -364,7 +364,7 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 8. [x] Thiết kế graph quan hệ và triển khai R-C01–R-C03 để phân loại ba hàng thừa kế.
 9. [x] Triển khai R-C04–R-C06, kết nối kết quả Điều 621 và chỉ chọn hàng hoạt động khi có `heir-search-complete=true`.
 10. [x] Triển khai lát cắt `representation` R-E01/R-E02, tái sử dụng graph gia đình, Điều 621 và trạng thái sống/từ chối.
-11. [ ] Graph editor vòng 1 đã có node/cạnh, fact preview và diagnostics; UI/UX vẫn phải tiếp tục cải thiện và usability test trước bản trình bày cuối.
+11. [x] Graph editor vòng 2 có canvas, zoom/pan, bốn điểm thêm quanh node, sửa/xóa trực tiếp; phân biệt con đẻ riêng và con đẻ chung, không nhập/vẽ cạnh bố mẹ kế, đồng thời sắp node con theo vị trí cha mẹ để hạn chế đường nối giao chéo.
 12. [x] Triển khai R-E03a/R-E03b cho căn cứ quan hệ con nuôi, không gộp với quan hệ cha mẹ đẻ và không kết luận quyền hưởng cuối cùng.
 13. [x] Triển khai draft R-E04/R-E05 bằng đánh giá chăm sóc gắn với từng cạnh con riêng–bố dượng/mẹ kế; thiếu đánh giá không bị diễn giải thành phủ định.
 14. [x] Triển khai lát cắt phân loại/loại trừ nhóm F với R-F01a, R-F01b, R-F02, R-F03 và R-F04.
@@ -378,6 +378,6 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 22. [x] Triển khai R-I04/R-I05: mốc `distribution-not-before`, quyền yêu cầu Tòa hoãn/gia hạn và giới hạn 3 năm; không suy diễn quyết định của Tòa.
 23. [x] Triển khai R-J01–R-J04: CLIPS chọn thời hạn theo loại yêu cầu/tài sản, temporal helper tính mốc ngày và presenter hiển thị timeline Điều 623.
 24. [x] Triển khai R-J05–R-J07 theo từng phần di sản với xác nhận hết thời hiệu, người thừa kế quản lý, người chiếm hữu đủ Điều 236 và completeness trước các nhánh phủ định.
-25. [ ] Quay lại UX debt của graph editor và usability test trước bản trình bày.
+25. [ ] Kiểm thử usability graph editor với ít nhất hai thành viên không viết CLIPS; sau đó chốt responsive/accessibility, hướng dẫn sửa diagnostics và nhu cầu kéo/thả node.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

@@ -36,6 +36,13 @@
 (asserted-fact (fact-id rep-adoptive-edge) (case-id case-representation) (subject adoptive-parent-one) (predicate adoptive-parent-of) (value adopted-child-one))
 (asserted-fact (fact-id rep-biological-edge) (case-id case-representation) (subject biological-parent-one) (predicate biological-parent-of) (value adopted-child-one))
 
+; Primitive family facts imply a step-parent relation for the separate child,
+; while a child with biological edges from both spouses remains a joint child.
+(asserted-fact (fact-id rep-spouse-edge) (case-id case-representation) (subject spouse-parent-one) (predicate spouse-at-opening) (value spouse-parent-two))
+(asserted-fact (fact-id rep-separate-child-edge) (case-id case-representation) (subject spouse-parent-one) (predicate biological-parent-of) (value separate-child-one))
+(asserted-fact (fact-id rep-joint-child-edge-one) (case-id case-representation) (subject spouse-parent-one) (predicate biological-parent-of) (value joint-child-one))
+(asserted-fact (fact-id rep-joint-child-edge-two) (case-id case-representation) (subject spouse-parent-two) (predicate biological-parent-of) (value joint-child-one))
+
 ; Article 654 assessments are attached to relation fact IDs, not inferred from absence.
 (asserted-fact (fact-id rep-step-positive-edge) (case-id case-representation) (subject step-parent-positive) (predicate step-parent-of) (value step-child-positive))
 (asserted-fact (fact-id rep-step-positive-care) (case-id case-representation) (subject rep-step-positive-edge) (predicate step-care-status) (value established))

@@ -285,6 +285,13 @@
       "conclusion": "Người con có đồng thời hai nhóm căn cứ quan hệ", "citation": "Điều 653 Bộ luật Dân sự 2015; đối chiếu Điều 651–652", "provisionId": "article-653", "relevantSections": ["main"], "clipsMetadata": true,
       "implementations": ["R-E03b-dual-parentage-basis"]
     },
+    "SYSTEM-IMPLY-STEP-RELATIONSHIP": {
+      "ruleId": "SYSTEM-IMPLY-STEP-RELATIONSHIP", "module": "representation", "kind": "internal", "status": "draft",
+      "title": "Suy ra quan hệ bố mẹ kế từ các quan hệ gốc",
+      "reasoning": "Một người là vợ hoặc chồng của cha/mẹ đẻ của trẻ, nhưng không đồng thời là cha/mẹ đẻ hoặc cha/mẹ nuôi của trẻ, được hệ thống suy ra là bố dượng hoặc mẹ kế. Quan hệ này không phải fact do người dùng nhập.",
+      "conclusion": "Tồn tại quan hệ bố dượng/mẹ kế được suy ra", "citation": "Quy tắc biểu diễn quan hệ của hệ thống", "relevantSections": [], "clipsMetadata": true,
+      "implementations": ["SYSTEM-IMPLY-STEP-PARENT-FROM-FIRST-SPOUSE", "SYSTEM-IMPLY-STEP-PARENT-FROM-SECOND-SPOUSE"]
+    },
     "R-E04": {
       "ruleId": "R-E04", "module": "representation", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
       "title": "Căn cứ thừa kế giữa con riêng và bố dượng, mẹ kế khi có chăm sóc",

@@ -202,6 +202,17 @@ test("representation adapter requires explicit step-family care assessment", asy
   assert.ok(output.traces.some((trace) => trace.ruleId === "R-E05"));
 });
 
+test("representation adapter implies step-parent relations from spouse and separate biological-child facts", async () => {
+  const output = await inferRepresentation({ caseId: "adapter-implied-step", subject: "adapter-implied-step", facts: [
+    { id: "spouses", subject: "parent-a", predicate: "spouse-at-opening", value: "parent-b" },
+    { id: "separate-child", subject: "parent-a", predicate: "biological-parent-of", value: "child-separate" },
+    { id: "joint-child-a", subject: "parent-a", predicate: "biological-parent-of", value: "child-joint" },
+    { id: "joint-child-b", subject: "parent-b", predicate: "biological-parent-of", value: "child-joint" },
+  ] });
+  assert.ok(output.traces.some((trace) => trace.ruleId === "SYSTEM-IMPLY-STEP-RELATIONSHIP" && trace.subject === "parent-b" && trace.conclusionPredicate === "step-parent-of" && trace.conclusionValue === "child-separate"));
+  assert.ok(!output.traces.some((trace) => trace.ruleId === "SYSTEM-IMPLY-STEP-RELATIONSHIP" && trace.conclusionValue === "child-joint"));
+});
+
 test("representation adapter blocks contradictory step-family care assessments", async () => {
   const output = await inferRepresentation({ caseId: "adapter-step-conflict", subject: "adapter-step-conflict", facts: [
     { id: "conflict-edge", subject: "step-parent", predicate: "step-parent-of", value: "step-child" },

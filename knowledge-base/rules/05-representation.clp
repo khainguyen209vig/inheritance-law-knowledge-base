@@ -25,6 +25,28 @@
   =>
   (assert (derived-fact (case-id ?case-id) (subject ?child) (predicate dual-parentage-inheritance-basis) (value true) (rule-id R-E03b) (supports ?adoptive-edge ?biological-edge))))
 
+; A step-parent relationship is derived from primitive spouse and biological
+; parent observations. The UI must not ask the user to assert this relation.
+(defrule SYSTEM-IMPLY-STEP-PARENT-FROM-FIRST-SPOUSE
+  (declare (salience 445))
+  (asserted-fact (fact-id ?spouse-edge) (case-id ?case-id) (subject ?parent) (predicate spouse-at-opening) (value ?step-parent))
+  (asserted-fact (fact-id ?parent-edge) (case-id ?case-id) (subject ?parent) (predicate biological-parent-of) (value ?child))
+  (test (neq ?step-parent ?child))
+  (not (asserted-fact (case-id ?case-id) (subject ?step-parent) (predicate biological-parent-of|adoptive-parent-of) (value ?child)))
+  (not (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?child)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?child) (rule-id SYSTEM-IMPLY-STEP-RELATIONSHIP) (supports ?spouse-edge ?parent-edge))))
+
+(defrule SYSTEM-IMPLY-STEP-PARENT-FROM-SECOND-SPOUSE
+  (declare (salience 445))
+  (asserted-fact (fact-id ?spouse-edge) (case-id ?case-id) (subject ?step-parent) (predicate spouse-at-opening) (value ?parent))
+  (asserted-fact (fact-id ?parent-edge) (case-id ?case-id) (subject ?parent) (predicate biological-parent-of) (value ?child))
+  (test (neq ?step-parent ?child))
+  (not (asserted-fact (case-id ?case-id) (subject ?step-parent) (predicate biological-parent-of|adoptive-parent-of) (value ?child)))
+  (not (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?child)))
+  =>
+  (assert (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?child) (rule-id SYSTEM-IMPLY-STEP-RELATIONSHIP) (supports ?spouse-edge ?parent-edge))))
+
 ; Article 654 is modeled as a relationship plus an explicit assessment attached
 ; to that relationship fact. Absence of an assessment never means "no care".
 (defrule R-E04-step-child-to-step-parent-basis

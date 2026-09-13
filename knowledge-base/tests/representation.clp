@@ -41,4 +41,8 @@
   then (printout t "PASS step-open-world-missing" crlf) else (printout t "FAIL step-open-world-missing" crlf))
 (if (and (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-E04)) (any-factp ((?trace inference-trace)) (eq ?trace:rule-id R-E05)))
   then (printout t "PASS step-traces" crlf) else (printout t "FAIL step-traces" crlf))
+(if (and
+    (any-factp ((?relation derived-fact)) (and (eq ?relation:subject spouse-parent-two) (eq ?relation:predicate step-parent-of) (eq ?relation:value separate-child-one)))
+    (not (any-factp ((?relation derived-fact)) (and (eq ?relation:predicate step-parent-of) (eq ?relation:value joint-child-one)))))
+  then (printout t "PASS step-relation-implied-from-primitive-facts" crlf) else (printout t "FAIL step-relation-implied-from-primitive-facts" crlf))
 (exit)

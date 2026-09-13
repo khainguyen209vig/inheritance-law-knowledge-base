@@ -25,6 +25,14 @@ export interface FamilyGraph {
   edges: FamilyEdge[];
 }
 
+export interface JointBiologicalChildConnection {
+  spouseEdgeId: string;
+  firstParentId: string;
+  secondParentId: string;
+  childId: string;
+  parentEdgeIds: [string, string];
+}
+
 const edgePredicates = new Set<FamilyEdgeType>(["biological-parent-of", "adoptive-parent-of", "step-parent-of", "spouse-at-opening"]);
 export const familyGraphPredicates = new Set(["deceased-person", "heir-rank-candidate", "heir-search-complete", "heir-life-status", "biological-parent-of", "adoptive-parent-of", "step-parent-of", "step-care-status", "spouse-at-opening", "heir-person-label"]);
 
@@ -51,23 +59,39 @@ export function restoreFamilyGraph(facts: ApiFact[], token: string): FamilyGraph
 export function serializeFamilyGraph(caseId: string, graph: FamilyGraph, searchComplete?: boolean): ApiFact[] {
   const facts: ApiFact[] = [];
   graph.people.forEach((person, index) => {
-    facts.push({ id: `fg-person-${index + 1}-label`, subject: person.id, predicate: "heir-person-label", value: person.name || `Người ${index + 1}` });
+    const personFactPrefix = `fgp-${stableToken(person.id)}`;
+    facts.push({ id: `${personFactPrefix}-label`, subject: person.id, predicate: "heir-person-label", value: person.name || `Người ${index + 1}` });
     if (person.id === graph.deceasedId) facts.push({ id: "fg-deceased", subject: person.id, predicate: "deceased-person", value: true });
     else {
       facts.push(
-        { id: `fg-person-${index + 1}-rank`, subject: person.id, predicate: "heir-rank-candidate", value: true },
-        { id: `fg-person-${index + 1}-eligibility`, subject: person.id, predicate: "eligibility-candidate", value: true },
+        { id: `${personFactPrefix}-rank`, subject: person.id, predicate: "heir-rank-candidate", value: true },
+        { id: `${personFactPrefix}-eligibility`, subject: person.id, predicate: "eligibility-candidate", value: true },
       );
-      if (person.life) facts.push({ id: `fg-person-${index + 1}-life`, subject: person.id, predicate: "heir-life-status", value: person.life });
+      if (person.life) facts.push({ id: `${personFactPrefix}-life`, subject: person.id, predicate: "heir-life-status", value: person.life });
     }
   });
-  graph.edges.forEach((edge, index) => {
-    const edgeId = `fg-edge-${index + 1}`;
+  graph.edges.forEach((edge) => {
+    const edgeId = stableEdgeFactId(edge.id);
     facts.push({ id: edgeId, subject: edge.from, predicate: edge.type, value: edge.to });
     if (edge.type === "step-parent-of" && edge.careStatus) facts.push({ id: `${edgeId}-care`, subject: edgeId, predicate: "step-care-status", value: edge.careStatus });
   });
   if (searchComplete !== undefined) facts.push({ id: "fg-search-complete", subject: caseId, predicate: "heir-search-complete", value: searchComplete });
   return facts;
+}
+
+function stableEdgeFactId(edgeId: string): string {
+  return /^[a-z][a-z0-9-]{0,58}$/u.test(edgeId) ? edgeId : `fge-${stableToken(edgeId)}`;
+}
+
+function stableToken(value: string): string {
+  let first = 2166136261;
+  let second = 2246822519;
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index);
+    first = Math.imul(first ^ code, 16777619);
+    second = Math.imul(second ^ code, 3266489917);
+  }
+  return `${(first >>> 0).toString(16).padStart(8, "0")}${(second >>> 0).toString(16).padStart(8, "0")}`;
 }
 
 export function graphDiagnostics(graph: FamilyGraph): string[] {
@@ -127,6 +151,27 @@ export function edgeLabel(edge: FamilyEdge, people: Map<string, FamilyPerson>): 
   if (edge.type === "adoptive-parent-of") return `${from} là cha/mẹ nuôi của ${to}`;
   if (edge.type === "step-parent-of") return `${from} là bố dượng/mẹ kế của ${to}`;
   return `${from} là vợ/chồng của ${to} tại thời điểm mở thừa kế`;
+}
+
+export function jointBiologicalChildren(graph: FamilyGraph): JointBiologicalChildConnection[] {
+  const biologicalEdges = graph.edges.filter((edge) => edge.type === "biological-parent-of");
+  const connections: JointBiologicalChildConnection[] = [];
+  for (const spouseEdge of graph.edges) {
+    if (spouseEdge.type !== "spouse-at-opening") continue;
+    const firstParentEdges = biologicalEdges.filter((edge) => edge.from === spouseEdge.from);
+    const secondParentByChild = new Map(biologicalEdges.filter((edge) => edge.from === spouseEdge.to).map((edge) => [edge.to, edge]));
+    for (const firstEdge of firstParentEdges) {
+      const secondEdge = secondParentByChild.get(firstEdge.to);
+      if (secondEdge) connections.push({
+        spouseEdgeId: spouseEdge.id,
+        firstParentId: spouseEdge.from,
+        secondParentId: spouseEdge.to,
+        childId: firstEdge.to,
+        parentEdgeIds: [firstEdge.id, secondEdge.id],
+      });
+    }
+  }
+  return connections;
 }
 
 function deduplicateEdges(edges: FamilyEdge[]) {

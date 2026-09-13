@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { graphDiagnostics, graphWarnings, restoreFamilyGraph, serializeFamilyGraph, type FamilyGraph } from "../src/modules/family-graph/model";
+import { graphDiagnostics, graphWarnings, jointBiologicalChildren, restoreFamilyGraph, serializeFamilyGraph, type FamilyGraph } from "../src/modules/family-graph/model";
 
 test("family graph restores formerly hidden intermediate people as editable nodes", () => {
   const graph = restoreFamilyGraph([
@@ -35,6 +35,32 @@ test("family graph serializes observations and never serializes a legal rank con
   assert.ok(facts.some((fact) => fact.predicate === "heir-rank-candidate"));
   assert.ok(!facts.some((fact) => fact.predicate === "valid-refusal"));
   assert.ok(!facts.some((fact) => fact.predicate === "candidate-heir-rank" || fact.predicate === "called-to-inherit"));
+});
+
+test("family graph keeps fact identities stable when unrelated nodes or edges are removed", () => {
+  const graph: FamilyGraph = {
+    deceasedId: "person-a",
+    people: [
+      { id: "person-a", name: "A", eligibilityReviewed: false },
+      { id: "person-b", name: "B", life: "alive", eligibilityReviewed: false },
+      { id: "person-c", name: "C", life: "alive", eligibilityReviewed: false },
+    ],
+    edges: [
+      { id: "edge-a-b", from: "person-a", to: "person-b", type: "biological-parent-of" },
+      { id: "edge-a-c", from: "person-a", to: "person-c", type: "biological-parent-of" },
+    ],
+  };
+  const before = serializeFamilyGraph("case-stable", graph);
+  const after = serializeFamilyGraph("case-stable", {
+    ...graph,
+    people: graph.people.filter((person) => person.id !== "person-b"),
+    edges: graph.edges.filter((edge) => edge.to !== "person-b"),
+  });
+  const personCBefore = before.filter((fact) => fact.subject === "person-c").map((fact) => fact.id).sort();
+  const personCAfter = after.filter((fact) => fact.subject === "person-c").map((fact) => fact.id).sort();
+  assert.deepEqual(personCAfter, personCBefore);
+  assert.equal(before.find((fact) => fact.value === "person-c" && fact.predicate === "biological-parent-of")?.id, "edge-a-c");
+  assert.equal(after.find((fact) => fact.value === "person-c" && fact.predicate === "biological-parent-of")?.id, "edge-a-c");
 });
 
 test("family graph reports parent cycles", () => {
@@ -73,6 +99,32 @@ test("family graph stores an explicit care assessment on a step-parent relation"
   assert.equal(assessment?.subject, relation?.id);
   assert.equal(assessment?.value, "established");
   assert.equal(restoreFamilyGraph(facts, "test").edges[0]?.careStatus, "established");
+});
+
+test("family graph recognizes a child with two biological-parent facts as a joint child of spouses", () => {
+  const graph: FamilyGraph = {
+    deceasedId: "parent-a",
+    people: [
+      { id: "parent-a", name: "A", eligibilityReviewed: false },
+      { id: "parent-b", name: "B", eligibilityReviewed: false },
+      { id: "joint-child", name: "C", eligibilityReviewed: false },
+      { id: "separate-child", name: "D", eligibilityReviewed: false },
+    ],
+    edges: [
+      { id: "spouses", from: "parent-a", to: "parent-b", type: "spouse-at-opening" },
+      { id: "a-joint", from: "parent-a", to: "joint-child", type: "biological-parent-of" },
+      { id: "b-joint", from: "parent-b", to: "joint-child", type: "biological-parent-of" },
+      { id: "a-separate", from: "parent-a", to: "separate-child", type: "biological-parent-of" },
+    ],
+  };
+  assert.deepEqual(jointBiologicalChildren(graph), [{
+    spouseEdgeId: "spouses",
+    firstParentId: "parent-a",
+    secondParentId: "parent-b",
+    childId: "joint-child",
+    parentEdgeIds: ["a-joint", "b-joint"],
+  }]);
+  assert.equal(serializeFamilyGraph("case-joint", graph).filter((fact) => fact.predicate === "biological-parent-of" && fact.value === "joint-child").length, 2);
 });
 
 test("family graph reports a missing step-family care assessment", () => {

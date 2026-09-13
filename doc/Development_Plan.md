@@ -166,7 +166,7 @@ Cấu trúc triển khai cuối cùng sử dụng CLIPS. Mỗi production rule v
 
 #### Hạng mục bắt buộc — Cải thiện nhập facts bằng cây quan hệ
 
-Presenter `heir-rank` hiện mới là công cụ nhập graph tạm thời: người dùng phải chọn một nhãn quan hệ tổng hợp cho từng ứng viên, còn các nút trung gian được hệ thống tạo ẩn. Cách này đủ để kiểm thử rules nhưng UX kém, khó quan sát graph thật và dễ gây nhầm khi một người có nhiều vai trò hoặc cùng xuất hiện trong nhiều nhánh.
+Presenter `heir-rank` ban đầu chỉ là công cụ nhập graph tạm thời. Vòng cải thiện thứ hai đã thay phần hiển thị đó bằng canvas có node, đường nối và thao tác thêm quan hệ theo node đang chọn; phần kiểm thử usability và tối ưu màn hình nhỏ vẫn là UX debt trước bản trình bày.
 
 Trước phiên bản trình bày cuối cùng phải thay luồng này bằng trình biên tập cây/graph quan hệ có các yêu cầu:
 
@@ -383,21 +383,28 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] nạp rules Điều 621 trong cùng working memory, thêm completeness/projection, API, snapshot, presenter rà soát nhánh và regression tests;
 - [x] trích Điều 652–654 từ tài liệu luật cục bộ vào legal catalog;
 - [x] triển khai R-E03a/R-E03b để giữ căn cứ thừa kế hai chiều giữa con nuôi–cha mẹ nuôi và đồng thời bảo toàn quan hệ cha mẹ đẻ; không chiếu thành quyền hưởng cuối cùng;
+- [x] bổ sung `SYSTEM-IMPLY-STEP-RELATIONSHIP`: suy ra bố/mẹ kế từ cạnh vợ/chồng và cạnh con đẻ riêng, đồng thời loại trường hợp con chung có hai cha/mẹ đẻ;
 - [x] triển khai R-E04/R-E05 ở trạng thái `TEAM_REVIEW` bằng cặp facts `step-parent-of` và `step-care-status(edge-id, established|not-established)`; đánh giá gắn với cạnh quan hệ, thiếu đánh giá sinh missing requirement thay vì bị hiểu là phủ định;
+- [ ] chuyển presenter Điều 654 sang reify quan hệ kế dẫn xuất để gắn đánh giá chăm sóc; sau migration, loại bỏ hoàn toàn việc assert `step-parent-of` còn được giữ cho tương thích hồ sơ cũ;
 - [x] chỉ tạo căn cứ thừa kế hai chiều khi trạng thái chăm sóc là `established`; R-E05 chỉ phủ định căn cứ theo riêng Điều 654 khi có fact `not-established` tường minh và không phủ định căn cứ di chúc/quan hệ khác;
 - [x] thêm kiểm soát xung đột nếu một cạnh đồng thời có cả hai đánh giá và presenter dẫn tới nội dung Điều 654;
 - tái sử dụng trạng thái sống, Điều 621 và graph hiện có thay vì hỏi lại kết luận tổng hợp.
 
 ### UX debt trước bản trình bày cuối
 
-> **Trạng thái:** graph editor hiện tại chỉ là vòng cải thiện thứ nhất và **chưa được xem là UI/UX hoàn tất**. Việc đã thay nhãn quan hệ tổng hợp bằng node/cạnh thật giải quyết vấn đề representation, nhưng chưa chứng minh luồng thao tác đã dễ dùng.
+> **Trạng thái:** vòng cải thiện thứ hai đã hoàn tất các cơ chế chỉnh sửa và an toàn cốt lõi. Graph editor vẫn **chưa được xem là UI/UX hoàn tất** cho tới khi qua usability test và review responsive/accessibility.
 
 - [x] thay bộ chọn nhãn quan hệ hiện tại bằng trình biên tập cây/graph với node người và cạnh trực tiếp;
 - [x] để `heir-rank` ghi graph dùng chung và `representation` đọc lại chính graph đó, không tạo cây riêng;
 - [x] hiển thị preview facts nguyên tử và cảnh báo cạnh trùng, tự nối, xung đột loại cha/mẹ hoặc chu trình trước khi suy luận;
-- [ ] bổ sung thao tác kéo/thả hoặc nối cạnh trực tiếp trên canvas nếu kiểm thử usability cho thấy luồng chọn ba bước vẫn chậm;
-- [ ] cải thiện đường nối trực quan giữa các node, pan/zoom, bố cục cây lớn và khả năng nhận biết cha/mẹ–con mà không cần đọc danh sách cạnh;
-- [ ] bổ sung undo/redo, xác nhận khi xóa node có nhiều cạnh và hướng dẫn sửa từng loại cảnh báo;
+- [x] bỏ luồng tạo người rời và trình nối ba bước; khi chọn node, hiển thị tối đa bốn điểm `+` ở các hướng chưa có cạnh, rồi nhập tên và chọn chính xác quan hệ ngay trong node-form mới trên canvas;
+- [x] mỗi node có thao tác sửa/xóa trực tiếp; form node chỉ nhập quan hệ gốc cha/mẹ–con đẻ, nuôi hoặc vợ/chồng, không cho người dùng assert trực tiếp quan hệ bố/mẹ kế;
+- [x] phân biệt `con đẻ riêng của người đang chọn` (một fact `biological-parent-of`) với `con đẻ chung của cặp vợ chồng` (hai facts `biological-parent-of`); quan hệ bố/mẹ kế–con riêng chỉ được suy ra từ các facts gốc và không vẽ thành cạnh trên graph editor;
+- [x] sắp thứ tự node con theo trung bình vị trí cha/mẹ để con riêng nằm gần cha/mẹ đã chọn và con chung nằm gần trung điểm cặp vợ chồng, giảm cạnh giao chéo;
+- [x] hiển thị đường nối có hướng, màu/kiểu nét theo loại quan hệ, bố cục theo thế hệ, vùng cuộn để pan và điều khiển zoom cho cây lớn;
+- [x] bổ sung sửa/xóa cạnh, undo/redo tối đa 50 thay đổi và xác nhận khi xóa node kèm số cạnh bị ảnh hưởng;
+- [x] lưu ID fact ổn định theo ID node/cạnh, không đánh lại ID của các facts không liên quan sau khi xóa hoặc sắp xếp graph;
+- [ ] bổ sung hướng dẫn sửa theo từng loại cảnh báo; cân nhắc kéo/thả vị trí node nếu usability test cho thấy bố cục tự động chưa đủ;
 - [ ] review responsive/mobile, keyboard navigation, focus order và độ tương phản của trạng thái selected;
 - [ ] kiểm thử usability nội bộ với ít nhất hai thành viên không viết rules CLIPS.
 

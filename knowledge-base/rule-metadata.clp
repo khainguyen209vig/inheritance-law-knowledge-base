@@ -166,6 +166,12 @@
     (description "Khi graph có cả cạnh cha/mẹ nuôi và cha/mẹ đẻ tới cùng một người con, hệ thống giữ hai căn cứ độc lập thay vì gộp hoặc loại bỏ một quan hệ.")
     (status draft))
   (rule-metadata
+    (rule-id SYSTEM-IMPLY-STEP-RELATIONSHIP)
+    (module representation)
+    (legal-source "Quy tắc biểu diễn quan hệ của hệ thống")
+    (description "Một người là vợ hoặc chồng của cha/mẹ đẻ của trẻ, nhưng không đồng thời là cha/mẹ đẻ hoặc cha/mẹ nuôi của trẻ, được hệ thống suy ra là bố dượng hoặc mẹ kế. Quan hệ này không phải fact do người dùng nhập.")
+    (status draft))
+  (rule-metadata
     (rule-id R-E04)
     (module representation)
     (legal-source "Điều 654 Bộ luật Dân sự 2015")
