@@ -33,6 +33,10 @@ export interface JointBiologicalChildConnection {
   parentEdgeIds: [string, string];
 }
 
+export interface JointChildConnection extends JointBiologicalChildConnection {
+  relationType: "biological-parent-of" | "adoptive-parent-of";
+}
+
 const edgePredicates = new Set<FamilyEdgeType>(["biological-parent-of", "adoptive-parent-of", "step-parent-of", "spouse-at-opening"]);
 export const familyGraphPredicates = new Set(["deceased-person", "heir-rank-candidate", "heir-search-complete", "heir-life-status", "biological-parent-of", "adoptive-parent-of", "step-parent-of", "step-care-status", "spouse-at-opening", "heir-person-label"]);
 
@@ -154,24 +158,46 @@ export function edgeLabel(edge: FamilyEdge, people: Map<string, FamilyPerson>): 
 }
 
 export function jointBiologicalChildren(graph: FamilyGraph): JointBiologicalChildConnection[] {
-  const biologicalEdges = graph.edges.filter((edge) => edge.type === "biological-parent-of");
-  const connections: JointBiologicalChildConnection[] = [];
+  return jointChildrenOfSpouses(graph)
+    .filter((connection) => connection.relationType === "biological-parent-of")
+    .map(({ relationType: _relationType, ...connection }) => connection);
+}
+
+export function jointChildrenOfSpouses(graph: FamilyGraph): JointChildConnection[] {
+  const connections: JointChildConnection[] = [];
   for (const spouseEdge of graph.edges) {
     if (spouseEdge.type !== "spouse-at-opening") continue;
-    const firstParentEdges = biologicalEdges.filter((edge) => edge.from === spouseEdge.from);
-    const secondParentByChild = new Map(biologicalEdges.filter((edge) => edge.from === spouseEdge.to).map((edge) => [edge.to, edge]));
-    for (const firstEdge of firstParentEdges) {
-      const secondEdge = secondParentByChild.get(firstEdge.to);
-      if (secondEdge) connections.push({
-        spouseEdgeId: spouseEdge.id,
-        firstParentId: spouseEdge.from,
-        secondParentId: spouseEdge.to,
-        childId: firstEdge.to,
-        parentEdgeIds: [firstEdge.id, secondEdge.id],
-      });
+    for (const relationType of ["biological-parent-of", "adoptive-parent-of"] as const) {
+      const relationEdges = graph.edges.filter((edge) => edge.type === relationType);
+      const firstParentEdges = relationEdges.filter((edge) => edge.from === spouseEdge.from);
+      const secondParentByChild = new Map(relationEdges.filter((edge) => edge.from === spouseEdge.to).map((edge) => [edge.to, edge]));
+      for (const firstEdge of firstParentEdges) {
+        const secondEdge = secondParentByChild.get(firstEdge.to);
+        if (secondEdge) connections.push({
+          spouseEdgeId: spouseEdge.id,
+          firstParentId: spouseEdge.from,
+          secondParentId: spouseEdge.to,
+          childId: firstEdge.to,
+          parentEdgeIds: [firstEdge.id, secondEdge.id],
+          relationType,
+        });
+      }
     }
   }
   return connections;
+}
+
+export function soleExistingParentOfType(
+  graph: FamilyGraph,
+  childId: string,
+  relationType: "biological-parent-of" | "adoptive-parent-of",
+): string | undefined {
+  const parentIds = new Set(
+    graph.edges
+      .filter((edge) => edge.type === relationType && edge.to === childId)
+      .map((edge) => edge.from),
+  );
+  return parentIds.size === 1 ? [...parentIds][0] : undefined;
 }
 
 function deduplicateEdges(edges: FamilyEdge[]) {

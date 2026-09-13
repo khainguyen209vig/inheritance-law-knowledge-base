@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { graphDiagnostics, graphWarnings, jointBiologicalChildren, restoreFamilyGraph, serializeFamilyGraph, type FamilyGraph } from "../src/modules/family-graph/model";
+import { graphDiagnostics, graphWarnings, jointBiologicalChildren, jointChildrenOfSpouses, restoreFamilyGraph, serializeFamilyGraph, soleExistingParentOfType, type FamilyGraph } from "../src/modules/family-graph/model";
 
 test("family graph restores formerly hidden intermediate people as editable nodes", () => {
   const graph = restoreFamilyGraph([
@@ -125,6 +125,46 @@ test("family graph recognizes a child with two biological-parent facts as a join
     parentEdgeIds: ["a-joint", "b-joint"],
   }]);
   assert.equal(serializeFamilyGraph("case-joint", graph).filter((fact) => fact.predicate === "biological-parent-of" && fact.value === "joint-child").length, 2);
+});
+
+test("family graph recognizes a jointly adopted child while preserving a separately adopted child", () => {
+  const graph: FamilyGraph = {
+    deceasedId: "parent-a",
+    people: [
+      { id: "parent-a", name: "A", eligibilityReviewed: false },
+      { id: "parent-b", name: "B", eligibilityReviewed: false },
+      { id: "joint-adopted", name: "C", eligibilityReviewed: false },
+      { id: "separate-adopted", name: "D", eligibilityReviewed: false },
+    ],
+    edges: [
+      { id: "spouses", from: "parent-a", to: "parent-b", type: "spouse-at-opening" },
+      { id: "a-joint", from: "parent-a", to: "joint-adopted", type: "adoptive-parent-of" },
+      { id: "b-joint", from: "parent-b", to: "joint-adopted", type: "adoptive-parent-of" },
+      { id: "a-separate", from: "parent-a", to: "separate-adopted", type: "adoptive-parent-of" },
+    ],
+  };
+  const jointChildren = jointChildrenOfSpouses(graph);
+  assert.equal(jointChildren.length, 1);
+  assert.equal(jointChildren[0]?.childId, "joint-adopted");
+  assert.equal(jointChildren[0]?.relationType, "adoptive-parent-of");
+  assert.ok(!jointChildren.some((connection) => connection.childId === "separate-adopted"));
+});
+
+test("family graph identifies the first parent when a second same-type parent is added", () => {
+  const graph: FamilyGraph = {
+    deceasedId: "child-a",
+    people: [
+      { id: "child-a", name: "A", eligibilityReviewed: false },
+      { id: "parent-b", name: "B", eligibilityReviewed: false },
+    ],
+    edges: [{ id: "b-a", from: "parent-b", to: "child-a", type: "biological-parent-of" }],
+  };
+  assert.equal(soleExistingParentOfType(graph, "child-a", "biological-parent-of"), "parent-b");
+  assert.equal(soleExistingParentOfType(graph, "child-a", "adoptive-parent-of"), undefined);
+  assert.equal(soleExistingParentOfType({
+    ...graph,
+    edges: [...graph.edges, { id: "c-a", from: "parent-c", to: "child-a", type: "biological-parent-of" }],
+  }, "child-a", "biological-parent-of"), undefined);
 });
 
 test("family graph reports a missing step-family care assessment", () => {

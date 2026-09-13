@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useId, useMemo, useReducer, useRef, useState, useTransition } from "react";
 import type { ReactNode } from "react";
-import { FamilyGraphEditor, type RelatedPersonRole } from "@/components/family-graph/family-graph-editor";
+import { FamilyGraphEditor, type JointChildKind, type RelatedPersonRole } from "@/components/family-graph/family-graph-editor";
 import { LegalRuleDialog } from "@/components/inference/legal-rule-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import type { AnalysisModuleDefinition } from "@/domain/analysis-modules";
 import { getRuleExplanation } from "@/domain/legal-knowledge";
 import { cn } from "@/lib/utils";
-import { familyGraphPredicates, graphDiagnostics, restoreFamilyGraph, serializeFamilyGraph, type FamilyGraph, type FamilyPerson } from "@/modules/family-graph/model";
+import { familyGraphPredicates, graphDiagnostics, restoreFamilyGraph, serializeFamilyGraph, soleExistingParentOfType, type FamilyGraph, type FamilyPerson } from "@/modules/family-graph/model";
 import type { ApiFact, InferenceRun, ModuleResultValue } from "@/modules/contracts";
 
 interface InitialCase { id: string; title: string; subject: string; facts: ApiFact[] }
@@ -63,17 +63,26 @@ export function HeirRankWorkspace({ module, initialCase }: { module: AnalysisMod
       : role === "adoptive-parent" || role === "adopted-child" ? "adoptive-parent-of" as const
         : "spouse-at-opening" as const;
     const edge = { id: `edge-${crypto.randomUUID()}`, from: parentRole ? person.id : anchorId, to: parentRole ? anchorId : person.id, type: edgeType };
-    updateGraph({ ...graph, people: [...graph.people, person], edges: [...graph.edges, edge] });
+    const existingParentId = role === "biological-parent"
+      ? soleExistingParentOfType(graph, anchorId, "biological-parent-of")
+      : role === "adoptive-parent"
+        ? soleExistingParentOfType(graph, anchorId, "adoptive-parent-of")
+        : undefined;
+    const spouseEdge = existingParentId
+      ? { id: `edge-${crypto.randomUUID()}`, from: existingParentId, to: person.id, type: "spouse-at-opening" as const }
+      : undefined;
+    updateGraph({ ...graph, people: [...graph.people, person], edges: [...graph.edges, edge, ...(spouseEdge ? [spouseEdge] : [])] });
     setSelectedId(person.id);
   }
-  function createJointChild(spouseEdgeId: string, name: string) {
+  function createJointChild(spouseEdgeId: string, name: string, kind: JointChildKind) {
     const spouseEdge = graph.edges.find((edge) => edge.id === spouseEdgeId && edge.type === "spouse-at-opening");
     if (!spouseEdge) return;
     const number = counter.current++;
     const person: FamilyPerson = { id: `person-${token}-${number}`, name, eligibilityReviewed: false };
+    const edgeType = kind === "biological" ? "biological-parent-of" as const : "adoptive-parent-of" as const;
     const edges = [
-      { id: `edge-${crypto.randomUUID()}`, from: spouseEdge.from, to: person.id, type: "biological-parent-of" as const },
-      { id: `edge-${crypto.randomUUID()}`, from: spouseEdge.to, to: person.id, type: "biological-parent-of" as const },
+      { id: `edge-${crypto.randomUUID()}`, from: spouseEdge.from, to: person.id, type: edgeType },
+      { id: `edge-${crypto.randomUUID()}`, from: spouseEdge.to, to: person.id, type: edgeType },
     ];
     updateGraph({ ...graph, people: [...graph.people, person], edges: [...graph.edges, ...edges] });
     setSelectedId(person.id);

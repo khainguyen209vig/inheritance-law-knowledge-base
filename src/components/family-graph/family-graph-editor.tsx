@@ -10,11 +10,11 @@ import {
   edgeLabel,
   graphDiagnostics,
   graphLevels,
-  jointBiologicalChildren,
+  jointChildrenOfSpouses,
   type FamilyEdgeType,
   type FamilyGraph,
   type FamilyPerson,
-  type JointBiologicalChildConnection,
+  type JointChildConnection,
 } from "@/modules/family-graph/model";
 
 const NODE_WIDTH = 176;
@@ -38,7 +38,10 @@ interface DraftNode {
 interface JointChildDraft {
   spouseEdgeId: string;
   name: string;
+  kind: JointChildKind;
 }
+
+export type JointChildKind = "biological" | "adoptive";
 
 interface FamilyGraphEditorProps {
   graph: FamilyGraph;
@@ -46,7 +49,7 @@ interface FamilyGraphEditorProps {
   onSelect: (id: string) => void;
   onChange: (graph: FamilyGraph) => void;
   onCreateRelated: (anchorId: string, name: string, role: RelatedPersonRole) => void;
-  onCreateJointChild: (spouseEdgeId: string, name: string) => void;
+  onCreateJointChild: (spouseEdgeId: string, name: string, kind: JointChildKind) => void;
   onRenamePerson: (id: string, name: string) => void;
   onDeletePerson: (id: string) => void;
   onUndo: () => void;
@@ -58,8 +61,8 @@ interface FamilyGraphEditorProps {
 const relationChoices: Array<{ value: RelatedPersonRole; label: string }> = [
   { value: "biological-parent", label: "Cha/mẹ đẻ của người đang chọn" },
   { value: "adoptive-parent", label: "Cha/mẹ nuôi của người đang chọn" },
-  { value: "biological-child", label: "Con đẻ riêng của người đang chọn" },
-  { value: "adopted-child", label: "Con nuôi của người đang chọn" },
+  { value: "biological-child", label: "Con ruột riêng của người đang chọn" },
+  { value: "adopted-child", label: "Con nuôi riêng của người đang chọn" },
   { value: "spouse", label: "Vợ/chồng tại thời điểm mở thừa kế" },
 ];
 
@@ -79,9 +82,8 @@ export function FamilyGraphEditor({ graph, selectedId, onSelect, onChange, onCre
   const peopleById = useMemo(() => new Map(graph.people.map((person) => [person.id, person])), [graph.people]);
   const layout = useMemo(() => createGraphLayout(graph), [graph]);
   const diagnostics = useMemo(() => graphDiagnostics(graph), [graph]);
-  const jointChildren = useMemo(() => jointBiologicalChildren(graph), [graph]);
+  const jointChildren = useMemo(() => jointChildrenOfSpouses(graph), [graph]);
   const visibleEdges = useMemo(() => graph.edges.filter((edge) => edge.type !== "step-parent-of"), [graph.edges]);
-  const occupiedDirections = useMemo(() => findOccupiedDirections(graph, layout.positions), [graph, layout.positions]);
   const selectedPerson = selectedId ? peopleById.get(selectedId) : undefined;
   const markerToken = useId().replace(/[^a-zA-Z0-9_-]/g, "");
 
@@ -113,19 +115,19 @@ export function FamilyGraphEditor({ graph, selectedId, onSelect, onChange, onCre
   function beginJointChild(spouseEdgeId: string) {
     setDraft(undefined);
     setEditingPersonId(undefined);
-    setJointChildDraft({ spouseEdgeId, name: "" });
+    setJointChildDraft({ spouseEdgeId, name: "", kind: "biological" });
   }
 
   function saveJointChild() {
     if (!jointChildDraft?.name.trim()) return;
-    onCreateJointChild(jointChildDraft.spouseEdgeId, jointChildDraft.name.trim());
+    onCreateJointChild(jointChildDraft.spouseEdgeId, jointChildDraft.name.trim(), jointChildDraft.kind);
     setJointChildDraft(undefined);
   }
 
   return <Card>
     <CardHeader>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div><CardTitle>Cây quan hệ</CardTitle><CardDescription>Chọn một node, sau đó dùng dấu + còn trống quanh node để thêm người trực tiếp trên cây.</CardDescription></div>
+        <div><CardTitle>Cây quan hệ</CardTitle><CardDescription>Chọn một node, sau đó dùng một trong bốn dấu + quanh node để thêm người trực tiếp trên cây.</CardDescription></div>
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="secondary">{graph.people.length} người · {graph.edges.length} quan hệ</Badge>
           <Button variant="outline" size="sm" disabled={!canUndo} onClick={onUndo} title="Hoàn tác thay đổi graph gần nhất">↶ Hoàn tác</Button>
@@ -178,7 +180,6 @@ export function FamilyGraphEditor({ graph, selectedId, onSelect, onChange, onCre
                 </div>
                 {selected ? <NodeAddHandles
                   personId={person.id}
-                  occupied={occupiedDirections.get(person.id) ?? new Set()}
                   activeDirection={draft?.anchorId === person.id ? draft.direction : undefined}
                   onAdd={beginNode}
                 /> : null}
@@ -190,7 +191,7 @@ export function FamilyGraphEditor({ graph, selectedId, onSelect, onChange, onCre
           </div>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">Dấu + trên cạnh vợ/chồng tạo con chung bằng hai facts cha/mẹ đẻ. Dấu + trên từng node vẫn tạo quan hệ riêng của người đó.</p>
+      <p className="text-xs text-muted-foreground">Bốn dấu + quanh node luôn khả dụng. Khi thêm cha/mẹ thứ hai cùng loại, editor nối hai cha/mẹ thành vợ/chồng và biểu diễn node đang chọn là con chung. Dấu + trên cạnh vợ/chồng vẫn tạo con ruột hoặc con nuôi chung trực tiếp.</p>
 
       {diagnostics.length ? <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">{diagnostics.map((item) => <p key={item}>• {item}</p>)}</div> : <p className="text-xs text-emerald-700">Graph không có cạnh trùng, cạnh tự nối hoặc chu trình cha/mẹ–con.</p>}
       {visibleEdges.length ? <details className="rounded-lg border px-3 py-2"><summary className="cursor-pointer text-sm font-medium">Chi tiết {visibleEdges.length} quan hệ đã nhập</summary><div className="mt-3 space-y-2">{visibleEdges.map((edge) => <div key={edge.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-muted/30 p-2"><p className="text-xs font-medium">{edgeLabel(edge, peopleById)}</p><Button variant="ghost" size="sm" className="text-red-700 hover:bg-red-50" onClick={() => onChange({ ...graph, edges: graph.edges.filter((item) => item.id !== edge.id) })}>Xóa quan hệ</Button></div>)}</div></details> : null}
@@ -198,9 +199,9 @@ export function FamilyGraphEditor({ graph, selectedId, onSelect, onChange, onCre
   </Card>;
 }
 
-function NodeAddHandles({ personId, occupied, activeDirection, onAdd }: { personId: string; occupied: Set<Direction>; activeDirection?: Direction; onAdd: (personId: string, direction: Direction) => void }) {
+function NodeAddHandles({ personId, activeDirection, onAdd }: { personId: string; activeDirection?: Direction; onAdd: (personId: string, direction: Direction) => void }) {
   const directions: Direction[] = ["top", "right", "bottom", "left"];
-  return <>{directions.map((direction) => occupied.has(direction) ? null : <button
+  return <>{directions.map((direction) => <button
     key={direction}
     type="button"
     className={cn("absolute z-30 grid size-7 place-items-center rounded-full border-2 border-primary bg-background text-lg font-semibold leading-none text-primary shadow-md hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", handlePosition(direction), activeDirection === direction && "bg-primary text-primary-foreground")}
@@ -240,9 +241,10 @@ function NewJointChildForm({ draft, graph, positions, peopleById, onChange, onCa
   const firstName = peopleById.get(spouseEdge.from)?.name ?? spouseEdge.from;
   const secondName = peopleById.get(spouseEdge.to)?.name ?? spouseEdge.to;
   return <form className="absolute z-40 rounded-xl border-2 border-rose-600 bg-card p-3 shadow-xl" style={{ left: position.x, top: position.y, width: DRAFT_WIDTH }} onSubmit={(event) => { event.preventDefault(); onSave(); }}>
-    <div className="mb-2 flex items-center justify-between gap-2"><p className="text-sm font-semibold">Con chung</p><Badge variant="outline">2 quan hệ cha/mẹ đẻ</Badge></div>
-    <p className="mb-3 text-[11px] text-muted-foreground">Con chung của {firstName} và {secondName}. Hệ thống sẽ lưu hai facts độc lập.</p>
+    <div className="mb-2 flex items-center justify-between gap-2"><p className="text-sm font-semibold">Con chung</p><Badge variant="outline">2 facts cùng loại</Badge></div>
+    <p className="mb-3 text-[11px] text-muted-foreground">Con chung của {firstName} và {secondName}. Hệ thống lưu một quan hệ với mỗi người.</p>
     <label className="block text-xs font-medium">Tên<Input className="mt-1" autoFocus value={draft.name} maxLength={80} placeholder="Ví dụ: Nguyễn Văn C" onChange={(event) => onChange({ ...draft, name: event.target.value })} /></label>
+    <label className="mt-3 block text-xs font-medium">Loại quan hệ<select className="mt-1 h-10 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring" value={draft.kind} onChange={(event) => onChange({ ...draft, kind: event.target.value as JointChildKind })}><option value="biological">Con ruột chung</option><option value="adoptive">Con nuôi chung</option></select></label>
     <div className="mt-4 flex justify-end gap-2"><Button type="button" variant="outline" size="sm" onClick={onCancel}>Hủy</Button><Button type="submit" size="sm" disabled={!draft.name.trim()}>Tạo con chung</Button></div>
   </form>;
 }
@@ -280,7 +282,7 @@ function createGraphLayout(graph: FamilyGraph): GraphLayout {
   return { width, height, positions };
 }
 
-function GraphConnections({ graph, positions, jointChildren, markerToken, width, height }: { graph: FamilyGraph; positions: Map<string, NodePosition>; jointChildren: JointBiologicalChildConnection[]; markerToken: string; width: number; height: number }) {
+function GraphConnections({ graph, positions, jointChildren, markerToken, width, height }: { graph: FamilyGraph; positions: Map<string, NodePosition>; jointChildren: JointChildConnection[]; markerToken: string; width: number; height: number }) {
   const jointParentEdgeIds = new Set(jointChildren.flatMap((connection) => connection.parentEdgeIds));
   return <svg className="pointer-events-none absolute inset-0" width={width} height={height} aria-hidden="true">
     <defs>{edgeTypes().filter((type) => type !== "spouse-at-opening").map((type) => <marker key={type} id={`${markerToken}-${type}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" className={edgeVisual(type).fill} /></marker>)}</defs>
@@ -305,7 +307,9 @@ function GraphConnections({ graph, positions, jointChildren, markerToken, width,
       if (!midpoint || !child) return null;
       const endX = child.x + NODE_WIDTH / 2, endY = child.y;
       const middleY = (midpoint.y + endY) / 2;
-      return <g key={`${connection.spouseEdgeId}-${connection.childId}`}><path d={`M ${midpoint.x} ${midpoint.y} C ${midpoint.x} ${middleY}, ${endX} ${middleY}, ${endX} ${endY}`} fill="none" className="stroke-blue-600 stroke-[2.5]" markerEnd={`url(#${markerToken}-biological-parent-of)`} /><rect x={(midpoint.x + endX) / 2 - 34} y={(midpoint.y + endY) / 2 - 9} width="68" height="18" rx="9" className="fill-background stroke-border" /><text x={(midpoint.x + endX) / 2} y={(midpoint.y + endY) / 2 + 3.5} textAnchor="middle" className="fill-blue-700 text-[10px] font-semibold">con chung</text></g>;
+      const visual = edgeVisual(connection.relationType);
+      const label = connection.relationType === "biological-parent-of" ? "con ruột chung" : "con nuôi chung";
+      return <g key={`${connection.spouseEdgeId}-${connection.childId}-${connection.relationType}`}><path d={`M ${midpoint.x} ${midpoint.y} C ${midpoint.x} ${middleY}, ${endX} ${middleY}, ${endX} ${endY}`} fill="none" className={cn("stroke-[2.5]", visual.stroke)} strokeDasharray={visual.dash} markerEnd={`url(#${markerToken}-${connection.relationType})`} /><rect x={(midpoint.x + endX) / 2 - 42} y={(midpoint.y + endY) / 2 - 9} width="84" height="18" rx="9" className="fill-background stroke-border" /><text x={(midpoint.x + endX) / 2} y={(midpoint.y + endY) / 2 + 3.5} textAnchor="middle" className={cn("text-[10px] font-semibold", visual.fill)}>{label}</text></g>;
     })}
   </svg>;
 }
@@ -329,32 +333,11 @@ function JointChildDraftConnection({ draft, graph, positions }: { draft: JointCh
   return <svg className="pointer-events-none absolute inset-0 z-20 size-full overflow-visible" aria-hidden="true"><path d={`M ${midpoint.x} ${midpoint.y} L ${end.x} ${end.y}`} className="stroke-rose-600 stroke-2" strokeDasharray="5 5" /></svg>;
 }
 
-function findOccupiedDirections(graph: FamilyGraph, positions: Map<string, NodePosition>): Map<string, Set<Direction>> {
-  const result = new Map<string, Set<Direction>>();
-  for (const person of graph.people) result.set(person.id, new Set());
-  for (const edge of graph.edges) {
-    const from = positions.get(edge.from), to = positions.get(edge.to);
-    if (!from || !to) continue;
-    const fromDirection = relativeDirection(nodeCenter(from), nodeCenter(to));
-    const toDirection = oppositeDirection(fromDirection);
-    result.get(edge.from)?.add(fromDirection);
-    result.get(edge.to)?.add(toDirection);
-  }
-  return result;
-}
-
 function parentAnchorX(graph: FamilyGraph, childId: string, positions: Map<string, NodePosition>): number | undefined {
   const anchors = graph.edges.flatMap((edge) => edge.to === childId && edge.type !== "spouse-at-opening" && edge.type !== "step-parent-of" ? positions.has(edge.from) ? [nodeCenter(positions.get(edge.from)!).x] : [] : []);
   return anchors.length ? anchors.reduce((total, value) => total + value, 0) / anchors.length : undefined;
 }
 
-function relativeDirection(from: NodePosition, to: NodePosition): Direction {
-  const deltaX = to.x - from.x, deltaY = to.y - from.y;
-  if (Math.abs(deltaX) > Math.abs(deltaY)) return deltaX >= 0 ? "right" : "left";
-  return deltaY >= 0 ? "bottom" : "top";
-}
-
-function oppositeDirection(direction: Direction): Direction { return ({ top: "bottom", right: "left", bottom: "top", left: "right" } as const)[direction]; }
 function nodeCenter(position: NodePosition) { return { x: position.x + NODE_WIDTH / 2, y: position.y + NODE_HEIGHT / 2 }; }
 function draftPosition(anchor: NodePosition, direction: Direction): NodePosition {
   if (direction === "top") return { x: anchor.x + NODE_WIDTH / 2 - DRAFT_WIDTH / 2, y: anchor.y - 258 };

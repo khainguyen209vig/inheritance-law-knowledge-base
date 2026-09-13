@@ -364,7 +364,7 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 8. [x] Thiết kế graph quan hệ và triển khai R-C01–R-C03 để phân loại ba hàng thừa kế.
 9. [x] Triển khai R-C04–R-C06, kết nối kết quả Điều 621 và chỉ chọn hàng hoạt động khi có `heir-search-complete=true`.
 10. [x] Triển khai lát cắt `representation` R-E01/R-E02, tái sử dụng graph gia đình, Điều 621 và trạng thái sống/từ chối.
-11. [x] Graph editor vòng 2 có canvas, zoom/pan, bốn điểm thêm quanh node, sửa/xóa trực tiếp; phân biệt con đẻ riêng và con đẻ chung, không nhập/vẽ cạnh bố mẹ kế, đồng thời sắp node con theo vị trí cha mẹ để hạn chế đường nối giao chéo.
+11. [x] Graph editor vòng 2 có canvas, zoom/pan, bốn điểm thêm luôn khả dụng quanh node, sửa/xóa trực tiếp; hỗ trợ con ruột/con nuôi riêng từ từng node và con ruột/con nuôi chung từ cạnh vợ chồng. Khi thêm cha/mẹ thứ hai cùng loại cho một node, editor tự nối cặp cha/mẹ là vợ/chồng và nhận diện node đó là con chung; không nhập/vẽ cạnh bố mẹ kế, đồng thời sắp node con theo vị trí cha mẹ để hạn chế đường nối giao chéo.
 12. [x] Triển khai R-E03a/R-E03b cho căn cứ quan hệ con nuôi, không gộp với quan hệ cha mẹ đẻ và không kết luận quyền hưởng cuối cùng.
 13. [x] Triển khai draft R-E04/R-E05 bằng đánh giá chăm sóc gắn với từng cạnh con riêng–bố dượng/mẹ kế; thiếu đánh giá không bị diễn giải thành phủ định.
 14. [x] Triển khai lát cắt phân loại/loại trừ nhóm F với R-F01a, R-F01b, R-F02, R-F03 và R-F04.

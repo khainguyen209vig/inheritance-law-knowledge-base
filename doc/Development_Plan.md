@@ -383,7 +383,7 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] nạp rules Điều 621 trong cùng working memory, thêm completeness/projection, API, snapshot, presenter rà soát nhánh và regression tests;
 - [x] trích Điều 652–654 từ tài liệu luật cục bộ vào legal catalog;
 - [x] triển khai R-E03a/R-E03b để giữ căn cứ thừa kế hai chiều giữa con nuôi–cha mẹ nuôi và đồng thời bảo toàn quan hệ cha mẹ đẻ; không chiếu thành quyền hưởng cuối cùng;
-- [x] bổ sung `SYSTEM-IMPLY-STEP-RELATIONSHIP`: suy ra bố/mẹ kế từ cạnh vợ/chồng và cạnh con đẻ riêng, đồng thời loại trường hợp con chung có hai cha/mẹ đẻ;
+- [x] bổ sung `SYSTEM-IMPLY-STEP-RELATIONSHIP`: suy ra bố/mẹ kế từ cạnh vợ/chồng và cạnh con ruột riêng, đồng thời không suy ra nếu người còn lại đã là cha/mẹ ruột hoặc cha/mẹ nuôi của người con;
 - [x] triển khai R-E04/R-E05 ở trạng thái `TEAM_REVIEW` bằng cặp facts `step-parent-of` và `step-care-status(edge-id, established|not-established)`; đánh giá gắn với cạnh quan hệ, thiếu đánh giá sinh missing requirement thay vì bị hiểu là phủ định;
 - [ ] chuyển presenter Điều 654 sang reify quan hệ kế dẫn xuất để gắn đánh giá chăm sóc; sau migration, loại bỏ hoàn toàn việc assert `step-parent-of` còn được giữ cho tương thích hồ sơ cũ;
 - [x] chỉ tạo căn cứ thừa kế hai chiều khi trạng thái chăm sóc là `established`; R-E05 chỉ phủ định căn cứ theo riêng Điều 654 khi có fact `not-established` tường minh và không phủ định căn cứ di chúc/quan hệ khác;
@@ -399,7 +399,8 @@ Chuyển sang mô-đun `inheritance-type` dựa trên nhóm luật A trong `Loc_
 - [x] hiển thị preview facts nguyên tử và cảnh báo cạnh trùng, tự nối, xung đột loại cha/mẹ hoặc chu trình trước khi suy luận;
 - [x] bỏ luồng tạo người rời và trình nối ba bước; khi chọn node, hiển thị tối đa bốn điểm `+` ở các hướng chưa có cạnh, rồi nhập tên và chọn chính xác quan hệ ngay trong node-form mới trên canvas;
 - [x] mỗi node có thao tác sửa/xóa trực tiếp; form node chỉ nhập quan hệ gốc cha/mẹ–con đẻ, nuôi hoặc vợ/chồng, không cho người dùng assert trực tiếp quan hệ bố/mẹ kế;
-- [x] phân biệt `con đẻ riêng của người đang chọn` (một fact `biological-parent-of`) với `con đẻ chung của cặp vợ chồng` (hai facts `biological-parent-of`); quan hệ bố/mẹ kế–con riêng chỉ được suy ra từ các facts gốc và không vẽ thành cạnh trên graph editor;
+- [x] điểm thêm trên từng node cho phép tạo `con ruột riêng` hoặc `con nuôi riêng` bằng một fact tương ứng; điểm thêm trên cạnh vợ/chồng cho phép chọn `con ruột chung` hoặc `con nuôi chung` và tạo hai facts cùng loại từ cả hai vợ chồng; quan hệ bố/mẹ kế–con riêng chỉ được suy ra từ các facts gốc và không vẽ thành cạnh trên graph editor;
+- [x] luôn hiển thị đủ bốn điểm thêm quanh node, kể cả khi hướng đó đã có cạnh; khi người dùng thêm cha/mẹ thứ hai cùng loại cho một node, tự tạo cạnh vợ/chồng giữa hai cha/mẹ để node đó được biểu diễn là con chung;
 - [x] sắp thứ tự node con theo trung bình vị trí cha/mẹ để con riêng nằm gần cha/mẹ đã chọn và con chung nằm gần trung điểm cặp vợ chồng, giảm cạnh giao chéo;
 - [x] hiển thị đường nối có hướng, màu/kiểu nét theo loại quan hệ, bố cục theo thế hệ, vùng cuộn để pan và điều khiển zoom cho cây lớn;
 - [x] bổ sung sửa/xóa cạnh, undo/redo tối đa 50 thay đổi và xác nhận khi xóa node kèm số cạnh bị ảnh hưởng;
