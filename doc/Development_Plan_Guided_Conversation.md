@@ -87,8 +87,8 @@ Guided Conversation UI
 - [x] `G-501` Unit tests cho topic catalog và question planner nền tảng.
 - [x] `G-502` Integration tests cho tạo hồ sơ → trả lời → lưu facts → chọn bước tiếp theo. Đã bao phủ tạo/resume session và happy path di chúc viết đến kết luận từ CLIPS.
 - [x] `G-503` Test mỗi topic với happy path, unknown path và sửa câu trả lời. Ma trận integration bao phủ cả bảy topic: mỗi topic giữ đúng trạng thái `UNKNOWN`, sửa fact chung làm mất hiệu lực snapshot revision cũ; các happy path chạy CLIPS đã bao phủ di chúc, loại thừa kế, Điều 621, thế vị, suất bắt buộc, Điều 661 và Điều 623.
-- [ ] `G-504` Usability test nội bộ với thành viên không viết rule. Đã hoàn thành checklist, năm kịch bản, phiếu quan sát, ngưỡng pass/fail và vòng heuristic trước test tại `doc/Usability_Test_Guided_Conversation.md`; còn cần hai thành viên không viết rules thực hiện kịch bản để ghi nhận dữ liệu thật trước khi đóng task.
-- [ ] `G-505` Review responsive, keyboard navigation và screen reader labels.
+- [ ] `G-504` Usability test nội bộ với thành viên không viết rule. Đã hoàn thành checklist, năm kịch bản, phiếu quan sát, ngưỡng pass/fail và vòng heuristic trước test tại `doc/Usability_Test_Guided_Conversation.md`; còn cần hai thành viên không viết rules thực hiện kịch bản để ghi nhận dữ liệu thật trước khi đóng task. **Tạm hoãn** trong khi ưu tiên Quick Logic Test.
+- [ ] `G-505` Review responsive, keyboard navigation và screen reader labels. **Tạm hoãn** cùng `G-504`.
 
 ## 5. Vertical slice đầu tiên
 
@@ -104,7 +104,7 @@ Vertical slice G0/G1 tạo được đường đi:
   → đề xuất presenter tiếp theo
 ```
 
-Bước kế tiếp là chạy hai buổi usability review nội bộ (`G-504`) theo checklist đã chuẩn bị và xử lý các vấn đề `P0/P1`. Sau đó xử lý accessibility/responsive ở `G-505`.
+Tiến trình guided UX đang tạm dừng trước hai buổi usability review (`G-504`). Ưu tiên hiện tại là kế hoạch Quick Logic Test tại `doc/Development_Plan_Quick_Logic_Test.md`; sau release này mới quay lại `G-504`, rồi `G-505`.
 
 ## 6. Tiêu chí hoàn thành
 

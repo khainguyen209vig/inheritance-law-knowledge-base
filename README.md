@@ -195,6 +195,8 @@ Trang gốc `/` chuyển hướng tới `/guided`, là điểm vào hội thoạ
 
 Kịch bản và phiếu ghi nhận dành cho usability test nội bộ nằm tại `doc/Usability_Test_Guided_Conversation.md`. Cần ít nhất hai thành viên không viết rules thực hiện; integration test hoặc rà soát của developer không được tính thay cho dữ liệu người dùng thật.
 
+Kế hoạch cho trang upload case study `.clp`, chọn câu hỏi, xem chuỗi suy luận có thể explore code và xuất báo cáo nằm tại `doc/Development_Plan_Quick_Logic_Test.md`. Trong giai đoạn này, usability test guided UI được tạm hoãn chứ không được đánh dấu hoàn thành.
+
 Guided session lưu topic và danh sách bước đã hoàn thành trong bảng `guided_sessions`; nội dung câu trả lời không bị sao chép vào transcript mà tiếp tục được lưu dưới dạng asserted facts. Vertical slice đầu tiên đã hỗ trợ `tên người để lại di sản → hình thức di chúc → CLIPS run → missing requirement tiếp theo`.
 
 API đầu tiên nhận dữ kiện đã chuẩn hóa tại `POST /api/inference/will-validity`. Ví dụ request tối thiểu cho một di chúc bằng văn bản:
