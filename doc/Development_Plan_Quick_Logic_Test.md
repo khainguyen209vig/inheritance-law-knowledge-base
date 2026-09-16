@@ -183,7 +183,7 @@ interface ReasoningStep {
   conclusion: string;
   ruleId: string;
   supports: ExplainedSupport[];
-  code: Array<{ implementation: string; file: string; source: string }>;
+  codeReferences: Array<{ implementation: string; file: string }>;
 }
 ```
 
@@ -253,9 +253,9 @@ Hai exporter phải là hàm thuần và có golden-file tests.
 
 ### QL0 — Contract và fixture
 
-- [ ] `QL-001` Chốt input grammar, giới hạn upload và error contract có dòng/cột.
-- [ ] `QL-002` Tạo `LogicTestReport` contract và mapping topic → goal packages.
-- [ ] `QL-003` Thêm ba fixture cấp tính năng: complete, unknown/missing và conflict; dùng lại facts pháp lý hiện có thay vì viết rule mới.
+- [x] `QL-001` Chốt input grammar, giới hạn upload và error contract có dòng/cột tại `doc/Quick_Logic_Test_CLP_Format.md`.
+- [x] `QL-002` Tạo `LogicTestReport` contract và mapping topic → goal packages tại `src/domain/logic-test.ts`; mapping dẫn xuất từ guided goal catalog để không có nguồn cấu hình thứ hai.
+- [x] `QL-003` Thêm ba fixture cấp tính năng: complete, unknown/missing và conflict; dùng lại facts pháp lý hiện có thay vì viết rule mới. Fixtures có regression test CLIPS riêng.
 
 ### QL1 — Parser an toàn
 
@@ -329,4 +329,3 @@ Trong thời gian thực hiện Quick Logic Test:
 - không bắt đầu `G-505`;
 - không đóng `G-504` vì chưa có dữ liệu người dùng thật;
 - các sửa lỗi trực tiếp ảnh hưởng tính đúng đắn hoặc an toàn của inference vẫn được phép ưu tiên.
-
