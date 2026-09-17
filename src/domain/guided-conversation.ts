@@ -77,12 +77,12 @@ export const guidedInferenceGoals: Record<GuidedTopicId, readonly GuidedInferenc
     { module: "will-validity", resultPredicates: ["valid-will"], role: "dependency" },
   ],
   "compulsory-share": [
-    { module: "compulsory-share", resultPredicates: ["compulsory-heir", "minimum-compulsory-share", "compulsory-share-shortfall"], role: "result" },
+    { module: "compulsory-share", resultPredicates: ["compulsory-heir", "minimum-compulsory-share", "compulsory-share-shortfall", "hypothetical-statutory-share-vnd", "minimum-compulsory-share-vnd", "minimum-compulsory-share-rounding-remainder-numerator", "compulsory-share-shortfall-vnd"], role: "result" },
     { module: "heir-rank", resultPredicates: ["candidate-heir-rank"], role: "dependency" },
     { module: "eligibility", resultPredicates: ["article-621-status"], role: "dependency" },
     { module: "will-validity", resultPredicates: ["valid-will"], role: "dependency" },
   ],
-  "estate-settlement": [{ module: "estate-settlement", resultPredicates: ["payment-priority", "distribution-not-before", "court-deferral-may-be-requested", "court-extension-may-be-requested"], role: "result" }],
+  "estate-settlement": [{ module: "estate-settlement", resultPredicates: ["payment-priority", "distribution-not-before", "court-deferral-may-be-requested", "court-extension-may-be-requested", "estate-owned-value-vnd", "gross-estate-vnd", "total-obligations-vnd", "distributable-estate-vnd", "uncovered-obligations-vnd", "statutory-heir-count", "hypothetical-statutory-share-vnd", "statutory-division-remainder-vnd"], role: "result" }],
   limitation: [{ module: "limitation", resultPredicates: ["limitation-period-years", "limitation-deadline", "post-limitation-recipient"], role: "result" }],
 };
 

@@ -1,3 +1,38 @@
+(defrule project-estate-vnd-calculation-results
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (derived-fact
+    (case-id ?case-id)
+    (subject ?subject)
+    (predicate ?predicate&estate-owned-value-vnd|ownership-rounding-remainder-numerator|ownership-ratio-invalid|gross-estate-vnd|total-obligations-vnd|distributable-estate-vnd|uncovered-obligations-vnd|statutory-heir-count|hypothetical-statutory-share-vnd|statutory-division-remainder-vnd)
+    (value ?value)
+    (rule-id ?rule))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?subject) (module estate-settlement) (predicate ?predicate) (value ?value) (derivations ?rule))))
+
+(defrule project-unknown-gross-estate-vnd
+  (declare (salience -500))
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?calculation) (predicate estate-vnd-calculation) (value true))
+  (not (derived-fact (case-id ?case-id) (subject ?calculation) (predicate gross-estate-vnd)))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?calculation) (module estate-settlement) (predicate gross-estate-vnd) (value unknown) (derivations))))
+
+(defrule project-unknown-total-obligations-vnd
+  (declare (salience -500))
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?calculation) (predicate estate-vnd-calculation) (value true))
+  (not (derived-fact (case-id ?case-id) (subject ?calculation) (predicate total-obligations-vnd)))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?calculation) (module estate-settlement) (predicate total-obligations-vnd) (value unknown) (derivations))))
+
+(defrule project-unknown-distributable-estate-vnd
+  (declare (salience -500))
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?calculation) (predicate estate-vnd-calculation) (value true))
+  (not (derived-fact (case-id ?case-id) (subject ?calculation) (predicate distributable-estate-vnd)))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?calculation) (module estate-settlement) (predicate distributable-estate-vnd) (value unknown) (derivations))))
+
 (defrule project-payment-priority
   (analysis-request (case-id ?case-id) (module estate-settlement))
   (derived-fact (case-id ?case-id) (subject ?obligation) (predicate payment-priority) (value ?priority) (rule-id ?rule))

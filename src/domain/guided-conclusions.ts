@@ -67,8 +67,8 @@ function relevantResults(state: GuidedCaseState): Result[] {
     "person-eligibility": ["article-621-status"],
     "who-inherits": ["inheritance-regime", "called-to-inherit", "inherits-by-representation"],
     representation: ["inherits-by-representation"],
-    "compulsory-share": ["compulsory-heir", "minimum-compulsory-share", "compulsory-share-shortfall"],
-    "estate-settlement": ["payment-priority", "distribution-not-before", "court-deferral-may-be-requested", "court-extension-may-be-requested"],
+    "compulsory-share": ["compulsory-heir", "minimum-compulsory-share", "compulsory-share-shortfall", "hypothetical-statutory-share-vnd", "minimum-compulsory-share-vnd", "compulsory-share-shortfall-vnd"],
+    "estate-settlement": ["payment-priority", "distribution-not-before", "court-deferral-may-be-requested", "court-extension-may-be-requested", "estate-owned-value-vnd", "gross-estate-vnd", "total-obligations-vnd", "distributable-estate-vnd", "uncovered-obligations-vnd", "statutory-heir-count", "hypothetical-statutory-share-vnd", "statutory-division-remainder-vnd"],
     limitation: ["limitation-period-years", "limitation-deadline", "post-limitation-recipient"],
   };
   const predicates = new Set(primaryByTopic[state.topic.id]);
@@ -114,6 +114,14 @@ function estateSettlementConclusions(results: Result[], label: (subject: string)
     if (result.predicate === "court-deferral-may-be-requested") return [{ ...common, title: label(result.subject), statement: `${label(result.subject)} có quyền yêu cầu Tòa án xác định phần di sản được hưởng nhưng chưa cho chia trong thời hạn luật định. Đây không phải kết luận Tòa án đã chấp thuận.`, status: "positive" as const }];
     if (result.predicate === "court-extension-may-be-requested") return [{ ...common, title: "Yêu cầu gia hạn", statement: `${label(result.subject)} có thể yêu cầu gia hạn một lần theo điều kiện đã xác nhận.`, status: "positive" as const }];
     if (result.predicate === "payment-priority") return [{ ...common, title: label(result.subject), statement: `Nghĩa vụ này có thứ tự ưu tiên thanh toán số ${result.value}.`, status: "neutral" as const }];
+    if (result.predicate === "estate-owned-value-vnd") return [{ ...common, title: label(result.subject), statement: `Giá trị thuộc khối di sản: ${formatVnd(result.value)}.`, status: "neutral" as const }];
+    if (result.predicate === "gross-estate-vnd") return [{ ...common, title: "Tổng di sản gộp", statement: `Tổng giá trị thuộc di sản sau khi áp dụng tỷ lệ sở hữu là ${formatVnd(result.value)}.`, status: "neutral" as const }];
+    if (result.predicate === "total-obligations-vnd") return [{ ...common, title: "Tổng nghĩa vụ", statement: `Tổng nghĩa vụ đã xác nhận là ${formatVnd(result.value)}.`, status: "neutral" as const }];
+    if (result.predicate === "distributable-estate-vnd") return [{ ...common, title: "Di sản có thể phân chia", statement: `Giá trị ròng còn lại để phân chia là ${formatVnd(result.value)}.`, status: "positive" as const }];
+    if (result.predicate === "uncovered-obligations-vnd") return [{ ...common, title: "Nghĩa vụ chưa được bù đắp", statement: `Tổng nghĩa vụ vượt giá trị di sản ${formatVnd(result.value)}.`, status: "negative" as const }];
+    if (result.predicate === "statutory-heir-count") return [{ ...common, title: "Số người cùng hàng được gọi hưởng", statement: `Knowledge base xác định ${result.value} người trong hàng đang được gọi hưởng.`, status: "neutral" as const }];
+    if (result.predicate === "hypothetical-statutory-share-vnd") return [{ ...common, title: label(result.subject), statement: `Suất thừa kế theo pháp luật giả định của ${label(result.subject)} là ${formatVnd(result.value)}.`, status: "neutral" as const }];
+    if (result.predicate === "statutory-division-remainder-vnd") return [{ ...common, title: "Phần dư khi chia", statement: `Còn ${formatVnd(result.value)} chưa được tự động phân bổ sau phép chia số nguyên.`, status: Number(result.value) > 0 ? "unknown" as const : "neutral" as const }];
     return [];
   });
 }
@@ -127,6 +135,9 @@ function compulsoryShareConclusions(results: Result[], label: (subject: string) 
     if (result.predicate === "compulsory-heir") return conclusionForResult("compulsory-share", result, label, runId);
     if (result.predicate === "minimum-compulsory-share") return [{ ...common, title: subject, statement: `Mức suất bắt buộc tối thiểu được tính là ${formatNumber(result.value)}.`, status: "neutral" as const }];
     if (result.predicate === "compulsory-share-shortfall") return [{ ...common, title: subject, statement: `Phần còn thiếu so với mức tối thiểu là ${formatNumber(result.value)}.`, status: Number(result.value) > 0 ? "negative" as const : "positive" as const }];
+    if (result.predicate === "hypothetical-statutory-share-vnd") return [{ ...common, title: label(result.subject), statement: `Suất pháp luật giả định đã được tính tự động là ${formatVnd(result.value)}.`, status: "neutral" as const }];
+    if (result.predicate === "minimum-compulsory-share-vnd") return [{ ...common, title: label(result.subject), statement: `Ngưỡng suất bắt buộc 2/3 là ${formatVnd(result.value)}.`, status: "neutral" as const }];
+    if (result.predicate === "compulsory-share-shortfall-vnd") return [{ ...common, title: label(result.subject), statement: `Phần suất bắt buộc còn thiếu là ${formatVnd(result.value)}.`, status: Number(result.value) > 0 ? "negative" as const : "positive" as const }];
     return [];
   });
 }
@@ -154,6 +165,7 @@ function groupBySubject(results: readonly Result[]): Map<string, Result[]> {
 function unique(values: readonly string[]): string[] { return [...new Set(values.filter(Boolean))]; }
 function formatDate(value: string): string { const [year, month, day] = value.split("-"); return year && month && day ? `${day}/${month}/${year}` : value; }
 function formatNumber(value: string): string { const number = Number(value); return Number.isFinite(number) ? new Intl.NumberFormat("vi-VN").format(number) : value; }
+function formatVnd(value: string): string { const number = Number(value); return Number.isSafeInteger(number) ? new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND", maximumFractionDigits: 0 }).format(number) : `${value} VNĐ`; }
 
 function subjectFromConclusionId(id: string): string {
   const parts = id.split(":");

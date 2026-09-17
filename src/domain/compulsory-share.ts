@@ -11,6 +11,7 @@ export const compulsoryShareFactSchema = z.discriminatedUnion("predicate", [
   z.object({ id: symbolSchema, predicate: z.literal("calculation-estate-portion"), value: symbolSchema }),
   z.object({ id: symbolSchema, predicate: z.literal("hypothetical-statutory-share"), value: z.number().positive().finite() }),
   z.object({ id: symbolSchema, predicate: z.literal("testamentary-share-received"), value: z.number().nonnegative().finite() }),
+  z.object({ id: symbolSchema, predicate: z.literal("testamentary-share-received-vnd"), value: z.number().int().nonnegative().max(1_000_000_000_000_000) }),
 ]);
 
 export type CompulsoryShareFact = z.infer<typeof compulsoryShareFactSchema>;

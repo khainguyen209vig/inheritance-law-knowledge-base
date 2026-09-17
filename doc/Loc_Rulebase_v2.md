@@ -202,7 +202,7 @@ Cách đọc bảng so sánh:
 | R-C01 | Quan hệ thuộc hàng 1 → hàng thừa kế 1 | CLASSIFICATION | `relationship-at-opening(X,deceased,type)` với type thuộc hàng 1 | `candidate-heir-rank(X,case)=1` | Kết luận là ứng viên hàng 1, chưa tự động là người được nhận | MODEL-READY |
 | R-C02 | Quan hệ thuộc hàng 2 → hàng thừa kế 2 | CLASSIFICATION | Quan hệ của X thuộc danh sách hàng 2 | `candidate-heir-rank(X,case)=2` | Phân biệt loại quan hệ cháu bằng quan hệ cha/mẹ trung gian, tránh chuỗi text mơ hồ | TEAM-REVIEW |
 | R-C03 | Quan hệ thuộc hàng 3 → hàng thừa kế 3 | CLASSIFICATION | Quan hệ của X thuộc danh sách hàng 3 | `candidate-heir-rank(X,case)=3` | Chuẩn hóa quan hệ bác/chú/cậu/cô/dì/chắt thành graph quan hệ | TEAM-REVIEW |
-| R-C04 | Cùng hàng → chia đều | CALCULATION | Các `called-to-inherit` cùng `active-heir-rank` | `equal-share-principle-applies(case,rank)=true` | Không kết luận `phan_di_san(X)=phan_di_san(Y)` ngay; phép tính nằm ngoài MVP | TEAM-REVIEW |
+| R-C04 | Cùng hàng → chia đều | CALCULATION | Các `called-to-inherit` cùng `active-heir-rank`; nếu bật lát cắt VNĐ thì có di sản ròng và tập người hưởng đã hoàn chỉnh | `equal-share-principle-applies(case,rank)=true`; tùy chọn sinh `hypothetical-statutory-share-vnd` và phần dư chưa phân bổ | Phép tính VNĐ dùng chia nguyên, báo phần dư thay vì tự làm tròn; vẫn không tự xử lý mọi tình huống phân chia hiện vật | TEAM-REVIEW |
 | R-C05 | Có người hàng trước → X không hưởng | EXCLUSION | X ở hàng N và tồn tại người `called-to-inherit` ở hàng nhỏ hơn N | `called-to-inherit(X,case)=false` với reason `prior-rank-active` | Không dùng `co_nguoi_hang_truoc` làm input | MODEL-READY |
 | R-C06 | Không còn người hàng trước → X được hưởng | DERIVATION | X là ứng viên hàng N; tất cả hàng trước đã được kiểm tra đầy đủ và không có người đủ điều kiện | `active-heir-rank(case)=N`, `called-to-inherit(X,case)=true` nếu X đủ điều kiện | Cần `heir-search-complete` và trạng thái chết/không có quyền/từ chối của từng người | TEAM-REVIEW |
 
@@ -245,7 +245,7 @@ Quan hệ cháu/chắt không nên nhập bằng một nhãn text duy nhất; en
 |---|---|---|---|---|---|---|
 | R-F01a | Con chưa thành niên/cha/mẹ/vợ/chồng thiếu 2/3 suất → hưởng tối thiểu 2/3 | CLASSIFICATION | X là con chưa thành niên của người chết | `compulsory-heir-candidate(X,case)=true` | Đã triển khai từ graph; tách khỏi phép tính để trace rõ bước phân loại | MODEL-READY |
 | R-F01b | Cùng V1 R-F01 | CLASSIFICATION | X là cha, mẹ, vợ hoặc chồng của người chết tại thời điểm mở thừa kế | `compulsory-heir-candidate(X,case)=true` | Đã triển khai từ graph; tách khỏi phép tính để trace rõ bước phân loại | MODEL-READY |
-| R-F01c | Cùng V1 R-F01 | CALCULATION | `compulsory-heir(X)=true`; calculation gắn X với một phần di sản; có suất pháp luật giả định và phần đã nhận theo di chúc cùng đơn vị | `minimum-compulsory-share(calc)=statutory-share×2/3`; so sánh để sinh `minimum-share-rule-applies` và `compulsory-share-shortfall` | Đã triển khai theo calculation; suất pháp luật giả định vẫn là fact đầu vào, không tự chia end-to-end | TEAM-REVIEW |
+| R-F01c | Cùng V1 R-F01 | CALCULATION | `compulsory-heir(X)=true`; có suất pháp luật giả định và phần đã nhận theo di chúc | Sinh ngưỡng `2/3`, xác định có thiếu và số phần thiếu; với lát cắt VNĐ có thể dùng trực tiếp suất R-C04 đã suy ra | Nhánh generic theo từng phần vẫn nhận suất đầu vào; nhánh VNĐ tự nối với di sản ròng và số người hưởng, dùng chia nguyên và công bố phần dư | TEAM-REVIEW |
 | R-F02 | Con thành niên không có khả năng lao động, thiếu 2/3 suất → hưởng tối thiểu | CLASSIFICATION | X là con thành niên và `work-capacity=incapable` | `compulsory-heir-candidate(X,case)=true` | Đã triển khai draft; evidence/source vẫn cần team review | TEAM-REVIEW |
 | R-F03 | Thuộc diện suất bắt buộc nhưng từ chối → không hưởng | EXCLUSION | Candidate có `valid-refusal=true` | `compulsory-heir(X,case)=false`, reason `refusal` | Đã triển khai, dùng predicate thay vì Rule ID nguồn | MODEL-READY |
 | R-F04 | Thuộc diện suất bắt buộc nhưng không có quyền hưởng → không hưởng | EXCLUSION | Candidate có `article-621-status=excluded` | `compulsory-heir(X,case)=false`, reason `disqualified` | Đã triển khai, dùng kết luận Điều 621 trong cùng working memory | MODEL-READY |
@@ -272,7 +272,7 @@ Quan hệ cháu/chắt không nên nhập bằng một nhãn text duy nhất; en
 
 | Rule | V1 tóm tắt | Loại | Điều kiện chuẩn hóa V2 | Kết luận chuẩn hóa V2 | Thay đổi/điểm review | Trạng thái |
 |---|---|---|---|---|---|---|
-| R-I01 | Có nghĩa vụ/chi phí → thanh toán theo 10 mức ưu tiên | NORMATIVE | Có `estate-obligation` và `obligation-type` cho từng khoản | Sinh `payment-priority(obligation,1..10)` bằng cách đối chiếu bảng Điều 658 | Đã triển khai: bảng ưu tiên là `payment-priority-knowledge`; chỉ một production rule tổng quát, chưa tính tiền end-to-end | MODEL-READY |
+| R-I01 | Có nghĩa vụ/chi phí → thanh toán theo 10 mức ưu tiên | NORMATIVE | Có `estate-obligation`, `obligation-type` và tùy chọn `obligation-amount-vnd` cho từng khoản | Sinh `payment-priority(obligation,1..10)`; lát cắt VNĐ cộng các nghĩa vụ đã xác nhận để tính di sản ròng | Chưa phân bổ số tiền thiếu theo từng thứ tự ưu tiên khi tổng nghĩa vụ vượt di sản; khi đó chỉ báo nghĩa vụ chưa được bù đắp | MODEL-READY |
 | R-I02 | Theo di chúc nhưng không rõ phần → chia đều | CLASSIFICATION | Danh sách beneficiary đã đầy đủ và có từ hai người; di chúc không xác định phần; không có thỏa thuận khác | `equal-testamentary-share-principle-applies(disposition-group)=true`; các nhánh đã xác định phần/có thỏa thuận/chỉ một người sinh `false` | Đã triển khai theo từng nhóm; mọi phủ định là observation tường minh, chưa tính giá trị | MODEL-READY |
 | R-I03a | Có người đã thành thai chưa sinh → dành một phần bằng người khác | NORMATIVE | `prenatal-status-at-distribution=conceived-not-born`; graph suy ra `candidate-heir-rank` bằng `active-heir-rank` | `reserve-equal-share(unborn-person)=true` | Đã triển khai, tái sử dụng hàng thừa kế từ C thay vì nhập “cùng hàng” | MODEL-READY |
 | R-I03b | V1 chưa có nhánh hậu quả sau khi sinh | NORMATIVE | Đã có suất dành; `prenatal-birth-outcome=born-alive|died-before-birth` | Sinh sống → suất thuộc người con; chết trước sinh → những người thừa kế khác hưởng | Đã triển khai hai predicate hậu quả, chưa tự tính lại phần mỗi người | TEAM-REVIEW |
@@ -392,15 +392,15 @@ Checklist trước khi một rule V2 được chuyển sang `.clp`:
 | R-B01–R-B04 | Đã có vertical slice CLIPS theo kiến trúc V2 |
 | R-B05–R-B09 | Đã triển khai CLIPS và regression tests; knowledge base vẫn là draft |
 | R-A01–R-A06 | Đã triển khai theo từng phần di sản; các rule có nhãn `TEAM_REVIEW` chưa được phê duyệt |
-| R-C01–R-C06 | Đã triển khai trên graph quan hệ, gồm phân loại ba hàng và chọn hàng hoạt động có completeness; R-C02, R-C03, R-C04, R-C06 chờ team review |
+| R-C01–R-C06 | Đã triển khai trên graph quan hệ, gồm phân loại ba hàng và chọn hàng hoạt động có completeness; R-C04 có thêm phép chia nguyên VNĐ và báo phần dư; R-C02, R-C03, R-C04, R-C06 chờ team review |
 | R-D01–R-D05 | Đã triển khai theo từng người; R-D01 và R-D05 chờ team review |
 | R-E01–R-E02 | Đã triển khai lát cắt thế vị trên graph; vẫn ở trạng thái `TEAM_REVIEW` |
 | R-E03a–R-E03b | Đã triển khai căn cứ quan hệ con nuôi ở trạng thái `MODEL_READY`; chưa kết luận quyền hưởng cuối cùng |
 | R-E04–R-E05 | Đã triển khai với đánh giá chăm sóc gắn theo cạnh; giữ `TEAM_REVIEW`, open-world và không phủ định căn cứ khác |
-| R-F01a–R-F04 | Đã triển khai phân loại, loại trừ và R-F01c tính ngưỡng/phần thiếu theo từng cặp người–phần di sản; R-F01c chưa tự xác định suất pháp luật giả định; R-F01c/R-F02 giữ `TEAM_REVIEW` |
+| R-F01a–R-F04 | Đã triển khai phân loại, loại trừ và R-F01c tính ngưỡng/phần thiếu; nhánh VNĐ có thể nhận suất pháp luật tự động từ R-C04, nhánh generic theo phần vẫn nhận suất đầu vào; R-F01c/R-F02 giữ `TEAM_REVIEW` |
 | R-G01–R-G03 | Đã triển khai theo từng người phối ngẫu từ graph, có completeness và trace tới ba khoản Điều 655; không kết luận quyền hưởng cuối cùng |
 | R-H01–R-H04 | Đã triển khai theo từng người và phần di sản; H01/H03 giữ `TEAM_REVIEW`; A/C/E/F dùng `refusal-status` chuẩn hóa và chỉ fallback về fact cũ nếu chưa có assessment H |
-| R-I01 | Đã triển khai bảng 10 mức Điều 658 dưới dạng knowledge facts và một production rule tổng quát; chưa phân bổ tiền end-to-end |
+| R-I01 | Đã triển khai bảng 10 mức Điều 658 và phép cộng nghĩa vụ bằng số nguyên VNĐ để tính di sản ròng; chưa phân bổ trường hợp thiếu tiền lần lượt theo 10 mức |
 | R-I02 | Đã triển khai nhận diện nguyên tắc Điều 659 khoản 1 theo từng nhóm định đoạt; có completeness và không tính phần end-to-end |
 | R-I03a–R-I03b | Đã triển khai từ graph và hàng đang hoạt động; R-I03b giữ `TEAM_REVIEW`, chưa tính lại giá trị các suất |
 | R-I04–R-I05 | Đã triển khai mốc ngày và quyền yêu cầu Tòa; R-I05 giữ `TEAM_REVIEW`, không suy diễn quyết định tư pháp |

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v20",
+  "knowledgeBaseVersion": "inheritance-kb-v21",
   "entries": {
     "ARTICLE-627": [],
     "FORM-ASSESSMENT-ACCEPTED": [
@@ -184,6 +184,16 @@
         "implementation": "R-C04-equal-share-principle",
         "file": "rules/04-heir-rank.clp",
         "source": "(defrule R-C04-equal-share-principle\n  (declare (salience 190))\n  (derived-fact (case-id ?case-id) (subject ?first) (predicate called-to-inherit) (value true) (rule-id ?first-rule))\n  (derived-fact (case-id ?case-id) (subject ?second&~?first) (predicate called-to-inherit) (value true) (rule-id ?second-rule))\n  (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank) (value ?rank))\n  (not (derived-fact (case-id ?case-id) (subject ?case-id) (predicate equal-share-principle-applies) (value true)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?case-id) (predicate equal-share-principle-applies) (value true) (rule-id R-C04) (supports ?first-rule ?second-rule))))"
+      },
+      {
+        "implementation": "R-C04-calculate-equal-statutory-share-vnd",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule R-C04-calculate-equal-statutory-share-vnd\n  (declare (salience 160))\n  (derived-fact (case-id ?case-id) (subject ?calculation) (predicate distributable-estate-vnd) (value ?net) (rule-id ?net-rule))\n  (derived-fact (case-id ?case-id) (subject ?calculation) (predicate statutory-heir-count) (value ?count&:(> ?count 0)) (rule-id ?count-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit) (value true) (rule-id ?called-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate hypothetical-statutory-share-vnd)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?person) (predicate hypothetical-statutory-share-vnd)\n    (value (div ?net ?count)) (rule-id R-C04)\n    (supports ?net-rule ?count-rule ?called-rule))))"
+      },
+      {
+        "implementation": "R-C04-record-statutory-division-remainder-vnd",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule R-C04-record-statutory-division-remainder-vnd\n  (declare (salience 160))\n  (derived-fact (case-id ?case-id) (subject ?calculation) (predicate distributable-estate-vnd) (value ?net) (rule-id ?net-rule))\n  (derived-fact (case-id ?case-id) (subject ?calculation) (predicate statutory-heir-count) (value ?count&:(> ?count 0)) (rule-id ?count-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation) (predicate statutory-division-remainder-vnd)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?calculation) (predicate statutory-division-remainder-vnd)\n    (value (mod ?net ?count)) (rule-id R-C04)\n    (supports ?net-rule ?count-rule))))"
       }
     ],
     "R-C05": [
@@ -394,6 +404,16 @@
         "implementation": "R-F01c-threshold-already-met",
         "file": "rules/06-compulsory-share.clp",
         "source": "(defrule R-F01c-threshold-already-met\n  (declare (salience 300))\n  (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-compulsory-share) (value ?minimum) (rule-id ?minimum-rule))\n  (asserted-fact (fact-id ?received) (case-id ?case-id) (subject ?calculation-id) (predicate testamentary-share-received) (value ?amount&:(>= ?amount ?minimum)))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-share-rule-applies)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-share-rule-applies) (value false) (rule-id R-F01c) (supports ?minimum-rule ?received)))\n  (assert (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-shortfall) (value 0) (rule-id R-F01c) (supports ?minimum-rule ?received))))"
+      },
+      {
+        "implementation": "R-F01c-calculate-minimum-threshold-vnd",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F01c-calculate-minimum-threshold-vnd\n  (declare (salience 155))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir) (value true) (rule-id ?active-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate hypothetical-statutory-share-vnd) (value ?statutory) (rule-id ?statutory-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate minimum-compulsory-share-vnd)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?person) (predicate minimum-compulsory-share-vnd)\n    (value (div (* ?statutory 2) 3)) (rule-id R-F01c)\n    (supports ?active-rule ?statutory-rule)))\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?person) (predicate minimum-compulsory-share-rounding-remainder-numerator)\n    (value (mod (* ?statutory 2) 3)) (rule-id R-F01c)\n    (supports ?active-rule ?statutory-rule))))"
+      },
+      {
+        "implementation": "R-F01c-calculate-shortfall-vnd",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F01c-calculate-shortfall-vnd\n  (declare (salience 145))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate minimum-compulsory-share-vnd) (value ?minimum) (rule-id ?minimum-rule))\n  (asserted-fact (fact-id ?received-fact) (case-id ?case-id) (subject ?person) (predicate testamentary-share-received-vnd) (value ?received))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-share-shortfall-vnd)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?person) (predicate compulsory-share-shortfall-vnd)\n    (value (max 0 (- ?minimum ?received))) (rule-id R-F01c)\n    (supports ?minimum-rule ?received-fact)))\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?person) (predicate minimum-share-rule-applies-vnd)\n    (value (if (< ?received ?minimum) then true else false)) (rule-id R-F01c)\n    (supports ?minimum-rule ?received-fact))))"
       }
     ],
     "R-F02": [
@@ -548,6 +568,57 @@
         "implementation": "R-I01-assign-payment-priority",
         "file": "rules/09-estate-settlement.clp",
         "source": "(defrule R-I01-assign-payment-priority\n  (asserted-fact (fact-id ?entity) (case-id ?case-id) (subject ?obligation) (predicate estate-obligation) (value true))\n  (asserted-fact (fact-id ?type-fact) (case-id ?case-id) (subject ?obligation) (predicate obligation-type) (value ?type))\n  (payment-priority-knowledge (knowledge-id ?knowledge) (obligation-type ?type) (priority ?priority))\n  (not (derived-fact (case-id ?case-id) (subject ?obligation) (predicate payment-priority)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?obligation)\n    (predicate payment-priority)\n    (value ?priority)\n    (rule-id R-I01)\n    (supports ?entity ?type-fact ?knowledge))))"
+      }
+    ],
+    "ESTATE-VND-ASSET": [
+      {
+        "implementation": "ESTATE-VND-ASSET-calculate-owned-value",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule ESTATE-VND-ASSET-calculate-owned-value\n  (declare (salience 600))\n  (asserted-fact (fact-id ?asset-fact) (case-id ?case-id) (subject ?asset) (predicate estate-asset) (value true))\n  (asserted-fact (fact-id ?value-fact) (case-id ?case-id) (subject ?asset) (predicate asset-value-vnd) (value ?value&:(>= ?value 0)))\n  (asserted-fact (fact-id ?numerator-fact) (case-id ?case-id) (subject ?asset) (predicate deceased-ownership-numerator) (value ?numerator&:(> ?numerator 0)))\n  (asserted-fact (fact-id ?denominator-fact) (case-id ?case-id) (subject ?asset) (predicate deceased-ownership-denominator) (value ?denominator&:(> ?denominator 0)))\n  (test (<= ?numerator ?denominator))\n  (not (derived-fact (case-id ?case-id) (subject ?asset) (predicate estate-owned-value-vnd)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?asset) (predicate estate-owned-value-vnd)\n    (value (owned-value-vnd ?value ?numerator ?denominator))\n    (rule-id ESTATE-VND-ASSET)\n    (supports ?asset-fact ?value-fact ?numerator-fact ?denominator-fact))))"
+      },
+      {
+        "implementation": "ESTATE-VND-ASSET-record-sub-vnd-remainder",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule ESTATE-VND-ASSET-record-sub-vnd-remainder\n  (declare (salience 590))\n  (asserted-fact (case-id ?case-id) (subject ?asset) (predicate asset-value-vnd) (value ?value))\n  (asserted-fact (case-id ?case-id) (subject ?asset) (predicate deceased-ownership-numerator) (value ?numerator))\n  (asserted-fact (case-id ?case-id) (subject ?asset) (predicate deceased-ownership-denominator) (value ?denominator&:(> ?denominator 0)))\n  (test (<= ?numerator ?denominator))\n  (test (> (owned-value-remainder-numerator ?value ?numerator ?denominator) 0))\n  (not (derived-fact (case-id ?case-id) (subject ?asset) (predicate ownership-rounding-remainder-numerator)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?asset) (predicate ownership-rounding-remainder-numerator)\n    (value (owned-value-remainder-numerator ?value ?numerator ?denominator))\n    (rule-id ESTATE-VND-ASSET)\n    (supports))))"
+      }
+    ],
+    "ESTATE-VND-TOTALS": [
+      {
+        "implementation": "ESTATE-VND-TOTALS-calculate-gross-estate",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule ESTATE-VND-TOTALS-calculate-gross-estate\n  (declare (salience 500))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?calculation) (predicate estate-vnd-calculation) (value true))\n  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?calculation) (predicate estate-asset-set-complete) (value true))\n  (asserted-fact (case-id ?case-id) (predicate estate-asset) (value true))\n  (forall\n    (asserted-fact (case-id ?case-id) (subject ?asset) (predicate estate-asset) (value true))\n    (derived-fact (case-id ?case-id) (subject ?asset) (predicate estate-owned-value-vnd)))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation) (predicate gross-estate-vnd)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?calculation) (predicate gross-estate-vnd)\n    (value (sum-derived-integer ?case-id estate-owned-value-vnd))\n    (rule-id ESTATE-VND-TOTALS) (supports ?scope ?complete ESTATE-VND-ASSET))))"
+      },
+      {
+        "implementation": "ESTATE-VND-TOTALS-no-obligations",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule ESTATE-VND-TOTALS-no-obligations\n  (declare (salience 500))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?calculation) (predicate estate-vnd-calculation) (value true))\n  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?calculation) (predicate estate-obligation-set-complete) (value true))\n  (not (asserted-fact (case-id ?case-id) (predicate estate-obligation) (value true)))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation) (predicate total-obligations-vnd)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?calculation) (predicate total-obligations-vnd) (value 0) (rule-id ESTATE-VND-TOTALS) (supports ?scope ?complete))))"
+      },
+      {
+        "implementation": "ESTATE-VND-TOTALS-calculate-obligations",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule ESTATE-VND-TOTALS-calculate-obligations\n  (declare (salience 500))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?calculation) (predicate estate-vnd-calculation) (value true))\n  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?calculation) (predicate estate-obligation-set-complete) (value true))\n  (asserted-fact (case-id ?case-id) (predicate estate-obligation) (value true))\n  (forall\n    (asserted-fact (case-id ?case-id) (subject ?obligation) (predicate estate-obligation) (value true))\n    (asserted-fact (case-id ?case-id) (subject ?obligation) (predicate obligation-amount-vnd)))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation) (predicate total-obligations-vnd)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?calculation) (predicate total-obligations-vnd)\n    (value (sum-asserted-integer ?case-id obligation-amount-vnd))\n    (rule-id ESTATE-VND-TOTALS) (supports ?scope ?complete))))"
+      },
+      {
+        "implementation": "ESTATE-VND-TOTALS-calculate-net-estate",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule ESTATE-VND-TOTALS-calculate-net-estate\n  (declare (salience 400))\n  (derived-fact (case-id ?case-id) (subject ?calculation) (predicate gross-estate-vnd) (value ?gross) (rule-id ?gross-rule))\n  (derived-fact (case-id ?case-id) (subject ?calculation) (predicate total-obligations-vnd) (value ?obligations) (rule-id ?obligation-rule))\n  (test (>= ?gross ?obligations))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation) (predicate distributable-estate-vnd)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?calculation) (predicate distributable-estate-vnd)\n    (value (- ?gross ?obligations)) (rule-id ESTATE-VND-TOTALS)\n    (supports ?gross-rule ?obligation-rule))))"
+      },
+      {
+        "implementation": "ESTATE-VND-TOTALS-count-statutory-heirs",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule ESTATE-VND-TOTALS-count-statutory-heirs\n  (declare (salience 170))\n  (asserted-fact (case-id ?case-id) (subject ?calculation) (predicate estate-vnd-calculation) (value true))\n  (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank) (value ?rank) (rule-id ?active-rule))\n  (derived-fact (case-id ?case-id) (predicate called-to-inherit) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation) (predicate statutory-heir-count)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?calculation) (predicate statutory-heir-count)\n    (value (count-derived-value ?case-id called-to-inherit true))\n    (rule-id ESTATE-VND-TOTALS) (supports ?active-rule))))"
+      }
+    ],
+    "SYSTEM-ESTATE-VND": [
+      {
+        "implementation": "SYSTEM-ESTATE-VND-invalid-ownership-ratio",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule SYSTEM-ESTATE-VND-invalid-ownership-ratio\n  (declare (salience 590))\n  (asserted-fact (fact-id ?numerator-fact) (case-id ?case-id) (subject ?asset) (predicate deceased-ownership-numerator) (value ?numerator))\n  (asserted-fact (fact-id ?denominator-fact) (case-id ?case-id) (subject ?asset) (predicate deceased-ownership-denominator) (value ?denominator))\n  (test (> ?numerator ?denominator))\n  (not (derived-fact (case-id ?case-id) (subject ?asset) (predicate ownership-ratio-invalid)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?asset) (predicate ownership-ratio-invalid) (value true) (rule-id SYSTEM-ESTATE-VND) (supports ?numerator-fact ?denominator-fact))))"
+      },
+      {
+        "implementation": "SYSTEM-ESTATE-VND-obligations-exceed-estate",
+        "file": "rules/11-estate-vnd.clp",
+        "source": "(defrule SYSTEM-ESTATE-VND-obligations-exceed-estate\n  (declare (salience 400))\n  (derived-fact (case-id ?case-id) (subject ?calculation) (predicate gross-estate-vnd) (value ?gross) (rule-id ?gross-rule))\n  (derived-fact (case-id ?case-id) (subject ?calculation) (predicate total-obligations-vnd) (value ?obligations) (rule-id ?obligation-rule))\n  (test (> ?obligations ?gross))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation) (predicate distributable-estate-vnd)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?calculation) (predicate distributable-estate-vnd) (value 0) (rule-id SYSTEM-ESTATE-VND) (supports ?gross-rule ?obligation-rule)))\n  (assert (derived-fact (case-id ?case-id) (subject ?calculation) (predicate uncovered-obligations-vnd) (value (- ?obligations ?gross)) (rule-id SYSTEM-ESTATE-VND) (supports ?gross-rule ?obligation-rule))))"
       }
     ],
     "R-I02": [

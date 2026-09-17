@@ -88,3 +88,12 @@
   (not (asserted-fact (case-id ?case-id) (subject ?calculation-id) (predicate testamentary-share-received)))
   =>
   (assert (missing-requirement (case-id ?case-id) (subject ?calculation-id) (module compulsory-share) (predicate testamentary-share-received))))
+
+(defrule missing-testamentary-share-received-vnd
+  (declare (salience 140))
+  (analysis-request (case-id ?case-id) (module compulsory-share))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir) (value true))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate hypothetical-statutory-share-vnd))
+  (not (asserted-fact (case-id ?case-id) (subject ?person) (predicate testamentary-share-received-vnd)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?person) (module compulsory-share) (predicate testamentary-share-received-vnd))))

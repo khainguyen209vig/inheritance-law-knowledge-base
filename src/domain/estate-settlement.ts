@@ -31,10 +31,19 @@ export const obligationTypeLabels: Record<ObligationType, string> = {
 };
 
 export const estateSettlementFactSchema = z.discriminatedUnion("predicate", [
+  z.object({ id: symbolSchema, predicate: z.literal("estate-vnd-calculation"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("estate-asset-set-complete"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("estate-obligation-set-complete"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("estate-asset"), value: z.boolean() }),
+  z.object({ id: symbolSchema, predicate: z.literal("estate-asset-label"), value: z.string().trim().min(1).max(200) }),
+  z.object({ id: symbolSchema, predicate: z.literal("asset-value-vnd"), value: z.number().int().nonnegative().max(1_000_000_000_000_000) }),
+  z.object({ id: symbolSchema, predicate: z.literal("deceased-ownership-numerator"), value: z.number().int().positive().max(1_000_000) }),
+  z.object({ id: symbolSchema, predicate: z.literal("deceased-ownership-denominator"), value: z.number().int().positive().max(1_000_000) }),
   z.object({ id: symbolSchema, predicate: z.literal("estate-obligation"), value: z.boolean() }),
   z.object({ id: symbolSchema, predicate: z.literal("obligation-type"), value: z.enum(obligationTypes) }),
   z.object({ id: symbolSchema, predicate: z.literal("obligation-label"), value: z.string().trim().min(1).max(200) }),
   z.object({ id: symbolSchema, predicate: z.literal("obligation-amount"), value: z.number().nonnegative() }),
+  z.object({ id: symbolSchema, predicate: z.literal("obligation-amount-vnd"), value: z.number().int().nonnegative().max(1_000_000_000_000_000) }),
   z.object({ id: symbolSchema, predicate: z.literal("testamentary-distribution-group"), value: z.boolean() }),
   z.object({ id: symbolSchema, predicate: z.literal("distribution-group-label"), value: z.string().trim().min(1).max(200) }),
   z.object({ id: symbolSchema, predicate: z.literal("distribution-beneficiary"), value: symbolSchema }),

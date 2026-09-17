@@ -11,7 +11,7 @@
     "kb:generate": "node --import tsx scripts/generate-rule-metadata.ts",
     "kb:sources": "node --import tsx scripts/generate-rule-source-catalog.ts",
     "kb:sources:check": "node --import tsx scripts/check-rule-source-catalog.ts",
-    "test:kb": "clips -f2 knowledge-base/tests/will-validity.clp && clips -f2 knowledge-base/tests/inheritance-type.clp && clips -f2 knowledge-base/tests/eligibility.clp && clips -f2 knowledge-base/tests/heir-rank.clp && clips -f2 knowledge-base/tests/representation.clp && clips -f2 knowledge-base/tests/compulsory-share.clp && clips -f2 knowledge-base/tests/spouse-status.clp && clips -f2 knowledge-base/tests/refusal-and-unclaimed.clp && clips -f2 knowledge-base/tests/estate-settlement.clp && clips -f2 knowledge-base/tests/limitation.clp && clips -f2 knowledge-base/tests/logic-test-fixtures.clp",
+    "test:kb": "clips -f2 knowledge-base/tests/will-validity.clp && clips -f2 knowledge-base/tests/inheritance-type.clp && clips -f2 knowledge-base/tests/eligibility.clp && clips -f2 knowledge-base/tests/heir-rank.clp && clips -f2 knowledge-base/tests/representation.clp && clips -f2 knowledge-base/tests/compulsory-share.clp && clips -f2 knowledge-base/tests/compulsory-share-vnd.clp && clips -f2 knowledge-base/tests/spouse-status.clp && clips -f2 knowledge-base/tests/refusal-and-unclaimed.clp && clips -f2 knowledge-base/tests/estate-settlement.clp && clips -f2 knowledge-base/tests/estate-vnd.clp && clips -f2 knowledge-base/tests/limitation.clp && clips -f2 knowledge-base/tests/logic-test-fixtures.clp",
     "test:app": "node --import tsx --test tests/*.test.ts",
     "test": "npm run test:kb && npm run test:app"
   },

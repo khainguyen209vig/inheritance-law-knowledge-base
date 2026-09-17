@@ -65,7 +65,7 @@ test("run API validates input and returns the immutable report DTO", async () =>
   assert.equal(valid.status, 200);
   const report = await valid.json() as { status: string; knowledgeBaseVersion: string; conclusions: unknown[] };
   assert.equal(report.status, "complete");
-  assert.equal(report.knowledgeBaseVersion, "inheritance-kb-v20");
+  assert.equal(report.knowledgeBaseVersion, "inheritance-kb-v21");
   assert.equal(report.conclusions.length, 1);
 
   const invalid = await runRoute(new Request("http://localhost/api/logic-tests/run", {

@@ -21,10 +21,10 @@ export const clipsRulePackages: Record<AnalysisModuleId, readonly string[]> = {
   eligibility: ["rules/03-eligibility.clp", "rules/92-eligibility-completeness.clp", "rules/96-eligibility-projection.clp", "rules/98-explanation.clp"],
   "heir-rank": ["rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/04-heir-rank.clp", "rules/93-heir-rank-completeness.clp", "rules/95-heir-rank-projection.clp", "rules/98-explanation.clp"],
   representation: ["rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/05-representation.clp", "rules/94-representation-completeness.clp", "rules/95-representation-projection.clp", "rules/98-explanation.clp"],
-  "compulsory-share": ["rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/06-compulsory-share.clp", "rules/96-compulsory-share-completeness.clp", "rules/97-compulsory-share-projection.clp", "rules/98-explanation.clp"],
+  "compulsory-share": ["rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/04-heir-rank.clp", "rules/09-estate-settlement.clp", "rules/11-estate-vnd.clp", "rules/06-compulsory-share.clp", "rules/96-compulsory-share-completeness.clp", "rules/97-compulsory-share-projection.clp", "rules/98-explanation.clp"],
   "spouse-status": ["rules/07-spouse-status.clp", "rules/97-spouse-status-completeness.clp", "rules/98-spouse-status-projection.clp", "rules/98-explanation.clp"],
   "refusal-and-unclaimed": ["rules/03-eligibility.clp", "rules/04-heir-rank.clp", "rules/08-refusal-and-unclaimed.clp", "rules/98-refusal-and-unclaimed-completeness.clp", "rules/99-refusal-and-unclaimed-projection.clp", "rules/98-explanation.clp"],
-  "estate-settlement": ["rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/04-heir-rank.clp", "rules/09-estate-settlement.clp", "rules/99-estate-settlement-completeness.clp", "rules/99-estate-settlement-projection.clp", "rules/98-explanation.clp"],
+  "estate-settlement": ["rules/03-eligibility.clp", "rules/08-refusal-and-unclaimed.clp", "rules/04-heir-rank.clp", "rules/09-estate-settlement.clp", "rules/11-estate-vnd.clp", "rules/99-estate-settlement-completeness.clp", "rules/99-estate-settlement-projection.clp", "rules/98-explanation.clp"],
   limitation: ["rules/10-limitation.clp", "rules/99-limitation-completeness.clp", "rules/99-limitation-projection.clp", "rules/98-explanation.clp"],
 };
 

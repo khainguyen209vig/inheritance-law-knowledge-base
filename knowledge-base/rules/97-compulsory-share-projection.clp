@@ -52,3 +52,15 @@
   (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-shortfall) (value ?amount) (rule-id ?rule))
   =>
   (assert (module-result (case-id ?case-id) (subject ?calculation-id) (module compulsory-share) (predicate compulsory-share-shortfall) (value ?amount) (derivations ?rule))))
+
+(defrule project-compulsory-share-vnd-results
+  (declare (salience 50))
+  (analysis-request (case-id ?case-id) (module compulsory-share))
+  (derived-fact
+    (case-id ?case-id)
+    (subject ?person)
+    (predicate ?predicate&hypothetical-statutory-share-vnd|minimum-compulsory-share-vnd|minimum-compulsory-share-rounding-remainder-numerator|minimum-share-rule-applies-vnd|compulsory-share-shortfall-vnd)
+    (value ?value)
+    (rule-id ?rule))
+  =>
+  (assert (module-result (case-id ?case-id) (subject ?person) (module compulsory-share) (predicate ?predicate) (value ?value) (derivations ?rule))))

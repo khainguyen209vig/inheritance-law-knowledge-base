@@ -420,6 +420,18 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 22. [x] Triển khai R-I04/R-I05: mốc `distribution-not-before`, quyền yêu cầu Tòa hoãn/gia hạn và giới hạn 3 năm; không suy diễn quyết định của Tòa.
 23. [x] Triển khai R-J01–R-J04: CLIPS chọn thời hạn theo loại yêu cầu/tài sản, temporal helper tính mốc ngày và presenter hiển thị timeline Điều 623.
 24. [x] Triển khai R-J05–R-J07 theo từng phần di sản với xác nhận hết thời hiệu, người thừa kế quản lý, người chiếm hữu đủ Điều 236 và completeness trước các nhánh phủ định.
-25. [ ] Kiểm thử usability graph editor với ít nhất hai thành viên không viết CLIPS; sau đó chốt responsive/accessibility, hướng dẫn sửa diagnostics và nhu cầu kéo/thả node.
+25. [x] Triển khai lát cắt tính toán bằng số nguyên VNĐ: tổng hợp phần sở hữu của nhiều tài sản, trừ nghĩa vụ đã xác nhận, tính suất bằng nhau R-C04 và ngưỡng bắt buộc 2/3 R-F01c; mọi phần dư được xuất thành kết quả riêng, không tự làm tròn.
+26. [ ] Kiểm thử usability graph editor với ít nhất hai thành viên không viết CLIPS; sau đó chốt responsive/accessibility, hướng dẫn sửa diagnostics và nhu cầu kéo/thả node.
+
+### Phạm vi tính toán VNĐ
+
+- Chỉ nhận số nguyên VNĐ; không có tiền tệ, tỷ giá hoặc ngày quy đổi.
+- Giá trị tài sản và tỷ lệ sở hữu là facts đã được người dùng xác nhận. Hệ thống không định giá tài sản và không xác lập quyền sở hữu.
+- Di sản ròng = tổng phần giá trị thuộc người chết − tổng nghĩa vụ đã xác nhận. Nếu nghĩa vụ vượt tài sản, kết quả ròng bằng 0 và phần thiếu được báo riêng.
+- Suất theo pháp luật bằng nhau chỉ được tính khi graph đã xác định xong hàng thừa kế đang hoạt động và những người thực sự được gọi hưởng.
+- Khi phép chia tạo phần lẻ dưới 1 VNĐ, hệ thống xuất phần dư để người review xử lý; không tự lựa chọn người nhận phần dư.
+- Thứ tự Điều 658 vẫn được suy luận cho từng nghĩa vụ, nhưng phiên bản này chưa phân bổ số tiền thiếu lần lượt theo 10 mức ưu tiên.
+
+Fixture tham khảo: `knowledge-base/fixtures/estate-vnd.clp`.
 
 Hậu MVP: bổ sung màn hình so sánh hai inference runs của cùng hồ sơ, gồm thay đổi facts, kết quả, rule được kích hoạt và missing requirements. Tính năng này phục vụ giải thích/kiểm chứng nhưng không chặn việc mở rộng các mô-đun nghiệp vụ.

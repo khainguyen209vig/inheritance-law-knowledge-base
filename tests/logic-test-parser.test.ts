@@ -26,6 +26,14 @@ test("restricted parser normalizes all Quick Logic Test release fixtures", () =>
   }
 });
 
+test("restricted parser accepts the integer-VND estate fixture", () => {
+  const fileName = "estate-vnd.clp";
+  const result = parseLogicTestClpBytes(readFileSync(path.join(process.cwd(), "knowledge-base/fixtures", fileName)), { fileName });
+  assert.equal(result.caseStudy?.caseId, "estate-vnd-case");
+  assert.ok(result.caseStudy?.facts.some((fact) => fact.predicate === "asset-value-vnd" && fact.value === 3_000_000_001));
+  assert.equal(result.diagnostics.some((item) => item.severity === "error"), false);
+});
+
 test("predicate allow-list is derived from every module fact contract", () => {
   assert.ok(caseFactPredicates.size > 50);
   for (const predicate of ["will-type", "deceased-person", "eligibility-candidate", "representation-candidate", "inheritance-opening-date"]) {

@@ -85,7 +85,7 @@
     (rule-id R-C04)
     (module heir-rank)
     (legal-source "Điều 651 khoản 2 Bộ luật Dân sự 2015")
-    (description "Khi có từ hai người trở lên cùng được gọi hưởng ở hàng đang hoạt động, hệ thống ghi nhận nguyên tắc cùng hàng hưởng phần bằng nhau; mô-đun này chưa tính giá trị phần chia.")
+    (description "Khi có từ hai người trở lên cùng được gọi hưởng ở hàng đang hoạt động, hệ thống ghi nhận nguyên tắc cùng hàng hưởng phần bằng nhau. Nếu lát cắt VNĐ có di sản ròng và tập người hưởng đầy đủ, hệ thống tính suất bằng phép chia nguyên và công bố phần dư.")
     (status draft))
   (rule-metadata
     (rule-id R-C05)
@@ -308,6 +308,24 @@
     (module estate-settlement)
     (legal-source "Điều 658 Bộ luật Dân sự 2015")
     (description "Loại nghĩa vụ hoặc chi phí của từng khoản được đối chiếu với bảng tri thức 10 mức tại Điều 658. Một production rule tổng quát thực hiện phép đối chiếu; thứ tự pháp lý không được mã hóa thành mười nhánh điều kiện.")
+    (status draft))
+  (rule-metadata
+    (rule-id ESTATE-VND-ASSET)
+    (module estate-settlement)
+    (legal-source "Quy tắc tính toán nội bộ; không thực hiện định giá hoặc xác định tranh chấp sở hữu")
+    (description "Từ giá trị định giá bằng VNĐ và tỷ lệ sở hữu đã được xác nhận, hệ thống tính phần giá trị thuộc di sản bằng phép chia số nguyên. Phần nhỏ hơn một VNĐ được ghi riêng và không tự phân bổ.")
+    (status draft))
+  (rule-metadata
+    (rule-id ESTATE-VND-TOTALS)
+    (module estate-settlement)
+    (legal-source "Quy tắc tính toán nội bộ; kết nối thứ tự nghĩa vụ tại Điều 658")
+    (description "Sau khi tập tài sản và nghĩa vụ được xác nhận đầy đủ, hệ thống cộng phần giá trị thuộc di sản, cộng nghĩa vụ và lấy phần chênh lệch không âm làm di sản có thể phân chia.")
+    (status draft))
+  (rule-metadata
+    (rule-id SYSTEM-ESTATE-VND)
+    (module estate-settlement)
+    (legal-source "Quy tắc kiểm soát nhất quán của hệ thống")
+    (description "Hệ thống phát hiện tỷ lệ sở hữu không hợp lệ hoặc tổng nghĩa vụ lớn hơn tổng giá trị thuộc di sản. Trường hợp thiếu hụt không được chuyển thành số âm.")
     (status draft))
   (rule-metadata
     (rule-id R-I02)

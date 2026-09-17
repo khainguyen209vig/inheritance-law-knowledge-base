@@ -1,3 +1,53 @@
+(defrule missing-estate-asset-set-complete
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?calculation) (predicate estate-vnd-calculation) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?calculation) (predicate estate-asset-set-complete) (value true)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?calculation) (module estate-settlement) (predicate estate-asset-set-complete))))
+
+(defrule missing-estate-obligation-set-complete
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?calculation) (predicate estate-vnd-calculation) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?calculation) (predicate estate-obligation-set-complete) (value true)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?calculation) (module estate-settlement) (predicate estate-obligation-set-complete))))
+
+(defrule missing-estate-asset
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?calculation) (predicate estate-vnd-calculation) (value true))
+  (not (asserted-fact (case-id ?case-id) (predicate estate-asset) (value true)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?calculation) (module estate-settlement) (predicate estate-asset))))
+
+(defrule missing-asset-value-vnd
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?asset) (predicate estate-asset) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?asset) (predicate asset-value-vnd)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?asset) (module estate-settlement) (predicate asset-value-vnd))))
+
+(defrule missing-deceased-ownership-numerator
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?asset) (predicate estate-asset) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?asset) (predicate deceased-ownership-numerator)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?asset) (module estate-settlement) (predicate deceased-ownership-numerator))))
+
+(defrule missing-deceased-ownership-denominator
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (subject ?asset) (predicate estate-asset) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?asset) (predicate deceased-ownership-denominator)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?asset) (module estate-settlement) (predicate deceased-ownership-denominator))))
+
+(defrule missing-obligation-amount-vnd
+  (analysis-request (case-id ?case-id) (module estate-settlement))
+  (asserted-fact (case-id ?case-id) (predicate estate-vnd-calculation) (value true))
+  (asserted-fact (case-id ?case-id) (subject ?obligation) (predicate estate-obligation) (value true))
+  (not (asserted-fact (case-id ?case-id) (subject ?obligation) (predicate obligation-amount-vnd)))
+  =>
+  (assert (missing-requirement (case-id ?case-id) (subject ?obligation) (module estate-settlement) (predicate obligation-amount-vnd))))
+
 (defrule missing-obligation-type
   (analysis-request (case-id ?case-id) (module estate-settlement))
   (asserted-fact (case-id ?case-id) (subject ?obligation) (predicate estate-obligation) (value true))

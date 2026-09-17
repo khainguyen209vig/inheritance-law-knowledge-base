@@ -126,3 +126,36 @@
   =>
   (assert (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-share-rule-applies) (value false) (rule-id R-F01c) (supports ?minimum-rule ?received)))
   (assert (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-shortfall) (value 0) (rule-id R-F01c) (supports ?minimum-rule ?received))))
+
+; Integer-VND variant. The statutory share is derived from the estate VND
+; calculation and active statutory-heir set; only the testamentary amount is
+; supplied as a confirmed observation for the protected person.
+(defrule R-F01c-calculate-minimum-threshold-vnd
+  (declare (salience 155))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir) (value true) (rule-id ?active-rule))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate hypothetical-statutory-share-vnd) (value ?statutory) (rule-id ?statutory-rule))
+  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate minimum-compulsory-share-vnd)))
+  =>
+  (assert (derived-fact
+    (case-id ?case-id) (subject ?person) (predicate minimum-compulsory-share-vnd)
+    (value (div (* ?statutory 2) 3)) (rule-id R-F01c)
+    (supports ?active-rule ?statutory-rule)))
+  (assert (derived-fact
+    (case-id ?case-id) (subject ?person) (predicate minimum-compulsory-share-rounding-remainder-numerator)
+    (value (mod (* ?statutory 2) 3)) (rule-id R-F01c)
+    (supports ?active-rule ?statutory-rule))))
+
+(defrule R-F01c-calculate-shortfall-vnd
+  (declare (salience 145))
+  (derived-fact (case-id ?case-id) (subject ?person) (predicate minimum-compulsory-share-vnd) (value ?minimum) (rule-id ?minimum-rule))
+  (asserted-fact (fact-id ?received-fact) (case-id ?case-id) (subject ?person) (predicate testamentary-share-received-vnd) (value ?received))
+  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-share-shortfall-vnd)))
+  =>
+  (assert (derived-fact
+    (case-id ?case-id) (subject ?person) (predicate compulsory-share-shortfall-vnd)
+    (value (max 0 (- ?minimum ?received))) (rule-id R-F01c)
+    (supports ?minimum-rule ?received-fact)))
+  (assert (derived-fact
+    (case-id ?case-id) (subject ?person) (predicate minimum-share-rule-applies-vnd)
+    (value (if (< ?received ?minimum) then true else false)) (rule-id R-F01c)
+    (supports ?minimum-rule ?received-fact))))

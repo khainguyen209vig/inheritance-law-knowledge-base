@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "knowledgeBaseVersion": "inheritance-kb-v20",
+  "knowledgeBaseVersion": "inheritance-kb-v21",
   "entries": {
     "ARTICLE-627": {
       "ruleId": "ARTICLE-627",
@@ -190,10 +190,10 @@
     "R-C04": {
       "ruleId": "R-C04", "module": "heir-rank", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
       "title": "Nguyên tắc hưởng phần di sản bằng nhau",
-      "reasoning": "Khi có từ hai người trở lên cùng được gọi hưởng ở hàng đang hoạt động, hệ thống ghi nhận nguyên tắc cùng hàng hưởng phần bằng nhau; mô-đun này chưa tính giá trị phần chia.",
-      "conclusion": "Áp dụng nguyên tắc cùng hàng hưởng phần bằng nhau",
+      "reasoning": "Khi có từ hai người trở lên cùng được gọi hưởng ở hàng đang hoạt động, hệ thống ghi nhận nguyên tắc cùng hàng hưởng phần bằng nhau. Nếu lát cắt VNĐ có di sản ròng và tập người hưởng đầy đủ, hệ thống tính suất bằng phép chia nguyên và công bố phần dư.",
+      "conclusion": "Áp dụng nguyên tắc cùng hàng hưởng phần bằng nhau và tùy chọn tính suất VNĐ",
       "citation": "Điều 651 khoản 2 Bộ luật Dân sự 2015", "provisionId": "article-651", "relevantSections": ["clause-2"], "clipsMetadata": true,
-      "implementations": ["R-C04-equal-share-principle"]
+      "implementations": ["R-C04-equal-share-principle", "R-C04-calculate-equal-statutory-share-vnd", "R-C04-record-statutory-division-remainder-vnd"]
     },
     "R-C05": {
       "ruleId": "R-C05", "module": "heir-rank", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
@@ -328,7 +328,7 @@
       "ruleId": "R-F01c", "module": "compulsory-share", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
       "title": "Đối chiếu phần được chỉ định với ngưỡng hai phần ba", "reasoning": "Trong một calculation gắn với đúng người và phần di sản, hệ thống lấy hai phần ba suất thừa kế theo pháp luật giả định làm ngưỡng. Nếu phần đã nhận theo di chúc thấp hơn ngưỡng, phần chênh lệch được ghi nhận là phần còn thiếu theo cơ chế Điều 644.",
       "conclusion": "Xác định ngưỡng tối thiểu và phần chênh lệch cần xem xét", "citation": "Điều 644 khoản 1 Bộ luật Dân sự 2015", "provisionId": "article-644", "relevantSections": ["clause-1-intro"], "clipsMetadata": true,
-      "implementations": ["R-F01c-calculate-minimum-threshold", "R-F01c-shortfall-applies", "R-F01c-threshold-already-met"]
+      "implementations": ["R-F01c-calculate-minimum-threshold", "R-F01c-shortfall-applies", "R-F01c-threshold-already-met", "R-F01c-calculate-minimum-threshold-vnd", "R-F01c-calculate-shortfall-vnd"]
     },
     "R-F02": {
       "ruleId": "R-F02", "module": "compulsory-share", "kind": "legal", "status": "draft", "reviewState": "TEAM_REVIEW",
@@ -431,6 +431,24 @@
       "title": "Xác định thứ tự ưu tiên thanh toán", "reasoning": "Loại nghĩa vụ hoặc chi phí của từng khoản được đối chiếu với bảng tri thức 10 mức tại Điều 658. Một production rule tổng quát thực hiện phép đối chiếu; thứ tự pháp lý không được mã hóa thành mười nhánh điều kiện.",
       "conclusion": "Gán mức ưu tiên thanh toán từ 1 đến 10 cho khoản đang xét", "citation": "Điều 658 Bộ luật Dân sự 2015", "provisionId": "article-658", "relevantSections": ["main", "clause-1", "clause-2", "clause-3", "clause-4", "clause-5", "clause-6", "clause-7", "clause-8", "clause-9", "clause-10"], "clipsMetadata": true,
       "implementations": ["R-I01-assign-payment-priority"]
+    },
+    "ESTATE-VND-ASSET": {
+      "ruleId": "ESTATE-VND-ASSET", "module": "estate-settlement", "kind": "internal", "status": "draft",
+      "title": "Quy đổi phần sở hữu đã xác nhận sang VNĐ", "reasoning": "Từ giá trị định giá bằng VNĐ và tỷ lệ sở hữu đã được xác nhận, hệ thống tính phần giá trị thuộc di sản bằng phép chia số nguyên. Phần nhỏ hơn một VNĐ được ghi riêng và không tự phân bổ.",
+      "conclusion": "Xác định giá trị bằng VNĐ thuộc khối di sản", "citation": "Quy tắc tính toán nội bộ; không thực hiện định giá hoặc xác định tranh chấp sở hữu", "relevantSections": [], "clipsMetadata": true,
+      "implementations": ["ESTATE-VND-ASSET-calculate-owned-value", "ESTATE-VND-ASSET-record-sub-vnd-remainder"]
+    },
+    "ESTATE-VND-TOTALS": {
+      "ruleId": "ESTATE-VND-TOTALS", "module": "estate-settlement", "kind": "internal", "status": "draft",
+      "title": "Tổng hợp khối di sản bằng VNĐ", "reasoning": "Sau khi tập tài sản và nghĩa vụ được xác nhận đầy đủ, hệ thống cộng phần giá trị thuộc di sản, cộng nghĩa vụ và lấy phần chênh lệch không âm làm di sản có thể phân chia.",
+      "conclusion": "Xác định tổng di sản, tổng nghĩa vụ và di sản ròng bằng VNĐ", "citation": "Quy tắc tính toán nội bộ; kết nối thứ tự nghĩa vụ tại Điều 658", "provisionId": "article-658", "relevantSections": ["main"], "clipsMetadata": true,
+      "implementations": ["ESTATE-VND-TOTALS-calculate-gross-estate", "ESTATE-VND-TOTALS-no-obligations", "ESTATE-VND-TOTALS-calculate-obligations", "ESTATE-VND-TOTALS-calculate-net-estate", "ESTATE-VND-TOTALS-count-statutory-heirs"]
+    },
+    "SYSTEM-ESTATE-VND": {
+      "ruleId": "SYSTEM-ESTATE-VND", "module": "estate-settlement", "kind": "system", "status": "draft",
+      "title": "Kiểm tra nhất quán phép tính VNĐ", "reasoning": "Hệ thống phát hiện tỷ lệ sở hữu không hợp lệ hoặc tổng nghĩa vụ lớn hơn tổng giá trị thuộc di sản. Trường hợp thiếu hụt không được chuyển thành số âm.",
+      "conclusion": "Cần kiểm tra dữ kiện tiền và tỷ lệ sở hữu", "citation": "Quy tắc kiểm soát nhất quán của hệ thống", "relevantSections": [], "clipsMetadata": true,
+      "implementations": ["SYSTEM-ESTATE-VND-invalid-ownership-ratio", "SYSTEM-ESTATE-VND-obligations-exceed-estate"]
     },
     "R-I02": {
       "ruleId": "R-I02", "module": "estate-settlement", "kind": "legal", "status": "draft", "reviewState": "MODEL_READY",
