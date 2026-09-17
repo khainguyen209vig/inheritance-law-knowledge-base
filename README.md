@@ -69,6 +69,7 @@ Các nhóm luật được tổ chức thành mô-đun kết quả dùng chung w
 - [x] Triển khai lát cắt thừa kế thế vị R-E01/R-E02 trên graph dùng chung, gồm API, presenter rà soát nhánh, trace và tests.
 - [x] Triển khai R-I01–R-I05 về thanh toán, nguyên tắc chia và hạn chế phân chia tại Điều 658–661.
 - [x] Triển khai R-J01–R-J07 về thời hiệu, timeline và hậu quả sau thời hiệu theo Điều 623.
+- [x] Hoàn thiện Quick Logic Test: upload facts `.clp`, chọn câu hỏi, xem trace theo điều luật, explore source rule và xuất `.md`/`.clp`.
 - [ ] So sánh hai inference runs của cùng hồ sơ (hạng mục hậu MVP).
 
 ## Phạm vi kết quả
@@ -160,6 +161,37 @@ Facts đầu vào
 npm install
 npm run dev
 ```
+
+### Test nhanh logic bằng file CLP
+
+Trang `/logic-test` dành cho thành viên nhóm kiểm thử một case study mà không tạo hồ sơ SQLite:
+
+1. Kéo thả file `.clp` chứa `analysis-request` tùy chọn và các `asserted-fact`.
+2. Kiểm tra preview facts và diagnostics theo dòng/cột.
+3. Chọn câu hỏi pháp lý; lựa chọn này quyết định các package CLIPS được chạy, không phụ thuộc module ghi trong file.
+4. Chọn một subject nếu chỉ muốn tập trung vào một người hoặc đối tượng.
+5. Chạy suy luận, đọc kết luận và các bước được nhóm theo điều luật.
+6. Nhấn **Explore** để xem supports, source CLIPS read-only và nội dung điều luật.
+7. Tải báo cáo Markdown hoặc file CLP replayable.
+
+Có thể thử ngay với ba file:
+
+- `knowledge-base/fixtures/logic-test/complete.clp` — có kết luận xác định;
+- `knowledge-base/fixtures/logic-test/unknown-missing.clp` — thiếu dữ kiện;
+- `knowledge-base/fixtures/logic-test/conflict.clp` — kết luận xung đột.
+
+File upload tối đa 1 MiB và 500 facts. Parser chỉ chấp nhận hai top-level form là `analysis-request` và `asserted-fact`; `defrule`, `deffunction`, `load`, `batch`, `system` và các construct thực thi khác đều bị từ chối. Nội dung upload không được chuyển trực tiếp cho CLIPS thực thi. Quy cách slot, kiểu dữ liệu và error codes đầy đủ nằm tại `doc/Quick_Logic_Test_CLP_Format.md`.
+
+Ý nghĩa trạng thái:
+
+| Status | Cách đọc |
+|---|---|
+| `complete` | Knowledge base đã có kết luận cho các goal được chọn. |
+| `missing-facts` | Thiếu facts cụ thể; danh sách cần bổ sung được hiển thị trong báo cáo. |
+| `unknown` | Không có kết luận xác định dù không còn missing requirement trực tiếp. |
+| `conflict` | Có từ hai kết luận không tương thích; cần kiểm tra facts và các nhánh rule. |
+
+File Markdown chứa metadata, kết luận, chuỗi suy luận, facts và dữ kiện thiếu. File CLP chứa lại normalized facts cùng kết quả ở dạng comment `; RESULT`, `; TRACE` và `; MISSING`; hệ thống không assert các kết quả này ngược vào working memory, nên file có thể upload lại để chạy với knowledge base hiện tại.
 
 Giao diện tại `/` là một reasoning workspace responsive, gồm:
 

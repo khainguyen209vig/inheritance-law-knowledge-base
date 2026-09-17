@@ -287,12 +287,12 @@ Hai exporter phải là hàm thuần và có golden-file tests.
 
 ### QL4 — Export và release
 
-- [ ] `QL-401` Markdown exporter và golden test.
-- [ ] `QL-402` Replayable CLP exporter bằng normalized facts + comment report và golden test.
-- [ ] `QL-403` Integration test upload → chọn topic → run → inspect report → export.
-- [ ] `QL-404` Security regression cho code injection, oversized file, timeout và stderr sanitization.
-- [ ] `QL-405` Smoke test đủ bảy topic bằng fixture đại diện.
-- [ ] `QL-406` Viết README cho format file, file mẫu, giới hạn và cách đọc status.
+- [x] `QL-401` Markdown exporter dạng hàm thuần và golden test.
+- [x] `QL-402` Replayable CLP exporter bằng normalized facts + comment report và golden test; kết quả không được assert ngược vào working memory.
+- [x] `QL-403` Integration test upload → chọn topic → run → inspect source → export.
+- [x] `QL-404` Security regression cho code injection, oversized file, timeout/buffer limit và stderr sanitization.
+- [x] `QL-405` Smoke test đủ bảy topic bằng fixture đại diện.
+- [x] `QL-406` Viết README cho format file, file mẫu, giới hạn và cách đọc status.
 
 ## 11. Thứ tự release đề xuất
 

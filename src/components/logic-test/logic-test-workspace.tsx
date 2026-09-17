@@ -34,6 +34,7 @@ export function LogicTestWorkspace({ topics }: { topics: TopicOption[] }) {
   const [scopeSubject, setScopeSubject] = useState<string>();
   const [report, setReport] = useState<LogicTestReport>();
   const [busy, setBusy] = useState<"parse" | "run">();
+  const [exporting, setExporting] = useState<"md" | "clp">();
   const [error, setError] = useState<string>();
   const [exploreStep, setExploreStep] = useState<LogicReasoningStep>();
   const [legalRuleId, setLegalRuleId] = useState<string>();
@@ -80,6 +81,32 @@ export function LogicTestWorkspace({ topics }: { topics: TopicOption[] }) {
       setError(reason instanceof Error ? reason.message : "Không thể chạy suy luận. File đã đọc vẫn được giữ lại để bạn thử lại.");
     } finally {
       setBusy(undefined);
+    }
+  }
+
+  async function downloadReport(format: "md" | "clp") {
+    if (!parseResult?.caseStudy || !topicId) return;
+    setExporting(format);
+    setError(undefined);
+    try {
+      const response = await fetch("/api/logic-tests/export", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ format, topicId, scopeSubject: scopeSubject || undefined, caseStudy: parseResult.caseStudy }),
+      });
+      if (!response.ok) throw new Error(`Không thể xuất báo cáo .${format}.`);
+      const blobUrl = URL.createObjectURL(await response.blob());
+      const disposition = response.headers.get("content-disposition") ?? "";
+      const fileName = disposition.match(/filename="([^"]+)"/u)?.[1] ?? `${parseResult.caseStudy.caseId}-${topicId}-report.${format}`;
+      const anchor = document.createElement("a");
+      anchor.href = blobUrl;
+      anchor.download = fileName;
+      anchor.click();
+      URL.revokeObjectURL(blobUrl);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Không thể xuất báo cáo. Kết quả hiện tại vẫn được giữ lại.");
+    } finally {
+      setExporting(undefined);
     }
   }
 
@@ -178,7 +205,7 @@ export function LogicTestWorkspace({ topics }: { topics: TopicOption[] }) {
           )}
 
           {error ? <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900" role="alert">{error}</div> : null}
-          {report ? <ReportView report={report} selectedTopic={selectedTopic} onExplore={setExploreStep} /> : null}
+          {report ? <ReportView report={report} selectedTopic={selectedTopic} exporting={exporting} onExport={downloadReport} onExplore={setExploreStep} /> : null}
         </div>
       </div>
 
@@ -188,7 +215,19 @@ export function LogicTestWorkspace({ topics }: { topics: TopicOption[] }) {
   );
 }
 
-function ReportView({ report, selectedTopic, onExplore }: { report: LogicTestReport; selectedTopic?: TopicOption; onExplore: (step: LogicReasoningStep) => void }) {
+function ReportView({
+  report,
+  selectedTopic,
+  exporting,
+  onExport,
+  onExplore,
+}: {
+  report: LogicTestReport;
+  selectedTopic?: TopicOption;
+  exporting?: "md" | "clp";
+  onExport: (format: "md" | "clp") => Promise<void>;
+  onExplore: (step: LogicReasoningStep) => void;
+}) {
   const status = statusPresentation[report.status];
   return (
     <section className="space-y-5" aria-live="polite">
@@ -201,6 +240,10 @@ function ReportView({ report, selectedTopic, onExplore }: { report: LogicTestRep
         <CardContent className="space-y-3">
           {report.conclusions.map((conclusion) => <div key={conclusion.id} className="rounded-lg bg-primary/[0.055] p-4 text-sm font-medium leading-6">{conclusion.statement}</div>)}
           {!report.conclusions.length ? <p className="text-sm text-muted-foreground">Chưa có kết luận cuối để hiển thị.</p> : null}
+          <div className="flex flex-wrap gap-2 border-t pt-4">
+            <Button variant="outline" disabled={Boolean(exporting)} onClick={() => void onExport("md")}>{exporting === "md" ? "Đang xuất…" : "Tải báo cáo .md"}</Button>
+            <Button variant="outline" disabled={Boolean(exporting)} onClick={() => void onExport("clp")}>{exporting === "clp" ? "Đang xuất…" : "Tải replay .clp"}</Button>
+          </div>
         </CardContent>
       </Card>
 

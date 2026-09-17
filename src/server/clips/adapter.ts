@@ -12,6 +12,7 @@ import type { InferenceOutput } from "./types";
 
 const execFileAsync = promisify(execFile);
 const knowledgeBaseDirectory = path.join(process.cwd(), "knowledge-base");
+export const clipsExecutionLimits = { timeoutMs: 10_000, maxBufferBytes: 2 * 1024 * 1024 } as const;
 
 /** Each package is one CLIPS working memory containing its goal rules and required dependency rules. */
 export const clipsRulePackages: Record<AnalysisModuleId, readonly string[]> = {
@@ -107,8 +108,8 @@ async function inferWithClips(
     const { stdout, stderr } = await execFileAsync("clips", ["-f2", driverPath], {
       cwd: process.cwd(),
       encoding: "utf8",
-      maxBuffer: 2 * 1024 * 1024,
-      timeout: 10_000,
+      maxBuffer: clipsExecutionLimits.maxBufferBytes,
+      timeout: clipsExecutionLimits.timeoutMs,
     });
 
     if (stderr.trim().length > 0) {

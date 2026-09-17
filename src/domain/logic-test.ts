@@ -114,6 +114,10 @@ export const logicTestRunRequestSchema = z.object({
 }).strict();
 
 export type LogicTestRunRequest = z.infer<typeof logicTestRunRequestSchema>;
+export const logicTestExportRequestSchema = logicTestRunRequestSchema.extend({
+  format: z.enum(["md", "clp"]),
+});
+export type LogicTestExportRequest = z.infer<typeof logicTestExportRequestSchema>;
 export type LogicTestReportStatus = "complete" | "unknown" | "conflict" | "missing-facts";
 
 export interface LogicConclusion {
