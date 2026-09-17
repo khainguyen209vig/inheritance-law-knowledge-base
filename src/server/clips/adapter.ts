@@ -36,39 +36,48 @@ export async function inferInheritanceType(input: {
   subject: string;
   facts: StoredCase["facts"];
 }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "inheritance-type" }), "inheritance-type");
+  return inferAnalysisModule(input, "inheritance-type");
 }
 
 export async function inferEligibility(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "eligibility" }), "eligibility");
+  return inferAnalysisModule(input, "eligibility");
 }
 
 export async function inferHeirRank(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "heir-rank" }), "heir-rank");
+  return inferAnalysisModule(input, "heir-rank");
 }
 
 export async function inferRepresentation(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "representation" }), "representation");
+  return inferAnalysisModule(input, "representation");
 }
 
 export async function inferCompulsoryShare(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "compulsory-share" }), "compulsory-share");
+  return inferAnalysisModule(input, "compulsory-share");
 }
 
 export async function inferSpouseStatus(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "spouse-status" }), "spouse-status");
+  return inferAnalysisModule(input, "spouse-status");
 }
 
 export async function inferRefusalAndUnclaimed(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "refusal-and-unclaimed" }), "refusal-and-unclaimed");
+  return inferAnalysisModule(input, "refusal-and-unclaimed");
 }
 
 export async function inferEstateSettlement(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  return inferWithClips(serializeCaseFacts({ ...input, module: "estate-settlement" }), "estate-settlement");
+  return inferAnalysisModule(input, "estate-settlement");
 }
 
 export async function inferLimitation(input: { caseId: string; subject: string; facts: StoredCase["facts"] }): Promise<InferenceOutput> {
-  const output = await inferWithClips(serializeCaseFacts({ ...input, module: "limitation" }), "limitation");
+  return inferAnalysisModule(input, "limitation");
+}
+
+/** Run a configured module package without persisting a case or inference snapshot. */
+export async function inferAnalysisModule(
+  input: { caseId: string; subject: string; facts: StoredCase["facts"] },
+  moduleId: AnalysisModuleId,
+): Promise<InferenceOutput> {
+  const output = await inferWithClips(serializeCaseFacts({ ...input, module: moduleId }), moduleId);
+  if (moduleId !== "limitation") return output;
   const openingDates = new Map(input.facts
     .filter((fact) => fact.predicate === "inheritance-opening-date" && typeof fact.value === "string")
     .map((fact) => [fact.subject, String(fact.value)]));

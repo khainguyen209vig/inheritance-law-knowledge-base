@@ -259,31 +259,31 @@ Hai exporter phải là hàm thuần và có golden-file tests.
 
 ### QL1 — Parser an toàn
 
-- [ ] `QL-101` Viết tokenizer hỗ trợ comment, string escape, symbol và number.
-- [ ] `QL-102` Parse duy nhất `analysis-request`/`asserted-fact` thành AST; từ chối mọi construct khác.
-- [ ] `QL-103` Validate schema, predicate allow-list, ID/case consistency và giới hạn tài nguyên.
-- [ ] `QL-104` API parse trả normalized facts, preview summary và diagnostics.
-- [ ] `QL-105` Unit/fuzz-style tests cho malformed input và payload có `load`, `batch`, `system`, `defrule`.
+- [x] `QL-101` Viết tokenizer hỗ trợ comment, string escape, symbol và number, đồng thời giữ vị trí dòng/cột/offset.
+- [x] `QL-102` Parse duy nhất `analysis-request`/`asserted-fact` thành AST; từ chối mọi construct khác mà không thực thi nội dung upload.
+- [x] `QL-103` Validate schema, predicate allow-list dẫn xuất từ fact contract, ID/case consistency và giới hạn tài nguyên.
+- [x] `QL-104` API multipart `POST /api/logic-tests/parse` trả normalized facts, preview summary và diagnostics.
+- [x] `QL-105` Unit/fuzz-style tests cho malformed input, UTF-8 lỗi, giới hạn tài nguyên và payload có `load`, `batch`, `system`, `defrule`.
 
 ### QL2 — Runner và explanation model
 
-- [ ] `QL-201` Thêm generic module runner dùng lại adapter/`clipsRulePackages`, không lưu SQLite.
-- [ ] `QL-202` Topic planner chọn goal packages và scope subject.
-- [ ] `QL-203` Aggregate results, missing requirements và conflict thành status cuối.
-- [ ] `QL-204` Dựng dependency-ordered trace từ supports.
-- [ ] `QL-205` Nhóm trace theo `provisionId`, giữ khoản/điểm trong cùng legal group.
-- [ ] `QL-206` Sinh source catalog từ các `defrule` và `implementations` trong registry; build phải fail nếu mapping bị thiếu.
-- [ ] `QL-207` API run trả report; không trả raw process output.
+- [x] `QL-201` Thêm generic module runner dùng lại adapter/`clipsRulePackages`, không lưu SQLite.
+- [x] `QL-202` Topic planner chọn goal packages và scope subject; các package độc lập chạy song song trên cùng normalized facts.
+- [x] `QL-203` Aggregate results, missing requirements và conflict thành status cuối với độ ưu tiên `conflict → missing-facts → unknown → complete`.
+- [x] `QL-204` Dựng dependency-ordered trace từ cả ba dạng support: fact ID, Rule ID và `predicate=value`; giữ diagnostic khi dependency không giải được hoặc có cycle.
+- [x] `QL-205` Nhóm trace theo `provisionId`, giữ các rule/khoản/điểm của cùng điều luật trong một legal group.
+- [x] `QL-206` Sinh `rule-source-catalog.json` từ các `defrule` và `implementations`; `npm run build` kiểm tra catalog không stale và fail khi mapping bị thiếu.
+- [x] `QL-207` API `POST /api/logic-tests/run` trả report DTO đã tổng hợp; raw stdout/stderr của process không đi qua response.
 
 ### QL3 — UI
 
-- [ ] `QL-301` Tạo `/logic-test` và entry “Test nhanh logic” ở khu vực kỹ thuật.
-- [ ] `QL-302` Upload/dropzone và preview facts theo subject, kèm diagnostics theo dòng.
-- [ ] `QL-303` Question picker tái sử dụng topic catalog và scope selector khi cần.
-- [ ] `QL-304` Result header phân biệt complete/unknown/conflict/missing-facts.
-- [ ] `QL-305` Reasoning groups theo điều luật và các step con theo khoản/điểm.
-- [ ] `QL-306` Explore dialog hiển thị code read-only, supports và link điều luật.
-- [ ] `QL-307` Loading/error/retry không làm mất file đã parse trong phiên hiện tại.
+- [x] `QL-301` Tạo `/logic-test` và entry “Test nhanh logic” ở khu vực kỹ thuật.
+- [x] `QL-302` Upload/dropzone và preview facts theo subject, kèm diagnostics theo dòng/cột.
+- [x] `QL-303` Question picker tái sử dụng topic catalog và scope selector; lựa chọn câu hỏi không phụ thuộc `analysis-request` trong file.
+- [x] `QL-304` Result header phân biệt complete/unknown/conflict/missing-facts bằng nhãn, màu và mô tả riêng.
+- [x] `QL-305` Reasoning groups theo điều luật và các step con giữ chung trong một card pháp lý.
+- [x] `QL-306` Explore dialog tải source rule khi mở, hiển thị code read-only, supports và lối mở nội dung điều luật.
+- [x] `QL-307` Loading/error/retry giữ nguyên file và kết quả parse trong phiên hiện tại.
 
 ### QL4 — Export và release
 

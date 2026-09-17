@@ -22,6 +22,9 @@ export default function ModulesPage() {
         <p className="mt-3 text-base leading-7 text-muted-foreground">
           Mỗi mô-đun tạo một nhóm kết quả riêng nhưng có thể sử dụng chung facts và derived facts trong cùng vụ việc.
         </p>
+        <div className="mt-5">
+          <Button asChild><Link href="/logic-test">Test nhanh logic từ file CLP →</Link></Button>
+        </div>
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">

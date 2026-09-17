@@ -714,7 +714,16 @@
       "citation": "Quy tắc kiểm soát tính đầy đủ của hệ thống",
       "relevantSections": [],
       "clipsMetadata": true,
-      "implementations": []
+      "implementations": [
+        "project-unknown-will-validity",
+        "project-unknown-inheritance-regime",
+        "project-unknown-eligibility",
+        "project-unknown-called-to-inherit",
+        "project-unknown-heir-rank",
+        "project-unknown-representation",
+        "project-unknown-compulsory-candidate",
+        "project-unknown-compulsory-heir-status"
+      ]
     }
   }
 }

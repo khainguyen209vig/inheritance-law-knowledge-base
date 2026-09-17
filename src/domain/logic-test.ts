@@ -11,8 +11,10 @@ export const logicTestLimits = {
 
 export const logicTestDiagnosticCodes = [
   "INVALID_UTF8",
+  "INVALID_FILE_NAME",
   "FILE_TOO_LARGE",
   "TOO_MANY_FACTS",
+  "NO_ASSERTED_FACT",
   "UNEXPECTED_TOKEN",
   "UNTERMINATED_STRING",
   "UNTERMINATED_FORM",
@@ -22,6 +24,7 @@ export const logicTestDiagnosticCodes = [
   "DUPLICATE_SLOT",
   "INVALID_SLOT_VALUE",
   "DUPLICATE_FACT_ID",
+  "DUPLICATE_ANALYSIS_REQUEST",
   "INCONSISTENT_CASE_ID",
   "UNSUPPORTED_PREDICATE",
   "MISSING_LABEL",
@@ -41,6 +44,18 @@ export interface LogicTestDiagnostic {
   message: string;
   location: LogicTestSourceLocation;
   endLocation?: LogicTestSourceLocation;
+}
+
+export interface LogicTestParseSummary {
+  factCount: number;
+  subjectCount: number;
+  subjects: Array<{ id: string; label?: string; factCount: number }>;
+}
+
+export interface LogicTestParseResult {
+  caseStudy?: NormalizedLogicTestCaseStudy;
+  diagnostics: LogicTestDiagnostic[];
+  summary?: LogicTestParseSummary;
 }
 
 export const normalizedLogicTestFactSchema = caseFactSchema.and(z.object({ subject: caseIdSchema }));

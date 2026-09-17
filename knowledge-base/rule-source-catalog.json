@@ -1,0 +1,883 @@
+{
+  "schemaVersion": 1,
+  "knowledgeBaseVersion": "inheritance-kb-v20",
+  "entries": {
+    "ARTICLE-627": [],
+    "FORM-ASSESSMENT-ACCEPTED": [
+      {
+        "implementation": "FORM-ASSESSMENT-ACCEPTED",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule FORM-ASSESSMENT-ACCEPTED\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?type-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate will-type)\n    (value written))\n  (asserted-fact\n    (fact-id ?form-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate formal-defect)\n    (value not-detected))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-form-requirements)\n    (value true)\n    (rule-id FORM-ASSESSMENT-ACCEPTED)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-form-requirements)\n    (value true)\n    (rule-id FORM-ASSESSMENT-ACCEPTED)\n    (supports ?type-fact-id ?form-fact-id))))"
+      }
+    ],
+    "R-B01": [
+      {
+        "implementation": "R-B01-valid-intention",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B01-valid-intention\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?mental-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate testator-mental-state)\n    (value lucid))\n  (asserted-fact\n    (fact-id ?influence-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate undue-influence)\n    (value none))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-intention)\n    (value true)\n    (rule-id R-B01)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-intention)\n    (value true)\n    (rule-id R-B01)\n    (supports ?mental-fact-id ?influence-fact-id))))"
+      }
+    ],
+    "R-B02": [
+      {
+        "implementation": "R-B02-valid-content-and-form",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B02-valid-content-and-form\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?content-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate prohibited-content)\n    (value not-detected))\n  (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-form-requirements)\n    (value true)\n    (rule-id ?form-rule-id))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-content-and-form)\n    (value true)\n    (rule-id R-B02)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-content-and-form)\n    (value true)\n    (rule-id R-B02)\n    (supports ?content-fact-id ?form-rule-id))))"
+      }
+    ],
+    "R-B03": [
+      {
+        "implementation": "R-B03-valid-will",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B03-valid-will\n  (declare (salience 500))\n  (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-intention)\n    (value true))\n  (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-content-and-form)\n    (value true))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value true)\n    (rule-id R-B03)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value true)\n    (rule-id R-B03)\n    (supports valid-intention=true valid-content-and-form=true))))"
+      }
+    ],
+    "R-B04": [
+      {
+        "implementation": "R-B04-invalid-will-no-mental-capacity",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B04-invalid-will-no-mental-capacity\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?mental-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate testator-mental-state)\n    (value not-lucid))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value false)\n    (rule-id R-B04)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value false)\n    (rule-id R-B04)\n    (supports ?mental-fact-id))))"
+      },
+      {
+        "implementation": "R-B04-invalid-will-undue-influence",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B04-invalid-will-undue-influence\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?influence-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate undue-influence)\n    (value ?influence&deception|threat))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value false)\n    (rule-id R-B04)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value false)\n    (rule-id R-B04)\n    (supports ?influence-fact-id))))"
+      }
+    ],
+    "R-B05": [
+      {
+        "implementation": "R-B05-minor-special-requirement",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B05-minor-special-requirement\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?age-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate testator-age)\n    (value ?age&:(and (>= ?age 15) (< ?age 18))))\n  (asserted-fact\n    (fact-id ?type-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate will-type)\n    (value written))\n  (asserted-fact\n    (fact-id ?consent-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate guardian-consent)\n    (value true))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate minor-special-requirement)\n    (value satisfied)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate minor-special-requirement)\n    (value satisfied)\n    (rule-id R-B05)\n    (supports ?age-fact-id ?type-fact-id ?consent-fact-id))))"
+      },
+      {
+        "implementation": "R-B05-minor-form-requirements",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B05-minor-form-requirements\n  (declare (salience 500))\n  (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate minor-special-requirement)\n    (value satisfied)\n    (rule-id R-B05))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-form-requirements)\n    (value true)\n    (rule-id R-B05)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-form-requirements)\n    (value true)\n    (rule-id R-B05)\n    (supports minor-special-requirement=satisfied))))"
+      }
+    ],
+    "R-B06": [
+      {
+        "implementation": "R-B06-minor-will-not-written",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B06-minor-will-not-written\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?age-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate testator-age)\n    (value ?age&:(and (>= ?age 15) (< ?age 18))))\n  (asserted-fact\n    (fact-id ?type-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate will-type)\n    (value ?type&~written))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate minor-special-requirement)\n    (value failed)\n    (rule-id R-B06)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate minor-special-requirement)\n    (value failed)\n    (rule-id R-B06)\n    (supports ?age-fact-id ?type-fact-id))))"
+      },
+      {
+        "implementation": "R-B06-minor-without-consent",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B06-minor-without-consent\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?age-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate testator-age)\n    (value ?age&:(and (>= ?age 15) (< ?age 18))))\n  (asserted-fact\n    (fact-id ?consent-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate guardian-consent)\n    (value false))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate minor-special-requirement)\n    (value failed)\n    (rule-id R-B06)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate minor-special-requirement)\n    (value failed)\n    (rule-id R-B06)\n    (supports ?age-fact-id ?consent-fact-id))))"
+      },
+      {
+        "implementation": "R-B06-invalid-minor-will",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B06-invalid-minor-will\n  (declare (salience 500))\n  (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate minor-special-requirement)\n    (value failed)\n    (rule-id R-B06))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value false)\n    (rule-id R-B06)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value false)\n    (rule-id R-B06)\n    (supports minor-special-requirement=failed))))"
+      }
+    ],
+    "R-B07": [
+      {
+        "implementation": "R-B07-physical-limitation-form",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B07-physical-limitation-form\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?condition-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate physical-limitation)\n    (value true))\n  (asserted-fact\n    (fact-id ?type-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate will-type)\n    (value written))\n  (asserted-fact\n    (fact-id ?witness-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate prepared-by-witness)\n    (value true))\n  (asserted-fact\n    (fact-id ?certification-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate notarized-or-certified)\n    (value true))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate accessibility-form-requirement)\n    (value satisfied)\n    (rule-id R-B07)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate accessibility-form-requirement)\n    (value satisfied)\n    (rule-id R-B07)\n    (supports ?condition-fact-id ?type-fact-id ?witness-fact-id ?certification-fact-id))))"
+      },
+      {
+        "implementation": "R-B07-illiterate-testator-form",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B07-illiterate-testator-form\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?condition-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate testator-literacy)\n    (value illiterate))\n  (asserted-fact\n    (fact-id ?type-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate will-type)\n    (value written))\n  (asserted-fact\n    (fact-id ?witness-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate prepared-by-witness)\n    (value true))\n  (asserted-fact\n    (fact-id ?certification-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate notarized-or-certified)\n    (value true))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate accessibility-form-requirement)\n    (value satisfied)\n    (rule-id R-B07)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate accessibility-form-requirement)\n    (value satisfied)\n    (rule-id R-B07)\n    (supports ?condition-fact-id ?type-fact-id ?witness-fact-id ?certification-fact-id))))"
+      },
+      {
+        "implementation": "R-B07-accessibility-form-requirements",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B07-accessibility-form-requirements\n  (declare (salience 500))\n  (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate accessibility-form-requirement)\n    (value satisfied)\n    (rule-id R-B07))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-form-requirements)\n    (value true)\n    (rule-id R-B07)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-form-requirements)\n    (value true)\n    (rule-id R-B07)\n    (supports accessibility-form-requirement=satisfied))))"
+      }
+    ],
+    "R-B08": [
+      {
+        "implementation": "R-B08-oral-will-automatically-revoked",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B08-oral-will-automatically-revoked\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?type-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate will-type)\n    (value oral))\n  (asserted-fact\n    (fact-id ?alive-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate testator-alive-after-three-months)\n    (value true))\n  (asserted-fact\n    (fact-id ?mental-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate testator-mental-state-after-three-months)\n    (value lucid))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate will-effect-status)\n    (value automatically-revoked)\n    (rule-id R-B08)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate will-effect-status)\n    (value automatically-revoked)\n    (rule-id R-B08)\n    (supports ?type-fact-id ?alive-fact-id ?mental-fact-id)))\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate will-currently-effective)\n    (value false)\n    (rule-id R-B08)\n    (supports will-effect-status=automatically-revoked))))"
+      }
+    ],
+    "R-B09": [
+      {
+        "implementation": "R-B09-valid-oral-form",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B09-valid-oral-form\n  (declare (salience 500))\n  (asserted-fact\n    (fact-id ?type-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate will-type)\n    (value oral))\n  (asserted-fact\n    (fact-id ?count-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate witness-count)\n    (value ?count&:(>= ?count 2)))\n  (asserted-fact\n    (fact-id ?recorded-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate witnesses-recorded)\n    (value true))\n  (asserted-fact\n    (fact-id ?signed-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate witnesses-signed)\n    (value true))\n  (asserted-fact\n    (fact-id ?certified-fact-id)\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate certified-within-days)\n    (value ?days&:(and (>= ?days 0) (<= ?days 5))))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate oral-form-requirement)\n    (value satisfied)\n    (rule-id R-B09)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate oral-form-requirement)\n    (value satisfied)\n    (rule-id R-B09)\n    (supports ?type-fact-id ?count-fact-id ?recorded-fact-id ?signed-fact-id ?certified-fact-id))))"
+      },
+      {
+        "implementation": "R-B09-oral-form-requirements",
+        "file": "rules/01-will-validity.clp",
+        "source": "(defrule R-B09-oral-form-requirements\n  (declare (salience 500))\n  (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate oral-form-requirement)\n    (value satisfied)\n    (rule-id R-B09))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-form-requirements)\n    (value true)\n    (rule-id R-B09)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-form-requirements)\n    (value true)\n    (rule-id R-B09)\n    (supports oral-form-requirement=satisfied))))"
+      }
+    ],
+    "R-C01": [
+      {
+        "implementation": "R-C01-spouse",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C01-spouse\n  (declare (salience 500))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?person) (predicate spouse-at-opening) (value ?deceased))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1) (rule-id R-C01) (supports ?deceased-fact ?candidate ?relation))))"
+      },
+      {
+        "implementation": "R-C01-spouse-reverse",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C01-spouse-reverse\n  (declare (salience 500))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?deceased) (predicate spouse-at-opening) (value ?person))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1) (rule-id R-C01) (supports ?deceased-fact ?candidate ?relation))))"
+      },
+      {
+        "implementation": "R-C01-biological-parent",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C01-biological-parent\n  (declare (salience 500))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?person) (predicate biological-parent-of) (value ?deceased))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1) (rule-id R-C01) (supports ?deceased-fact ?candidate ?relation))))"
+      },
+      {
+        "implementation": "R-C01-adoptive-parent",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C01-adoptive-parent\n  (declare (salience 500))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?person) (predicate adoptive-parent-of) (value ?deceased))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1) (rule-id R-C01) (supports ?deceased-fact ?candidate ?relation))))"
+      },
+      {
+        "implementation": "R-C01-biological-child",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C01-biological-child\n  (declare (salience 500))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?deceased) (predicate biological-parent-of) (value ?person))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1) (rule-id R-C01) (supports ?deceased-fact ?candidate ?relation))))"
+      },
+      {
+        "implementation": "R-C01-adoptive-child",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C01-adoptive-child\n  (declare (salience 500))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?deceased) (predicate adoptive-parent-of) (value ?person))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1) (rule-id R-C01) (supports ?deceased-fact ?candidate ?relation))))"
+      }
+    ],
+    "R-C02": [
+      {
+        "implementation": "R-C02-grandparent",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C02-grandparent\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?edge-one) (case-id ?case-id) (subject ?person) (predicate biological-parent-of) (value ?parent))\n  (asserted-fact (fact-id ?edge-two) (case-id ?case-id) (subject ?parent) (predicate biological-parent-of) (value ?deceased))\n  (asserted-fact (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 2)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 2) (rule-id R-C02) (supports ?candidate ?edge-one ?edge-two))))"
+      },
+      {
+        "implementation": "R-C02-sibling",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C02-sibling\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?person-edge) (case-id ?case-id) (subject ?parent) (predicate biological-parent-of) (value ?person))\n  (asserted-fact (fact-id ?deceased-edge) (case-id ?case-id) (subject ?parent) (predicate biological-parent-of) (value ?deceased))\n  (asserted-fact (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (test (neq ?person ?deceased))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 2)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 2) (rule-id R-C02) (supports ?candidate ?person-edge ?deceased-edge))))"
+      },
+      {
+        "implementation": "R-C02-grandchild",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C02-grandchild\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?edge-one) (case-id ?case-id) (subject ?deceased) (predicate biological-parent-of) (value ?parent))\n  (asserted-fact (fact-id ?edge-two) (case-id ?case-id) (subject ?parent) (predicate biological-parent-of) (value ?person))\n  (asserted-fact (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 2)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 2) (rule-id R-C02) (supports ?candidate ?edge-one ?edge-two))))"
+      }
+    ],
+    "R-C03": [
+      {
+        "implementation": "R-C03-great-grandparent",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C03-great-grandparent\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?one) (case-id ?case-id) (subject ?person) (predicate biological-parent-of) (value ?middle-one))\n  (asserted-fact (fact-id ?two) (case-id ?case-id) (subject ?middle-one) (predicate biological-parent-of) (value ?middle-two))\n  (asserted-fact (fact-id ?three) (case-id ?case-id) (subject ?middle-two) (predicate biological-parent-of) (value ?deceased))\n  (asserted-fact (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 3)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 3) (rule-id R-C03) (supports ?candidate ?one ?two ?three))))"
+      },
+      {
+        "implementation": "R-C03-aunt-or-uncle",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C03-aunt-or-uncle\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?one) (case-id ?case-id) (subject ?grandparent) (predicate biological-parent-of) (value ?person))\n  (asserted-fact (fact-id ?two) (case-id ?case-id) (subject ?grandparent) (predicate biological-parent-of) (value ?parent))\n  (asserted-fact (fact-id ?three) (case-id ?case-id) (subject ?parent) (predicate biological-parent-of) (value ?deceased))\n  (asserted-fact (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (test (neq ?person ?parent))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 3)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 3) (rule-id R-C03) (supports ?candidate ?one ?two ?three))))"
+      },
+      {
+        "implementation": "R-C03-niece-or-nephew",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C03-niece-or-nephew\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?one) (case-id ?case-id) (subject ?grandparent) (predicate biological-parent-of) (value ?deceased))\n  (asserted-fact (fact-id ?two) (case-id ?case-id) (subject ?grandparent) (predicate biological-parent-of) (value ?parent))\n  (asserted-fact (fact-id ?three) (case-id ?case-id) (subject ?parent) (predicate biological-parent-of) (value ?person))\n  (asserted-fact (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (test (neq ?deceased ?parent))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 3)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 3) (rule-id R-C03) (supports ?candidate ?one ?two ?three))))"
+      },
+      {
+        "implementation": "R-C03-great-grandchild",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C03-great-grandchild\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (asserted-fact (fact-id ?one) (case-id ?case-id) (subject ?deceased) (predicate biological-parent-of) (value ?middle-one))\n  (asserted-fact (fact-id ?two) (case-id ?case-id) (subject ?middle-one) (predicate biological-parent-of) (value ?middle-two))\n  (asserted-fact (fact-id ?three) (case-id ?case-id) (subject ?middle-two) (predicate biological-parent-of) (value ?person))\n  (asserted-fact (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 3)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 3) (rule-id R-C03) (supports ?candidate ?one ?two ?three))))"
+      }
+    ],
+    "R-C04": [
+      {
+        "implementation": "R-C04-equal-share-principle",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C04-equal-share-principle\n  (declare (salience 190))\n  (derived-fact (case-id ?case-id) (subject ?first) (predicate called-to-inherit) (value true) (rule-id ?first-rule))\n  (derived-fact (case-id ?case-id) (subject ?second&~?first) (predicate called-to-inherit) (value true) (rule-id ?second-rule))\n  (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank) (value ?rank))\n  (not (derived-fact (case-id ?case-id) (subject ?case-id) (predicate equal-share-principle-applies) (value true)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?case-id) (predicate equal-share-principle-applies) (value true) (rule-id R-C04) (supports ?first-rule ?second-rule))))"
+      }
+    ],
+    "R-C05": [
+      {
+        "implementation": "R-C05-prior-rank-active",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C05-prior-rank-active\n  (declare (salience 210))\n  (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank) (value ?active-rank) (rule-id ?active-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?rank&1|2|3))\n  (test (> ?rank ?active-rank))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit) (value false) (rule-id R-C05) (supports ?active-rule))))"
+      }
+    ],
+    "R-C06": [
+      {
+        "implementation": "R-C06-active-rank-one",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C06-active-rank-one\n  (declare (salience 240))\n  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?case-id) (predicate heir-search-complete) (value true))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-statutory-candidate) (value 1) (rule-id ?qualification))\n  (not (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank) (value 1) (rule-id R-C06) (supports ?complete ?qualification))))"
+      },
+      {
+        "implementation": "R-C06-active-rank-two",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C06-active-rank-two\n  (declare (salience 240))\n  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?case-id) (predicate heir-search-complete) (value true))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-statutory-candidate) (value 2) (rule-id ?qualification))\n  (not (derived-fact (case-id ?case-id) (predicate qualified-statutory-candidate) (value 1)))\n  (not (derived-fact (case-id ?case-id) (predicate unresolved-statutory-candidate) (value 1)))\n  (not (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank) (value 2) (rule-id R-C06) (supports ?complete ?qualification))))"
+      },
+      {
+        "implementation": "R-C06-active-rank-three",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C06-active-rank-three\n  (declare (salience 240))\n  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?case-id) (predicate heir-search-complete) (value true))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-statutory-candidate) (value 3) (rule-id ?qualification))\n  (not (derived-fact (case-id ?case-id) (predicate qualified-statutory-candidate) (value 1|2)))\n  (not (derived-fact (case-id ?case-id) (predicate unresolved-statutory-candidate) (value 1|2)))\n  (not (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank) (value 3) (rule-id R-C06) (supports ?complete ?qualification))))"
+      },
+      {
+        "implementation": "R-C06-call-active-rank",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule R-C06-call-active-rank\n  (declare (salience 220))\n  (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank) (value ?rank) (rule-id ?active-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-statutory-candidate) (value ?rank) (rule-id ?qualification))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit) (value true) (rule-id R-C06) (supports ?active-rule ?qualification))))"
+      }
+    ],
+    "SYSTEM-RANK-CONFLICT": [
+      {
+        "implementation": "SYSTEM-RANK-CONFLICT",
+        "file": "rules/93-heir-rank-completeness.clp",
+        "source": "(defrule SYSTEM-RANK-CONFLICT\n  (declare (salience 450))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?first&1|2|3) (rule-id ?first-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?second&1|2|3) (rule-id ?second-rule))\n  (test (neq ?first ?second))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value conflict)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value conflict) (rule-id SYSTEM-RANK-CONFLICT) (supports ?first-rule ?second-rule))))"
+      }
+    ],
+    "STATUTORY-CANDIDATE-QUALIFIED": [
+      {
+        "implementation": "STATUTORY-CANDIDATE-QUALIFIED",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule STATUTORY-CANDIDATE-QUALIFIED\n  (declare (salience 280))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?rank&1|2|3))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value conflict)))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value not-excluded) (rule-id ?eligibility-rule))\n  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?person) (predicate heir-life-status) (value alive))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value false) (rule-id ?refusal))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-statutory-candidate)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-statutory-candidate) (value ?rank) (rule-id STATUTORY-CANDIDATE-QUALIFIED) (supports ?eligibility-rule ?life ?refusal))))"
+      }
+    ],
+    "STATUTORY-CANDIDATE-INACTIVE": [
+      {
+        "implementation": "STATUTORY-CANDIDATE-INACTIVE-ELIGIBILITY",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule STATUTORY-CANDIDATE-INACTIVE-ELIGIBILITY\n  (declare (salience 280))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?rank&1|2|3))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value excluded|exception-under-will) (rule-id ?reason))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit) (value false) (rule-id STATUTORY-CANDIDATE-INACTIVE) (supports ?reason))))"
+      },
+      {
+        "implementation": "STATUTORY-CANDIDATE-INACTIVE-LIFE",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule STATUTORY-CANDIDATE-INACTIVE-LIFE\n  (declare (salience 280))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?rank&1|2|3))\n  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?person) (predicate heir-life-status) (value dead-before-or-same))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit) (value false) (rule-id STATUTORY-CANDIDATE-INACTIVE) (supports ?life))))"
+      },
+      {
+        "implementation": "STATUTORY-CANDIDATE-INACTIVE-REFUSAL",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule STATUTORY-CANDIDATE-INACTIVE-REFUSAL\n  (declare (salience 280))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?rank&1|2|3))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value true) (rule-id ?refusal))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit) (value false) (rule-id STATUTORY-CANDIDATE-INACTIVE) (supports ?refusal))))"
+      }
+    ],
+    "STATUTORY-CANDIDATE-UNRESOLVED": [
+      {
+        "implementation": "STATUTORY-CANDIDATE-UNRESOLVED",
+        "file": "rules/04-heir-rank.clp",
+        "source": "(defrule STATUTORY-CANDIDATE-UNRESOLVED\n  (declare (salience 260))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?rank&1|2|3) (rule-id ?rank-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-statutory-candidate) (value ?rank)))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit) (value false)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate unresolved-statutory-candidate) (value ?rank) (rule-id STATUTORY-CANDIDATE-UNRESOLVED) (supports ?rank-rule))))"
+      }
+    ],
+    "REPRESENTED-CHILD-WOULD-BE-ENTITLED": [
+      {
+        "implementation": "REPRESENTED-CHILD-WOULD-BE-ENTITLED",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule REPRESENTED-CHILD-WOULD-BE-ENTITLED\n  (declare (salience 420))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?deceased) (predicate biological-parent-of) (value ?represented))\n  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?represented) (predicate heir-life-status) (value dead-before-or-same))\n  (derived-fact (case-id ?case-id) (subject ?represented) (predicate article-621-status) (value not-excluded) (rule-id ?eligibility-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?represented) (predicate would-be-entitled-if-alive) (value true)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?represented) (predicate would-be-entitled-if-alive) (value true) (rule-id REPRESENTED-CHILD-WOULD-BE-ENTITLED) (supports ?deceased-fact ?edge ?life ?eligibility-rule))))"
+      }
+    ],
+    "REPRESENTATION-CANDIDATE-QUALIFIED": [
+      {
+        "implementation": "REPRESENTATION-CANDIDATE-QUALIFIED",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule REPRESENTATION-CANDIDATE-QUALIFIED\n  (declare (salience 400))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate representation-candidate) (value true))\n  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?person) (predicate heir-life-status) (value alive))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value false) (rule-id ?refusal))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value not-excluded) (rule-id ?eligibility-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-representation-candidate) (value true)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-representation-candidate) (value true) (rule-id REPRESENTATION-CANDIDATE-QUALIFIED) (supports ?candidate ?life ?refusal ?eligibility-rule))))"
+      }
+    ],
+    "REPRESENTED-GRANDCHILD-WOULD-BE-ENTITLED": [
+      {
+        "implementation": "REPRESENTED-GRANDCHILD-WOULD-BE-ENTITLED",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule REPRESENTED-GRANDCHILD-WOULD-BE-ENTITLED\n  (declare (salience 390))\n  (asserted-fact (fact-id ?child-edge) (case-id ?case-id) (subject ?deceased) (predicate biological-parent-of) (value ?original-child))\n  (asserted-fact (fact-id ?grandchild-edge) (case-id ?case-id) (subject ?original-child) (predicate biological-parent-of) (value ?represented))\n  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?represented) (predicate heir-life-status) (value dead-before-or-same))\n  (derived-fact (case-id ?case-id) (subject ?original-child) (predicate would-be-entitled-if-alive) (value true) (rule-id ?original-rule))\n  (derived-fact (case-id ?case-id) (subject ?represented) (predicate article-621-status) (value not-excluded) (rule-id ?eligibility-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?represented) (predicate would-be-entitled-by-representation-if-alive) (value true)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?represented) (predicate would-be-entitled-by-representation-if-alive) (value true) (rule-id REPRESENTED-GRANDCHILD-WOULD-BE-ENTITLED) (supports ?child-edge ?grandchild-edge ?life ?original-rule ?eligibility-rule))))"
+      }
+    ],
+    "R-E01": [
+      {
+        "implementation": "R-E01-grandchild-represents-child",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule R-E01-grandchild-represents-child\n  (declare (salience 350))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?parent-edge) (case-id ?case-id) (subject ?deceased) (predicate biological-parent-of) (value ?represented))\n  (asserted-fact (fact-id ?child-edge) (case-id ?case-id) (subject ?represented) (predicate biological-parent-of) (value ?person))\n  (derived-fact (case-id ?case-id) (subject ?represented) (predicate would-be-entitled-if-alive) (value true) (rule-id ?would-be-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-representation-candidate) (value true) (rule-id ?candidate-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate represents-person) (value ?represented) (rule-id R-E01) (supports ?parent-edge ?child-edge ?would-be-rule ?candidate-rule)))\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation) (value true) (rule-id R-E01) (supports ?deceased-fact ?parent-edge ?child-edge ?would-be-rule ?candidate-rule))))"
+      }
+    ],
+    "R-E02": [
+      {
+        "implementation": "R-E02-great-grandchild-represents-grandchild",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule R-E02-great-grandchild-represents-grandchild\n  (declare (salience 350))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?child-edge) (case-id ?case-id) (subject ?deceased) (predicate biological-parent-of) (value ?original-child))\n  (asserted-fact (fact-id ?grandchild-edge) (case-id ?case-id) (subject ?original-child) (predicate biological-parent-of) (value ?represented))\n  (asserted-fact (fact-id ?great-grandchild-edge) (case-id ?case-id) (subject ?represented) (predicate biological-parent-of) (value ?person))\n  (derived-fact (case-id ?case-id) (subject ?represented) (predicate would-be-entitled-by-representation-if-alive) (value true) (rule-id ?would-be-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate qualified-representation-candidate) (value true) (rule-id ?candidate-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate represents-person) (value ?represented) (rule-id R-E02) (supports ?child-edge ?grandchild-edge ?great-grandchild-edge ?would-be-rule ?candidate-rule)))\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation) (value true) (rule-id R-E02) (supports ?deceased-fact ?child-edge ?grandchild-edge ?great-grandchild-edge ?would-be-rule ?candidate-rule))))"
+      }
+    ],
+    "R-E03a": [
+      {
+        "implementation": "R-E03a-adopted-child-to-adoptive-parent-basis",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule R-E03a-adopted-child-to-adoptive-parent-basis\n  (declare (salience 460))\n  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?parent) (predicate adoptive-parent-of) (value ?child))\n  (not (derived-fact (case-id ?case-id) (subject ?child) (predicate adoption-inheritance-basis) (value ?parent)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?child) (predicate adoption-inheritance-basis) (value ?parent) (rule-id R-E03a) (supports ?edge))))"
+      },
+      {
+        "implementation": "R-E03a-adoptive-parent-to-adopted-child-basis",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule R-E03a-adoptive-parent-to-adopted-child-basis\n  (declare (salience 460))\n  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?parent) (predicate adoptive-parent-of) (value ?child))\n  (not (derived-fact (case-id ?case-id) (subject ?parent) (predicate adoption-inheritance-basis) (value ?child)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?parent) (predicate adoption-inheritance-basis) (value ?child) (rule-id R-E03a) (supports ?edge))))"
+      }
+    ],
+    "R-E03b": [
+      {
+        "implementation": "R-E03b-dual-parentage-basis",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule R-E03b-dual-parentage-basis\n  (declare (salience 450))\n  (asserted-fact (fact-id ?adoptive-edge) (case-id ?case-id) (subject ?adoptive-parent) (predicate adoptive-parent-of) (value ?child))\n  (asserted-fact (fact-id ?biological-edge) (case-id ?case-id) (subject ?biological-parent) (predicate biological-parent-of) (value ?child))\n  (test (neq ?adoptive-parent ?biological-parent))\n  (not (derived-fact (case-id ?case-id) (subject ?child) (predicate dual-parentage-inheritance-basis) (value true)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?child) (predicate dual-parentage-inheritance-basis) (value true) (rule-id R-E03b) (supports ?adoptive-edge ?biological-edge))))"
+      }
+    ],
+    "SYSTEM-IMPLY-STEP-RELATIONSHIP": [
+      {
+        "implementation": "SYSTEM-IMPLY-STEP-PARENT-FROM-FIRST-SPOUSE",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule SYSTEM-IMPLY-STEP-PARENT-FROM-FIRST-SPOUSE\n  (declare (salience 445))\n  (asserted-fact (fact-id ?spouse-edge) (case-id ?case-id) (subject ?parent) (predicate spouse-at-opening) (value ?step-parent))\n  (asserted-fact (fact-id ?parent-edge) (case-id ?case-id) (subject ?parent) (predicate biological-parent-of) (value ?child))\n  (test (neq ?step-parent ?child))\n  (not (asserted-fact (case-id ?case-id) (subject ?step-parent) (predicate biological-parent-of|adoptive-parent-of) (value ?child)))\n  (not (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?child)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?child) (rule-id SYSTEM-IMPLY-STEP-RELATIONSHIP) (supports ?spouse-edge ?parent-edge))))"
+      },
+      {
+        "implementation": "SYSTEM-IMPLY-STEP-PARENT-FROM-SECOND-SPOUSE",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule SYSTEM-IMPLY-STEP-PARENT-FROM-SECOND-SPOUSE\n  (declare (salience 445))\n  (asserted-fact (fact-id ?spouse-edge) (case-id ?case-id) (subject ?step-parent) (predicate spouse-at-opening) (value ?parent))\n  (asserted-fact (fact-id ?parent-edge) (case-id ?case-id) (subject ?parent) (predicate biological-parent-of) (value ?child))\n  (test (neq ?step-parent ?child))\n  (not (asserted-fact (case-id ?case-id) (subject ?step-parent) (predicate biological-parent-of|adoptive-parent-of) (value ?child)))\n  (not (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?child)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?child) (rule-id SYSTEM-IMPLY-STEP-RELATIONSHIP) (supports ?spouse-edge ?parent-edge))))"
+      }
+    ],
+    "R-E04": [
+      {
+        "implementation": "R-E04-step-child-to-step-parent-basis",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule R-E04-step-child-to-step-parent-basis\n  (declare (salience 440))\n  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?step-child))\n  (asserted-fact (fact-id ?assessment) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value established))\n  (not (asserted-fact (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value not-established)))\n  (not (derived-fact (case-id ?case-id) (subject ?step-child) (predicate step-relationship-inheritance-basis) (value ?step-parent)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?step-child) (predicate step-relationship-inheritance-basis) (value ?step-parent) (rule-id R-E04) (supports ?edge ?assessment))))"
+      },
+      {
+        "implementation": "R-E04-step-parent-to-step-child-basis",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule R-E04-step-parent-to-step-child-basis\n  (declare (salience 440))\n  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?step-child))\n  (asserted-fact (fact-id ?assessment) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value established))\n  (not (asserted-fact (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value not-established)))\n  (not (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-relationship-inheritance-basis) (value ?step-child)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate step-relationship-inheritance-basis) (value ?step-child) (rule-id R-E04) (supports ?edge ?assessment))))"
+      }
+    ],
+    "R-E05": [
+      {
+        "implementation": "R-E05-step-child-without-care-basis",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule R-E05-step-child-without-care-basis\n  (declare (salience 440))\n  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?step-child))\n  (asserted-fact (fact-id ?assessment) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value not-established))\n  (not (asserted-fact (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value established)))\n  (not (derived-fact (case-id ?case-id) (subject ?step-child) (predicate eligible-by-step-relationship)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?step-child) (predicate eligible-by-step-relationship) (value false) (rule-id R-E05) (supports ?edge ?assessment))))"
+      },
+      {
+        "implementation": "R-E05-step-parent-without-care-basis",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule R-E05-step-parent-without-care-basis\n  (declare (salience 440))\n  (asserted-fact (fact-id ?edge) (case-id ?case-id) (subject ?step-parent) (predicate step-parent-of) (value ?step-child))\n  (asserted-fact (fact-id ?assessment) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value not-established))\n  (not (asserted-fact (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value established)))\n  (not (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate eligible-by-step-relationship)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?step-parent) (predicate eligible-by-step-relationship) (value false) (rule-id R-E05) (supports ?edge ?assessment))))"
+      }
+    ],
+    "SYSTEM-STEP-CARE-CONFLICT": [
+      {
+        "implementation": "SYSTEM-STEP-CARE-CONFLICT",
+        "file": "rules/94-representation-completeness.clp",
+        "source": "(defrule SYSTEM-STEP-CARE-CONFLICT\n  (declare (salience 490))\n  (analysis-request (case-id ?case-id) (module representation))\n  (asserted-fact (fact-id ?edge) (case-id ?case-id) (predicate step-parent-of) (value ?step-child))\n  (asserted-fact (fact-id ?positive) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value established))\n  (asserted-fact (fact-id ?negative) (case-id ?case-id) (subject ?edge) (predicate step-care-status) (value not-established))\n  (not (derived-fact (case-id ?case-id) (subject ?step-child) (predicate step-care-assessment) (value conflict)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?step-child) (predicate step-care-assessment) (value conflict) (rule-id SYSTEM-STEP-CARE-CONFLICT) (supports ?edge ?positive ?negative))))"
+      }
+    ],
+    "R-F01a": [
+      {
+        "implementation": "R-F01a-minor-biological-child",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F01a-minor-biological-child\n  (declare (salience 440))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate compulsory-share-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?deceased) (predicate biological-parent-of) (value ?person))\n  (asserted-fact (fact-id ?age) (case-id ?case-id) (subject ?person) (predicate age-group) (value minor))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id R-F01a) (supports ?scope ?deceased-fact ?relation ?age))))"
+      },
+      {
+        "implementation": "R-F01a-minor-adopted-child",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F01a-minor-adopted-child\n  (declare (salience 440))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate compulsory-share-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?deceased) (predicate adoptive-parent-of) (value ?person))\n  (asserted-fact (fact-id ?age) (case-id ?case-id) (subject ?person) (predicate age-group) (value minor))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id R-F01a) (supports ?scope ?deceased-fact ?relation ?age))))"
+      }
+    ],
+    "R-F01b": [
+      {
+        "implementation": "R-F01b-parent",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F01b-parent\n  (declare (salience 440))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate compulsory-share-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?person) (predicate biological-parent-of|adoptive-parent-of) (value ?deceased))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id R-F01b) (supports ?scope ?deceased-fact ?relation))))"
+      },
+      {
+        "implementation": "R-F01b-spouse-forward",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F01b-spouse-forward\n  (declare (salience 440))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate compulsory-share-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?person) (predicate spouse-at-opening) (value ?deceased))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id R-F01b) (supports ?scope ?deceased-fact ?relation))))"
+      },
+      {
+        "implementation": "R-F01b-spouse-reverse",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F01b-spouse-reverse\n  (declare (salience 440))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate compulsory-share-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?deceased) (predicate spouse-at-opening) (value ?person))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id R-F01b) (supports ?scope ?deceased-fact ?relation))))"
+      }
+    ],
+    "R-F01c": [
+      {
+        "implementation": "R-F01c-calculate-minimum-threshold",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F01c-calculate-minimum-threshold\n  (declare (salience 320))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir) (value true) (rule-id ?active-rule))\n  (asserted-fact (fact-id ?calculation) (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-calculation) (value true))\n  (asserted-fact (fact-id ?person-link) (case-id ?case-id) (subject ?calculation-id) (predicate calculation-person) (value ?person))\n  (asserted-fact (fact-id ?portion-link) (case-id ?case-id) (subject ?calculation-id) (predicate calculation-estate-portion) (value ?portion))\n  (asserted-fact (fact-id ?statutory-share) (case-id ?case-id) (subject ?calculation-id) (predicate hypothetical-statutory-share) (value ?amount&:(> ?amount 0)))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-compulsory-share)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-compulsory-share) (value (* ?amount (/ 2.0 3.0))) (rule-id R-F01c) (supports ?active-rule ?calculation ?person-link ?portion-link ?statutory-share))))"
+      },
+      {
+        "implementation": "R-F01c-shortfall-applies",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F01c-shortfall-applies\n  (declare (salience 300))\n  (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-compulsory-share) (value ?minimum) (rule-id ?minimum-rule))\n  (asserted-fact (fact-id ?received) (case-id ?case-id) (subject ?calculation-id) (predicate testamentary-share-received) (value ?amount&:(< ?amount ?minimum)))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-share-rule-applies)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-share-rule-applies) (value true) (rule-id R-F01c) (supports ?minimum-rule ?received)))\n  (assert (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-shortfall) (value (- ?minimum ?amount)) (rule-id R-F01c) (supports ?minimum-rule ?received))))"
+      },
+      {
+        "implementation": "R-F01c-threshold-already-met",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F01c-threshold-already-met\n  (declare (salience 300))\n  (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-compulsory-share) (value ?minimum) (rule-id ?minimum-rule))\n  (asserted-fact (fact-id ?received) (case-id ?case-id) (subject ?calculation-id) (predicate testamentary-share-received) (value ?amount&:(>= ?amount ?minimum)))\n  (not (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-share-rule-applies)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate minimum-share-rule-applies) (value false) (rule-id R-F01c) (supports ?minimum-rule ?received)))\n  (assert (derived-fact (case-id ?case-id) (subject ?calculation-id) (predicate compulsory-share-shortfall) (value 0) (rule-id R-F01c) (supports ?minimum-rule ?received))))"
+      }
+    ],
+    "R-F02": [
+      {
+        "implementation": "R-F02-adult-biological-child-without-work-capacity",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F02-adult-biological-child-without-work-capacity\n  (declare (salience 440))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate compulsory-share-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?deceased) (predicate biological-parent-of) (value ?person))\n  (asserted-fact (fact-id ?age) (case-id ?case-id) (subject ?person) (predicate age-group) (value adult))\n  (asserted-fact (fact-id ?capacity) (case-id ?case-id) (subject ?person) (predicate work-capacity-status) (value incapable))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id R-F02) (supports ?scope ?deceased-fact ?relation ?age ?capacity))))"
+      },
+      {
+        "implementation": "R-F02-adult-adopted-child-without-work-capacity",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F02-adult-adopted-child-without-work-capacity\n  (declare (salience 440))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate compulsory-share-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?relation) (case-id ?case-id) (subject ?deceased) (predicate adoptive-parent-of) (value ?person))\n  (asserted-fact (fact-id ?age) (case-id ?case-id) (subject ?person) (predicate age-group) (value adult))\n  (asserted-fact (fact-id ?capacity) (case-id ?case-id) (subject ?person) (predicate work-capacity-status) (value incapable))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id R-F02) (supports ?scope ?deceased-fact ?relation ?age ?capacity))))"
+      }
+    ],
+    "R-F03": [
+      {
+        "implementation": "R-F03-valid-refusal-excludes-compulsory-share",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F03-valid-refusal-excludes-compulsory-share\n  (declare (salience 400))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id ?candidate-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value true) (rule-id ?refusal))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir) (value false) (rule-id R-F03) (supports ?candidate-rule ?refusal))))"
+      }
+    ],
+    "R-F04": [
+      {
+        "implementation": "R-F04-disqualification-excludes-compulsory-share",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule R-F04-disqualification-excludes-compulsory-share\n  (declare (salience 400))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id ?candidate-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value excluded) (rule-id ?eligibility-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir) (value false) (rule-id R-F04) (supports ?candidate-rule ?eligibility-rule))))"
+      }
+    ],
+    "COMPULSORY-HEIR-ACTIVE": [
+      {
+        "implementation": "COMPULSORY-HEIR-ACTIVE",
+        "file": "rules/06-compulsory-share.clp",
+        "source": "(defrule COMPULSORY-HEIR-ACTIVE\n  (declare (salience 360))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true) (rule-id ?candidate-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value false) (rule-id ?refusal))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value not-excluded) (rule-id ?eligibility-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir) (value true) (rule-id COMPULSORY-HEIR-ACTIVE) (supports ?candidate-rule ?refusal ?eligibility-rule))))"
+      }
+    ],
+    "COMPULSORY-CANDIDATE-NOT-IN-PROTECTED-CLASS": [
+      {
+        "implementation": "COMPULSORY-CANDIDATE-NOT-IN-PROTECTED-CLASS",
+        "file": "rules/96-compulsory-share-completeness.clp",
+        "source": "(defrule COMPULSORY-CANDIDATE-NOT-IN-PROTECTED-CLASS\n  (declare (salience 100))\n  (analysis-request (case-id ?case-id) (module compulsory-share))\n  (asserted-fact (case-id ?case-id) (subject ?person) (predicate compulsory-share-assessment-subject) (value true))\n  (asserted-fact (case-id ?case-id) (subject ?case-id) (predicate heir-search-complete) (value true))\n  (not (missing-requirement (case-id ?case-id) (subject ?person) (module compulsory-share)))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value false) (rule-id COMPULSORY-CANDIDATE-NOT-IN-PROTECTED-CLASS) (supports family-graph-complete))))"
+      }
+    ],
+    "R-G01": [
+      {
+        "implementation": "R-G01-common-property-divided-forward",
+        "file": "rules/07-spouse-status.clp",
+        "source": "(defrule R-G01-common-property-divided-forward\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?survivor) (predicate spouse-status-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?marriage) (case-id ?case-id) (subject ?survivor) (predicate spouse-at-opening) (value ?deceased))\n  (asserted-fact (fact-id ?division) (case-id ?case-id) (subject ?survivor) (predicate joint-property-divided) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g01)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g01) (rule-id R-G01) (supports ?scope ?deceased-fact ?marriage ?division))))"
+      },
+      {
+        "implementation": "R-G01-common-property-divided-reverse",
+        "file": "rules/07-spouse-status.clp",
+        "source": "(defrule R-G01-common-property-divided-reverse\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?survivor) (predicate spouse-status-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?marriage) (case-id ?case-id) (subject ?deceased) (predicate spouse-at-opening) (value ?survivor))\n  (asserted-fact (fact-id ?division) (case-id ?case-id) (subject ?survivor) (predicate joint-property-divided) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g01)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g01) (rule-id R-G01) (supports ?scope ?deceased-fact ?marriage ?division))))"
+      }
+    ],
+    "R-G02": [
+      {
+        "implementation": "R-G02-pending-divorce-forward",
+        "file": "rules/07-spouse-status.clp",
+        "source": "(defrule R-G02-pending-divorce-forward\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?survivor) (predicate spouse-status-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?marriage) (case-id ?case-id) (subject ?survivor) (predicate spouse-at-opening) (value ?deceased))\n  (asserted-fact (fact-id ?petition) (case-id ?case-id) (subject ?survivor) (predicate divorce-petition-pending-at-opening) (value true))\n  (asserted-fact (fact-id ?decision) (case-id ?case-id) (subject ?survivor) (predicate divorce-decision-effective-at-opening) (value false))\n  (not (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g02)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g02) (rule-id R-G02) (supports ?scope ?deceased-fact ?marriage ?petition ?decision))))"
+      },
+      {
+        "implementation": "R-G02-pending-divorce-reverse",
+        "file": "rules/07-spouse-status.clp",
+        "source": "(defrule R-G02-pending-divorce-reverse\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?survivor) (predicate spouse-status-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?marriage) (case-id ?case-id) (subject ?deceased) (predicate spouse-at-opening) (value ?survivor))\n  (asserted-fact (fact-id ?petition) (case-id ?case-id) (subject ?survivor) (predicate divorce-petition-pending-at-opening) (value true))\n  (asserted-fact (fact-id ?decision) (case-id ?case-id) (subject ?survivor) (predicate divorce-decision-effective-at-opening) (value false))\n  (not (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g02)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g02) (rule-id R-G02) (supports ?scope ?deceased-fact ?marriage ?petition ?decision))))"
+      }
+    ],
+    "R-G03": [
+      {
+        "implementation": "R-G03-remarried-after-opening-forward",
+        "file": "rules/07-spouse-status.clp",
+        "source": "(defrule R-G03-remarried-after-opening-forward\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?survivor) (predicate spouse-status-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?marriage) (case-id ?case-id) (subject ?survivor) (predicate spouse-at-opening) (value ?deceased))\n  (asserted-fact (fact-id ?remarriage) (case-id ?case-id) (subject ?survivor) (predicate remarried-after-opening) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g03)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g03) (rule-id R-G03) (supports ?scope ?deceased-fact ?marriage ?remarriage))))"
+      },
+      {
+        "implementation": "R-G03-remarried-after-opening-reverse",
+        "file": "rules/07-spouse-status.clp",
+        "source": "(defrule R-G03-remarried-after-opening-reverse\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?survivor) (predicate spouse-status-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (asserted-fact (fact-id ?marriage) (case-id ?case-id) (subject ?deceased) (predicate spouse-at-opening) (value ?survivor))\n  (asserted-fact (fact-id ?remarriage) (case-id ?case-id) (subject ?survivor) (predicate remarried-after-opening) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g03)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value g03) (rule-id R-G03) (supports ?scope ?deceased-fact ?marriage ?remarriage))))"
+      }
+    ],
+    "SPOUSE-STATUS-PRESERVED": [
+      {
+        "implementation": "SPOUSE-STATUS-PRESERVED",
+        "file": "rules/07-spouse-status.clp",
+        "source": "(defrule SPOUSE-STATUS-PRESERVED\n  (declare (salience -10))\n  (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-preservation-basis) (value ?basis) (rule-id ?legal-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-status-at-opening)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?survivor) (predicate spouse-status-at-opening) (value valid) (rule-id SPOUSE-STATUS-PRESERVED) (supports ?legal-rule))))"
+      }
+    ],
+    "R-H01": [
+      {
+        "implementation": "R-H01-substantive-condition-satisfied",
+        "file": "rules/08-refusal-and-unclaimed.clp",
+        "source": "(defrule R-H01-substantive-condition-satisfied\n  (declare (salience 1000))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate refusal-assessment-subject) (value true))\n  (asserted-fact (fact-id ?made) (case-id ?case-id) (subject ?person) (predicate refusal-made) (value true))\n  (asserted-fact (fact-id ?intent) (case-id ?case-id) (subject ?person) (predicate refusal-intent) (value ordinary))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-substantive-condition)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-substantive-condition) (value satisfied) (rule-id R-H01) (supports ?scope ?made ?intent))))"
+      }
+    ],
+    "R-H02": [
+      {
+        "implementation": "R-H02-avoid-obligation-invalid",
+        "file": "rules/08-refusal-and-unclaimed.clp",
+        "source": "(defrule R-H02-avoid-obligation-invalid\n  (declare (salience 1000))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate refusal-assessment-subject) (value true))\n  (asserted-fact (fact-id ?made) (case-id ?case-id) (subject ?person) (predicate refusal-made) (value true))\n  (asserted-fact (fact-id ?intent) (case-id ?case-id) (subject ?person) (predicate refusal-intent) (value avoid-obligation))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal) (value false) (rule-id R-H02) (supports ?scope ?made ?intent))))"
+      }
+    ],
+    "R-H03": [
+      {
+        "implementation": "R-H03-form-condition-estate-manager",
+        "file": "rules/08-refusal-and-unclaimed.clp",
+        "source": "(defrule R-H03-form-condition-estate-manager\n  (declare (salience 1000))\n  (asserted-fact (fact-id ?made) (case-id ?case-id) (subject ?person) (predicate refusal-made) (value true))\n  (asserted-fact (fact-id ?written) (case-id ?case-id) (subject ?person) (predicate refusal-written) (value true))\n  (asserted-fact (fact-id ?recipient) (case-id ?case-id) (subject ?person) (predicate refusal-notice-recipient) (value estate-manager))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-form-condition)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-form-condition) (value satisfied) (rule-id R-H03) (supports ?made ?written ?recipient))))"
+      },
+      {
+        "implementation": "R-H03-form-condition-other-heir",
+        "file": "rules/08-refusal-and-unclaimed.clp",
+        "source": "(defrule R-H03-form-condition-other-heir\n  (declare (salience 1000))\n  (asserted-fact (fact-id ?made) (case-id ?case-id) (subject ?person) (predicate refusal-made) (value true))\n  (asserted-fact (fact-id ?written) (case-id ?case-id) (subject ?person) (predicate refusal-written) (value true))\n  (asserted-fact (fact-id ?recipient) (case-id ?case-id) (subject ?person) (predicate refusal-notice-recipient) (value other-heir))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-form-condition)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-form-condition) (value satisfied) (rule-id R-H03) (supports ?made ?written ?recipient))))"
+      },
+      {
+        "implementation": "R-H03-form-condition-distribution-assignee",
+        "file": "rules/08-refusal-and-unclaimed.clp",
+        "source": "(defrule R-H03-form-condition-distribution-assignee\n  (declare (salience 1000))\n  (asserted-fact (fact-id ?made) (case-id ?case-id) (subject ?person) (predicate refusal-made) (value true))\n  (asserted-fact (fact-id ?written) (case-id ?case-id) (subject ?person) (predicate refusal-written) (value true))\n  (asserted-fact (fact-id ?recipient) (case-id ?case-id) (subject ?person) (predicate refusal-notice-recipient) (value distribution-assignee))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-form-condition)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-form-condition) (value satisfied) (rule-id R-H03) (supports ?made ?written ?recipient))))"
+      }
+    ],
+    "VALID-REFUSAL-COMPOSED": [
+      {
+        "implementation": "VALID-REFUSAL-COMPOSED",
+        "file": "rules/08-refusal-and-unclaimed.clp",
+        "source": "(defrule VALID-REFUSAL-COMPOSED\n  (declare (salience 950))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-substantive-condition) (value satisfied) (rule-id ?substantive-rule))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-form-condition) (value satisfied) (rule-id ?form-rule))\n  (asserted-fact (fact-id ?timing) (case-id ?case-id) (subject ?person) (predicate refusal-before-estate-distribution) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal) (value true) (rule-id VALID-REFUSAL-COMPOSED) (supports ?substantive-rule ?form-rule ?timing))))"
+      }
+    ],
+    "NO-REFUSAL-MADE": [
+      {
+        "implementation": "NO-REFUSAL-MADE",
+        "file": "rules/08-refusal-and-unclaimed.clp",
+        "source": "(defrule NO-REFUSAL-MADE\n  (declare (salience 1000))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate refusal-assessment-subject) (value true))\n  (asserted-fact (fact-id ?made) (case-id ?case-id) (subject ?person) (predicate refusal-made) (value false))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal) (value false) (rule-id NO-REFUSAL-MADE) (supports ?scope ?made))))"
+      }
+    ],
+    "REFUSAL-STATUS-NORMALIZED": [
+      {
+        "implementation": "NORMALIZE-INFERRED-REFUSAL-STATUS",
+        "file": "rules/08-refusal-and-unclaimed.clp",
+        "source": "(defrule NORMALIZE-INFERRED-REFUSAL-STATUS\n  (declare (salience 900))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate valid-refusal) (value ?value&true|false) (rule-id ?source-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value ?value) (rule-id REFUSAL-STATUS-NORMALIZED) (supports ?source-rule))))"
+      },
+      {
+        "implementation": "NORMALIZE-LEGACY-REFUSAL-STATUS",
+        "file": "rules/08-refusal-and-unclaimed.clp",
+        "source": "(defrule NORMALIZE-LEGACY-REFUSAL-STATUS\n  (declare (salience 900))\n  (asserted-fact (fact-id ?legacy) (case-id ?case-id) (subject ?person) (predicate valid-refusal) (value ?value&true|false))\n  (not (asserted-fact (case-id ?case-id) (subject ?person) (predicate refusal-assessment-subject) (value true)))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value ?value) (rule-id REFUSAL-STATUS-NORMALIZED) (supports ?legacy))))"
+      }
+    ],
+    "R-H04": [
+      {
+        "implementation": "R-H04-unclaimed-estate-belongs-to-state",
+        "file": "rules/08-refusal-and-unclaimed.clp",
+        "source": "(defrule R-H04-unclaimed-estate-belongs-to-state\n  (declare (salience -200))\n  (analysis-request (case-id ?case-id) (module refusal-and-unclaimed))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?portion) (predicate unclaimed-estate-assessment-subject) (value true))\n  (asserted-fact (fact-id ?estate) (case-id ?case-id) (subject ?portion) (predicate estate-portion) (value true))\n  (asserted-fact (fact-id ?testamentary-complete) (case-id ?case-id) (subject ?portion) (predicate testamentary-beneficiary-search-complete) (value true))\n  (not (asserted-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value effective)))\n  (asserted-fact (fact-id ?statutory-complete) (case-id ?case-id) (subject ?case-id) (predicate heir-search-complete) (value true))\n  (not (derived-fact (case-id ?case-id) (predicate called-to-inherit) (value true)))\n  (asserted-fact (fact-id ?remaining) (case-id ?case-id) (subject ?portion) (predicate remaining-estate-after-obligations) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate unclaimed-estate-recipient)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?portion) (predicate unclaimed-estate-recipient) (value state) (rule-id R-H04) (supports ?scope ?estate ?testamentary-complete ?statutory-complete ?remaining))))"
+      }
+    ],
+    "R-I01": [
+      {
+        "implementation": "R-I01-assign-payment-priority",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I01-assign-payment-priority\n  (asserted-fact (fact-id ?entity) (case-id ?case-id) (subject ?obligation) (predicate estate-obligation) (value true))\n  (asserted-fact (fact-id ?type-fact) (case-id ?case-id) (subject ?obligation) (predicate obligation-type) (value ?type))\n  (payment-priority-knowledge (knowledge-id ?knowledge) (obligation-type ?type) (priority ?priority))\n  (not (derived-fact (case-id ?case-id) (subject ?obligation) (predicate payment-priority)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?obligation)\n    (predicate payment-priority)\n    (value ?priority)\n    (rule-id R-I01)\n    (supports ?entity ?type-fact ?knowledge))))"
+      }
+    ],
+    "R-I02": [
+      {
+        "implementation": "R-I02-equal-share-default-applies",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I02-equal-share-default-applies\n  (asserted-fact (fact-id ?group-fact) (case-id ?case-id) (subject ?group) (predicate testamentary-distribution-group) (value true))\n  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary-set-complete) (value true))\n  (asserted-fact (fact-id ?first-fact) (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary) (value ?first))\n  (asserted-fact (fact-id ?second-fact) (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary) (value ?second&~?first))\n  (asserted-fact (fact-id ?shares) (case-id ?case-id) (subject ?group) (predicate testamentary-shares-specified) (value false))\n  (asserted-fact (fact-id ?agreement) (case-id ?case-id) (subject ?group) (predicate alternative-share-agreement) (value false))\n  (not (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies) (value true) (rule-id R-I02) (supports ?group-fact ?complete ?first-fact ?second-fact ?shares ?agreement))))"
+      },
+      {
+        "implementation": "R-I02-specified-shares-disable-default",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I02-specified-shares-disable-default\n  (asserted-fact (fact-id ?group-fact) (case-id ?case-id) (subject ?group) (predicate testamentary-distribution-group) (value true))\n  (asserted-fact (fact-id ?shares) (case-id ?case-id) (subject ?group) (predicate testamentary-shares-specified) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies) (value false) (rule-id R-I02) (supports ?group-fact ?shares))))"
+      },
+      {
+        "implementation": "R-I02-alternative-agreement-disables-default",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I02-alternative-agreement-disables-default\n  (asserted-fact (fact-id ?group-fact) (case-id ?case-id) (subject ?group) (predicate testamentary-distribution-group) (value true))\n  (asserted-fact (fact-id ?agreement) (case-id ?case-id) (subject ?group) (predicate alternative-share-agreement) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies) (value false) (rule-id R-I02) (supports ?group-fact ?agreement))))"
+      },
+      {
+        "implementation": "R-I02-single-beneficiary-not-a-sharing-case",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I02-single-beneficiary-not-a-sharing-case\n  (asserted-fact (fact-id ?group-fact) (case-id ?case-id) (subject ?group) (predicate testamentary-distribution-group) (value true))\n  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary-set-complete) (value true))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary) (value ?beneficiary))\n  (not (asserted-fact (case-id ?case-id) (subject ?group) (predicate distribution-beneficiary) (value ?other&~?beneficiary)))\n  (not (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?group) (predicate equal-testamentary-share-principle-applies) (value false) (rule-id R-I02) (supports ?group-fact ?complete ?beneficiary-fact))))"
+      }
+    ],
+    "R-I03a": [
+      {
+        "implementation": "R-I03a-reserve-equal-share-for-prenatal-heir",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I03a-reserve-equal-share-for-prenatal-heir\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?person) (predicate prenatal-share-assessment-subject) (value true))\n  (asserted-fact (fact-id ?prenatal) (case-id ?case-id) (subject ?person) (predicate prenatal-status-at-distribution) (value conceived-not-born))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value ?rank) (rule-id ?candidate-rule))\n  (derived-fact (case-id ?case-id) (subject ?case-id) (predicate active-heir-rank) (value ?rank) (rule-id ?active-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate reserve-equal-share)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate reserve-equal-share) (value true) (rule-id R-I03a) (supports ?scope ?prenatal ?candidate-rule ?active-rule))))"
+      }
+    ],
+    "R-I03b": [
+      {
+        "implementation": "R-I03b-born-alive-receives-reserved-share",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I03b-born-alive-receives-reserved-share\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate reserve-equal-share) (value true) (rule-id ?reserve-rule))\n  (asserted-fact (fact-id ?outcome) (case-id ?case-id) (subject ?person) (predicate prenatal-birth-outcome) (value born-alive))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-vests-in-child)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-vests-in-child) (value true) (rule-id R-I03b) (supports ?reserve-rule ?outcome))))"
+      },
+      {
+        "implementation": "R-I03b-died-before-birth-returns-share",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I03b-died-before-birth-returns-share\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate reserve-equal-share) (value true) (rule-id ?reserve-rule))\n  (asserted-fact (fact-id ?outcome) (case-id ?case-id) (subject ?person) (predicate prenatal-birth-outcome) (value died-before-birth))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-returns-to-other-heirs)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate reserved-share-returns-to-other-heirs) (value true) (rule-id R-I03b) (supports ?reserve-rule ?outcome))))"
+      }
+    ],
+    "R-I04": [
+      {
+        "implementation": "R-I04-will-restricts-division-until-date",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I04-will-restricts-division-until-date\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?restriction) (predicate division-restriction-assessment-subject) (value true))\n  (asserted-fact (fact-id ?basis) (case-id ?case-id) (subject ?restriction) (predicate division-restriction-basis) (value will-instruction))\n  (asserted-fact (fact-id ?date-fact) (case-id ?case-id) (subject ?restriction) (predicate specified-division-date) (value ?date))\n  (not (derived-fact (case-id ?case-id) (subject ?restriction) (predicate distribution-not-before)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?restriction) (predicate distribution-not-before) (value ?date) (rule-id R-I04) (supports ?scope ?basis ?date-fact))))"
+      },
+      {
+        "implementation": "R-I04-all-heirs-agreement-restricts-division-until-date",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I04-all-heirs-agreement-restricts-division-until-date\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?restriction) (predicate division-restriction-assessment-subject) (value true))\n  (asserted-fact (fact-id ?basis) (case-id ?case-id) (subject ?restriction) (predicate division-restriction-basis) (value all-heirs-agreement))\n  (asserted-fact (fact-id ?agreement) (case-id ?case-id) (subject ?restriction) (predicate all-heirs-agreed) (value true))\n  (asserted-fact (fact-id ?date-fact) (case-id ?case-id) (subject ?restriction) (predicate specified-division-date) (value ?date))\n  (not (derived-fact (case-id ?case-id) (subject ?restriction) (predicate distribution-not-before)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?restriction) (predicate distribution-not-before) (value ?date) (rule-id R-I04) (supports ?scope ?basis ?agreement ?date-fact))))"
+      }
+    ],
+    "R-I05": [
+      {
+        "implementation": "R-I05-surviving-spouse-may-request-deferral",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I05-surviving-spouse-may-request-deferral\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?spouse) (predicate division-hardship-assessment-subject) (value true))\n  (asserted-fact (fact-id ?deceased-fact) (case-id ?case-id) (subject ?deceased) (predicate deceased-person) (value true))\n  (or\n    (asserted-fact (fact-id ?marriage) (case-id ?case-id) (subject ?spouse) (predicate spouse-at-opening) (value ?deceased))\n    (asserted-fact (fact-id ?marriage) (case-id ?case-id) (subject ?deceased) (predicate spouse-at-opening) (value ?spouse)))\n  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?spouse) (predicate heir-life-status) (value alive))\n  (asserted-fact (fact-id ?request) (case-id ?case-id) (subject ?spouse) (predicate estate-division-requested) (value true))\n  (asserted-fact (fact-id ?impact) (case-id ?case-id) (subject ?spouse) (predicate serious-division-impact) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?spouse) (predicate court-deferral-may-be-requested)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?spouse) (predicate court-deferral-may-be-requested) (value true) (rule-id R-I05) (supports ?scope ?deceased-fact ?marriage ?life ?request ?impact)))\n  (assert (derived-fact (case-id ?case-id) (subject ?spouse) (predicate initial-deferral-maximum-years) (value 3) (rule-id R-I05) (supports ?scope ?impact))))"
+      },
+      {
+        "implementation": "R-I05-surviving-spouse-may-request-one-extension",
+        "file": "rules/09-estate-settlement.clp",
+        "source": "(defrule R-I05-surviving-spouse-may-request-one-extension\n  (derived-fact (case-id ?case-id) (subject ?spouse) (predicate court-deferral-may-be-requested) (value true) (rule-id ?initial-rule))\n  (asserted-fact (fact-id ?expired) (case-id ?case-id) (subject ?spouse) (predicate prior-court-deferral-expired) (value true))\n  (asserted-fact (fact-id ?impact) (case-id ?case-id) (subject ?spouse) (predicate serious-impact-still-exists) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?spouse) (predicate court-extension-may-be-requested)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?spouse) (predicate court-extension-may-be-requested) (value true) (rule-id R-I05) (supports ?initial-rule ?expired ?impact)))\n  (assert (derived-fact (case-id ?case-id) (subject ?spouse) (predicate extension-maximum-years) (value 3) (rule-id R-I05) (supports ?expired ?impact)))\n  (assert (derived-fact (case-id ?case-id) (subject ?spouse) (predicate extension-maximum-count) (value 1) (rule-id R-I05) (supports ?expired ?impact))))"
+      }
+    ],
+    "R-J01": [
+      {
+        "implementation": "R-J01-immovable-estate-division-period",
+        "file": "rules/10-limitation.clp",
+        "source": "(defrule R-J01-immovable-estate-division-period\n  (analysis-request (case-id ?case-id) (module limitation))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?request) (predicate limitation-assessment-subject) (value true))\n  (asserted-fact (fact-id ?type) (case-id ?case-id) (subject ?request) (predicate request-type) (value divide-estate))\n  (asserted-fact (fact-id ?asset) (case-id ?case-id) (subject ?request) (predicate asset-type) (value immovable))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?request) (predicate limitation-period-years) (value 30) (rule-id R-J01) (supports ?scope ?type ?asset))))"
+      }
+    ],
+    "R-J02": [
+      {
+        "implementation": "R-J02-movable-estate-division-period",
+        "file": "rules/10-limitation.clp",
+        "source": "(defrule R-J02-movable-estate-division-period\n  (analysis-request (case-id ?case-id) (module limitation))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?request) (predicate limitation-assessment-subject) (value true))\n  (asserted-fact (fact-id ?type) (case-id ?case-id) (subject ?request) (predicate request-type) (value divide-estate))\n  (asserted-fact (fact-id ?asset) (case-id ?case-id) (subject ?request) (predicate asset-type) (value movable))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?request) (predicate limitation-period-years) (value 10) (rule-id R-J02) (supports ?scope ?type ?asset))))"
+      }
+    ],
+    "R-J03": [
+      {
+        "implementation": "R-J03-inheritance-right-period",
+        "file": "rules/10-limitation.clp",
+        "source": "(defrule R-J03-inheritance-right-period\n  (analysis-request (case-id ?case-id) (module limitation))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?request) (predicate limitation-assessment-subject) (value true))\n  (asserted-fact (fact-id ?type) (case-id ?case-id) (subject ?request) (predicate request-type) (value confirm-or-deny-inheritance-right))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?request) (predicate limitation-period-years) (value 10) (rule-id R-J03) (supports ?scope ?type))))"
+      }
+    ],
+    "R-J04": [
+      {
+        "implementation": "R-J04-estate-obligation-period",
+        "file": "rules/10-limitation.clp",
+        "source": "(defrule R-J04-estate-obligation-period\n  (analysis-request (case-id ?case-id) (module limitation))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?request) (predicate limitation-assessment-subject) (value true))\n  (asserted-fact (fact-id ?type) (case-id ?case-id) (subject ?request) (predicate request-type) (value perform-estate-obligation))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?request) (predicate limitation-period-years) (value 3) (rule-id R-J04) (supports ?scope ?type))))"
+      }
+    ],
+    "R-J05": [
+      {
+        "implementation": "R-J05-managing-heir-receives-after-limitation",
+        "file": "rules/10-limitation.clp",
+        "source": "(defrule R-J05-managing-heir-receives-after-limitation\n  (analysis-request (case-id ?case-id) (module limitation))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?asset) (predicate post-limitation-assessment-subject) (value true))\n  (asserted-fact (fact-id ?expired) (case-id ?case-id) (subject ?asset) (predicate limitation-expiry-confirmed) (value true))\n  (asserted-fact (fact-id ?manager) (case-id ?case-id) (subject ?asset) (predicate estate-managing-heir) (value ?person))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?asset) (predicate post-limitation-recipient) (value managing-heir) (rule-id R-J05) (supports ?scope ?expired ?manager))))"
+      }
+    ],
+    "R-J06": [
+      {
+        "implementation": "R-J06-qualified-possessor-receives-after-limitation",
+        "file": "rules/10-limitation.clp",
+        "source": "(defrule R-J06-qualified-possessor-receives-after-limitation\n  (analysis-request (case-id ?case-id) (module limitation))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?asset) (predicate post-limitation-assessment-subject) (value true))\n  (asserted-fact (fact-id ?expired) (case-id ?case-id) (subject ?asset) (predicate limitation-expiry-confirmed) (value true))\n  (asserted-fact (fact-id ?heir-search) (case-id ?case-id) (subject ?asset) (predicate managing-heir-search-complete) (value true))\n  (not (asserted-fact (case-id ?case-id) (subject ?asset) (predicate estate-managing-heir)))\n  (asserted-fact (fact-id ?possessor) (case-id ?case-id) (subject ?asset) (predicate article-236-qualified-possessor) (value ?person))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?asset) (predicate post-limitation-recipient) (value qualified-possessor) (rule-id R-J06) (supports ?scope ?expired ?heir-search ?possessor))))"
+      }
+    ],
+    "R-J07": [
+      {
+        "implementation": "R-J07-state-receives-after-complete-search",
+        "file": "rules/10-limitation.clp",
+        "source": "(defrule R-J07-state-receives-after-complete-search\n  (analysis-request (case-id ?case-id) (module limitation))\n  (asserted-fact (fact-id ?scope) (case-id ?case-id) (subject ?asset) (predicate post-limitation-assessment-subject) (value true))\n  (asserted-fact (fact-id ?expired) (case-id ?case-id) (subject ?asset) (predicate limitation-expiry-confirmed) (value true))\n  (asserted-fact (fact-id ?heir-search) (case-id ?case-id) (subject ?asset) (predicate managing-heir-search-complete) (value true))\n  (not (asserted-fact (case-id ?case-id) (subject ?asset) (predicate estate-managing-heir)))\n  (asserted-fact (fact-id ?possessor-search) (case-id ?case-id) (subject ?asset) (predicate qualified-possessor-search-complete) (value true))\n  (not (asserted-fact (case-id ?case-id) (subject ?asset) (predicate article-236-qualified-possessor)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?asset) (predicate post-limitation-recipient) (value state) (rule-id R-J07) (supports ?scope ?expired ?heir-search ?possessor-search))))"
+      }
+    ],
+    "REPRESENTATION-CANDIDATE-INACTIVE": [
+      {
+        "implementation": "REPRESENTATION-CANDIDATE-INACTIVE-ELIGIBILITY",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule REPRESENTATION-CANDIDATE-INACTIVE-ELIGIBILITY\n  (declare (salience 330))\n  (asserted-fact (case-id ?case-id) (subject ?person) (predicate representation-candidate) (value true))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value excluded|exception-under-will) (rule-id ?reason))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation) (value false) (rule-id REPRESENTATION-CANDIDATE-INACTIVE) (supports ?reason))))"
+      },
+      {
+        "implementation": "REPRESENTATION-CANDIDATE-INACTIVE-LIFE",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule REPRESENTATION-CANDIDATE-INACTIVE-LIFE\n  (declare (salience 330))\n  (asserted-fact (case-id ?case-id) (subject ?person) (predicate representation-candidate) (value true))\n  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?person) (predicate heir-life-status) (value dead-before-or-same))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation) (value false) (rule-id REPRESENTATION-CANDIDATE-INACTIVE) (supports ?life))))"
+      },
+      {
+        "implementation": "REPRESENTATION-CANDIDATE-INACTIVE-REFUSAL",
+        "file": "rules/05-representation.clp",
+        "source": "(defrule REPRESENTATION-CANDIDATE-INACTIVE-REFUSAL\n  (declare (salience 330))\n  (asserted-fact (case-id ?case-id) (subject ?person) (predicate representation-candidate) (value true))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate refusal-status) (value true) (rule-id ?refusal))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation) (value false) (rule-id REPRESENTATION-CANDIDATE-INACTIVE) (supports ?refusal))))"
+      }
+    ],
+    "R-D01": [
+      {
+        "implementation": "R-D01-intentional-offense-against-deceased",
+        "file": "rules/03-eligibility.clp",
+        "source": "(defrule R-D01-intentional-offense-against-deceased\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate eligibility-candidate) (value true))\n  (asserted-fact (fact-id ?evidence) (case-id ?case-id) (subject ?person) (predicate convicted-intentional-offense-against-deceased) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D01)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D01) (supports ?candidate ?evidence))))"
+      },
+      {
+        "implementation": "R-D01-abuse-against-deceased",
+        "file": "rules/03-eligibility.clp",
+        "source": "(defrule R-D01-abuse-against-deceased\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate eligibility-candidate) (value true))\n  (asserted-fact (fact-id ?evidence) (case-id ?case-id) (subject ?person) (predicate convicted-abuse-against-deceased) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D01)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D01) (supports ?candidate ?evidence))))"
+      }
+    ],
+    "R-D02": [
+      {
+        "implementation": "R-D02-serious-support-duty-violation",
+        "file": "rules/03-eligibility.clp",
+        "source": "(defrule R-D02-serious-support-duty-violation\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate eligibility-candidate) (value true))\n  (asserted-fact (fact-id ?evidence) (case-id ?case-id) (subject ?person) (predicate serious-support-duty-violation) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D02)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D02) (supports ?candidate ?evidence))))"
+      }
+    ],
+    "R-D03": [
+      {
+        "implementation": "R-D03-offense-against-other-heir",
+        "file": "rules/03-eligibility.clp",
+        "source": "(defrule R-D03-offense-against-other-heir\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate eligibility-candidate) (value true))\n  (asserted-fact (fact-id ?offense) (case-id ?case-id) (subject ?person) (predicate convicted-offense-against-other-heir) (value true))\n  (asserted-fact (fact-id ?motive) (case-id ?case-id) (subject ?person) (predicate inheritance-benefit-motive) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D03)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D03) (supports ?candidate ?offense ?motive))))"
+      }
+    ],
+    "R-D04a": [
+      {
+        "implementation": "R-D04a-will-interference",
+        "file": "rules/03-eligibility.clp",
+        "source": "(defrule R-D04a-will-interference\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate eligibility-candidate) (value true))\n  (asserted-fact (fact-id ?act) (case-id ?case-id) (subject ?person) (predicate will-interference) (value deception|coercion))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D04a)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D04a) (supports ?candidate ?act))))"
+      }
+    ],
+    "R-D04b": [
+      {
+        "implementation": "R-D04b-will-document-interference",
+        "file": "rules/03-eligibility.clp",
+        "source": "(defrule R-D04b-will-document-interference\n  (declare (salience 500))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate eligibility-candidate) (value true))\n  (asserted-fact (fact-id ?act) (case-id ?case-id) (subject ?person) (predicate will-document-interference) (value forgery|alteration|destruction|concealment))\n  (asserted-fact (fact-id ?intent) (case-id ?case-id) (subject ?person) (predicate improper-benefit-intent) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D04b)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id R-D04b) (supports ?candidate ?act ?intent))))"
+      }
+    ],
+    "R-D05": [
+      {
+        "implementation": "R-D05-disqualification-exception",
+        "file": "rules/03-eligibility.clp",
+        "source": "(defrule R-D05-disqualification-exception\n  (declare (salience 450))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id ?reason))\n  (asserted-fact (fact-id ?knowledge) (case-id ?case-id) (subject ?person) (predicate deceased-knew-disqualifying-act) (value true))\n  (asserted-fact (fact-id ?designation) (case-id ?case-id) (subject ?person) (predicate named-in-will-after-knowledge) (value true))\n  (asserted-fact (fact-id ?will) (case-id ?case-id) (subject ?person) (predicate eligibility-applicable-will) (value ?will-id))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualification-exception) (value true)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualification-exception) (value true) (rule-id R-D05) (supports ?reason ?knowledge ?designation ?will)))\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value exception-under-will) (rule-id R-D05) (supports ?reason ?knowledge ?designation ?will))))"
+      }
+    ],
+    "ELIGIBILITY-BLOCKED": [
+      {
+        "implementation": "ELIGIBILITY-BLOCKED",
+        "file": "rules/03-eligibility.clp",
+        "source": "(defrule ELIGIBILITY-BLOCKED\n  (declare (salience 300))\n  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?person) (predicate eligibility-review-complete) (value true))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true) (rule-id ?reason))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualification-exception) (value true)))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value excluded) (rule-id ELIGIBILITY-BLOCKED) (supports ?complete ?reason))))"
+      }
+    ],
+    "ELIGIBILITY-CLEAR": [
+      {
+        "implementation": "ELIGIBILITY-CLEAR",
+        "file": "rules/03-eligibility.clp",
+        "source": "(defrule ELIGIBILITY-CLEAR\n  (declare (salience 300))\n  (asserted-fact (fact-id ?candidate) (case-id ?case-id) (subject ?person) (predicate eligibility-candidate) (value true))\n  (asserted-fact (fact-id ?complete) (case-id ?case-id) (subject ?person) (predicate eligibility-review-complete) (value true))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate disqualified) (value true)))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status)))\n  =>\n  (assert (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status) (value not-excluded) (rule-id ELIGIBILITY-CLEAR) (supports ?candidate ?complete))))"
+      }
+    ],
+    "DISPOSITION-STATUS-NORMALIZED": [
+      {
+        "implementation": "DISPOSITION-EFFECTIVE-PERSON",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule DISPOSITION-EFFECTIVE-PERSON\n  (declare (salience 700))\n  (asserted-fact (fact-id ?kind) (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-kind) (value person))\n  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-life-status) (value alive))\n  (derived-fact (case-id ?case-id) (subject ?beneficiary) (predicate article-621-status) (value ?eligibility&not-excluded|exception-under-will) (rule-id ?eligibility-rule))\n  (derived-fact (case-id ?case-id) (subject ?beneficiary) (predicate refusal-status) (value false) (rule-id ?refusal-rule))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value effective)\n    (rule-id DISPOSITION-STATUS-NORMALIZED) (supports ?beneficiary-fact ?kind ?life ?eligibility-rule ?refusal-rule))))"
+      },
+      {
+        "implementation": "DISPOSITION-EFFECTIVE-ORGANIZATION",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule DISPOSITION-EFFECTIVE-ORGANIZATION\n  (declare (salience 700))\n  (asserted-fact (fact-id ?kind) (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-kind) (value organization))\n  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-life-status) (value organization-exists))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value effective)\n    (rule-id DISPOSITION-STATUS-NORMALIZED) (supports ?beneficiary-fact ?kind ?life))))"
+      },
+      {
+        "implementation": "DISPOSITION-INEFFECTIVE-LIFE",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule DISPOSITION-INEFFECTIVE-LIFE\n  (declare (salience 700))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))\n  (asserted-fact (fact-id ?life) (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-life-status) (value dead-before-or-same|organization-no-longer-exists))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary)\n    (rule-id DISPOSITION-STATUS-NORMALIZED) (supports ?beneficiary-fact ?life))))"
+      },
+      {
+        "implementation": "DISPOSITION-INEFFECTIVE-DISQUALIFIED",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule DISPOSITION-INEFFECTIVE-DISQUALIFIED\n  (declare (salience 700))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))\n  (derived-fact (case-id ?case-id) (subject ?beneficiary) (predicate article-621-status) (value excluded) (rule-id ?eligibility-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary)\n    (rule-id DISPOSITION-STATUS-NORMALIZED) (supports ?beneficiary-fact ?eligibility-rule))))"
+      },
+      {
+        "implementation": "DISPOSITION-INEFFECTIVE-REFUSAL",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule DISPOSITION-INEFFECTIVE-REFUSAL\n  (declare (salience 700))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))\n  (derived-fact (case-id ?case-id) (subject ?beneficiary) (predicate refusal-status) (value true) (rule-id ?refusal-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary)\n    (rule-id DISPOSITION-STATUS-NORMALIZED) (supports ?beneficiary-fact ?refusal-rule))))"
+      }
+    ],
+    "R-A01": [
+      {
+        "implementation": "R-A01-no-will",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule R-A01-no-will\n  (declare (salience 500))\n  (asserted-fact (fact-id ?portion-fact) (case-id ?case-id) (subject ?portion) (predicate estate-portion) (value true))\n  (asserted-fact (fact-id ?will-fact) (case-id ?case-id) (subject ?case-id) (predicate has-will) (value false))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory) (rule-id R-A01)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory)\n    (rule-id R-A01) (supports ?portion-fact ?will-fact))))"
+      }
+    ],
+    "R-A02": [
+      {
+        "implementation": "R-A02-invalid-will-portion",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule R-A02-invalid-will-portion\n  (declare (salience 500))\n  (asserted-fact (fact-id ?portion-fact) (case-id ?case-id) (subject ?portion) (predicate estate-portion) (value true))\n  (asserted-fact (fact-id ?will-fact) (case-id ?case-id) (subject ?case-id) (predicate has-will) (value true))\n  (asserted-fact (fact-id ?applicable-fact) (case-id ?case-id) (subject ?portion) (predicate applicable-will) (value ?will-id))\n  (derived-fact (case-id ?case-id) (subject ?will-id) (predicate valid-will) (value false) (rule-id ?validity-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory) (rule-id R-A02)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory)\n    (rule-id R-A02) (supports ?portion-fact ?will-fact ?applicable-fact ?validity-rule))))"
+      }
+    ],
+    "R-A03": [
+      {
+        "implementation": "R-A03-effective-testamentary-disposition",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule R-A03-effective-testamentary-disposition\n  (declare (salience 500))\n  (asserted-fact (fact-id ?portion-fact) (case-id ?case-id) (subject ?portion) (predicate estate-portion) (value true))\n  (asserted-fact (fact-id ?applicable-fact) (case-id ?case-id) (subject ?portion) (predicate applicable-will) (value ?will-id))\n  (derived-fact (case-id ?case-id) (subject ?will-id) (predicate valid-will) (value true) (rule-id ?validity-rule))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))\n  (or\n    (asserted-fact (fact-id ?status-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value effective))\n    (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value effective) (rule-id ?status-fact)))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value testamentary) (rule-id R-A03)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value testamentary)\n    (rule-id R-A03) (supports ?portion-fact ?applicable-fact ?validity-rule ?beneficiary-fact ?status-fact))))"
+      }
+    ],
+    "R-A04": [
+      {
+        "implementation": "R-A04-beneficiary-dead",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule R-A04-beneficiary-dead\n  (declare (salience 500))\n  (asserted-fact (fact-id ?applicable-fact) (case-id ?case-id) (subject ?portion) (predicate applicable-will) (value ?will-id))\n  (derived-fact (case-id ?case-id) (subject ?will-id) (predicate valid-will) (value true) (rule-id ?validity-rule))\n  (asserted-fact (fact-id ?complete-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-set-complete) (value true))\n  (or\n    (asserted-fact (fact-id ?status-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary))\n    (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary) (rule-id ?status-fact)))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))\n  (asserted-fact (fact-id ?life-fact) (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-life-status) (value dead-before-or-same))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory) (rule-id R-A04)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory)\n    (rule-id R-A04) (supports ?applicable-fact ?validity-rule ?complete-fact ?status-fact ?beneficiary-fact ?life-fact))))"
+      },
+      {
+        "implementation": "R-A04-organization-no-longer-exists",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule R-A04-organization-no-longer-exists\n  (declare (salience 500))\n  (asserted-fact (fact-id ?applicable-fact) (case-id ?case-id) (subject ?portion) (predicate applicable-will) (value ?will-id))\n  (derived-fact (case-id ?case-id) (subject ?will-id) (predicate valid-will) (value true) (rule-id ?validity-rule))\n  (asserted-fact (fact-id ?complete-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-set-complete) (value true))\n  (or\n    (asserted-fact (fact-id ?status-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary))\n    (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary) (rule-id ?status-fact)))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))\n  (asserted-fact (fact-id ?life-fact) (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-life-status) (value organization-no-longer-exists))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory) (rule-id R-A04)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory)\n    (rule-id R-A04) (supports ?applicable-fact ?validity-rule ?complete-fact ?status-fact ?beneficiary-fact ?life-fact))))"
+      }
+    ],
+    "R-A05a": [
+      {
+        "implementation": "R-A05a-beneficiary-disqualified",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule R-A05a-beneficiary-disqualified\n  (declare (salience 500))\n  (asserted-fact (fact-id ?applicable-fact) (case-id ?case-id) (subject ?portion) (predicate applicable-will) (value ?will-id))\n  (derived-fact (case-id ?case-id) (subject ?will-id) (predicate valid-will) (value true) (rule-id ?validity-rule))\n  (asserted-fact (fact-id ?complete-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-set-complete) (value true))\n  (or\n    (asserted-fact (fact-id ?status-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary))\n    (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary) (rule-id ?status-fact)))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))\n  (or\n    (and\n      (asserted-fact (fact-id ?disqualified-fact) (case-id ?case-id) (subject ?beneficiary) (predicate beneficiary-disqualified) (value true))\n      (asserted-fact (fact-id ?exception-fact) (case-id ?case-id) (subject ?beneficiary) (predicate disqualification-exception) (value false)))\n    (derived-fact (case-id ?case-id) (subject ?beneficiary) (predicate article-621-status) (value excluded) (rule-id ?disqualified-fact)))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory) (rule-id R-A05a)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory)\n    (rule-id R-A05a) (supports ?applicable-fact ?validity-rule ?complete-fact ?status-fact ?beneficiary-fact ?disqualified-fact))))"
+      }
+    ],
+    "R-A05b": [
+      {
+        "implementation": "R-A05b-beneficiary-refused",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule R-A05b-beneficiary-refused\n  (declare (salience 500))\n  (asserted-fact (fact-id ?applicable-fact) (case-id ?case-id) (subject ?portion) (predicate applicable-will) (value ?will-id))\n  (derived-fact (case-id ?case-id) (subject ?will-id) (predicate valid-will) (value true) (rule-id ?validity-rule))\n  (asserted-fact (fact-id ?complete-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-set-complete) (value true))\n  (or\n    (asserted-fact (fact-id ?status-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary))\n    (derived-fact (case-id ?case-id) (subject ?portion) (predicate disposition-status) (value ineffective-beneficiary) (rule-id ?status-fact)))\n  (asserted-fact (fact-id ?beneficiary-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-beneficiary) (value ?beneficiary))\n  (derived-fact (case-id ?case-id) (subject ?beneficiary) (predicate refusal-status) (value true) (rule-id ?refusal-fact))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory) (rule-id R-A05b)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory)\n    (rule-id R-A05b) (supports ?applicable-fact ?validity-rule ?complete-fact ?status-fact ?beneficiary-fact ?refusal-fact))))"
+      }
+    ],
+    "R-A06": [
+      {
+        "implementation": "R-A06-undisposed-portion",
+        "file": "rules/02-inheritance-type.clp",
+        "source": "(defrule R-A06-undisposed-portion\n  (declare (salience 500))\n  (asserted-fact (fact-id ?portion-fact) (case-id ?case-id) (subject ?portion) (predicate estate-portion) (value true))\n  (asserted-fact (fact-id ?will-fact) (case-id ?case-id) (subject ?case-id) (predicate has-will) (value true))\n  (asserted-fact (fact-id ?complete-fact) (case-id ?case-id) (subject ?portion) (predicate disposition-set-complete) (value true))\n  (asserted-fact (fact-id ?disposed-fact) (case-id ?case-id) (subject ?portion) (predicate portion-disposed) (value false))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory) (rule-id R-A06)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory)\n    (rule-id R-A06) (supports ?portion-fact ?will-fact ?complete-fact ?disposed-fact))))"
+      }
+    ],
+    "SYSTEM-REGIME-CONFLICT": [
+      {
+        "implementation": "detect-inheritance-regime-conflict",
+        "file": "rules/91-inheritance-type-completeness.clp",
+        "source": "(defrule detect-inheritance-regime-conflict\n  (declare (salience 400))\n  (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory) (rule-id ?statutory-rule))\n  (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value testamentary) (rule-id ?testamentary-rule))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value conflict)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value conflict)\n    (rule-id SYSTEM-REGIME-CONFLICT) (supports ?statutory-rule ?testamentary-rule))))"
+      }
+    ],
+    "SYSTEM-CONFLICT": [
+      {
+        "implementation": "detect-valid-will-conflict",
+        "file": "rules/90-will-validity-completeness.clp",
+        "source": "(defrule detect-valid-will-conflict\n  (declare (salience 400))\n  (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value true)\n    (rule-id ?true-rule))\n  (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value false)\n    (rule-id ?false-rule))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value conflict)))\n  =>\n  (assert (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value conflict)\n    (rule-id SYSTEM-CONFLICT)\n    (supports ?true-rule ?false-rule))))"
+      }
+    ],
+    "SYSTEM-INCOMPLETE": [
+      {
+        "implementation": "project-unknown-will-validity",
+        "file": "rules/99-result-projection.clp",
+        "source": "(defrule project-unknown-will-validity\n  (declare (salience -100))\n  (analysis-request (case-id ?case-id) (subject ?will-id) (module will-validity))\n  (missing-requirement\n    (case-id ?case-id)\n    (subject ?will-id)\n    (module will-validity))\n  (not (derived-fact\n    (case-id ?case-id)\n    (subject ?will-id)\n    (predicate valid-will)\n    (value true|false|conflict)))\n  (not (module-result\n    (case-id ?case-id)\n    (subject ?will-id)\n    (module will-validity)\n    (predicate valid-will)))\n  =>\n  (assert (module-result\n    (case-id ?case-id)\n    (subject ?will-id)\n    (module will-validity)\n    (predicate valid-will)\n    (value unknown)\n    (derivations SYSTEM-INCOMPLETE))))"
+      },
+      {
+        "implementation": "project-unknown-inheritance-regime",
+        "file": "rules/97-inheritance-type-projection.clp",
+        "source": "(defrule project-unknown-inheritance-regime\n  (declare (salience -100))\n  (analysis-request (case-id ?case-id) (module inheritance-type))\n  (asserted-fact (case-id ?case-id) (subject ?portion) (predicate estate-portion) (value true))\n  (missing-requirement (case-id ?case-id) (subject ?portion) (module inheritance-type))\n  (not (derived-fact (case-id ?case-id) (subject ?portion) (predicate inheritance-regime) (value statutory|testamentary|conflict)))\n  (not (module-result (case-id ?case-id) (subject ?portion) (module inheritance-type) (predicate inheritance-regime)))\n  =>\n  (assert (module-result (case-id ?case-id) (subject ?portion) (module inheritance-type)\n    (predicate inheritance-regime) (value unknown) (derivations SYSTEM-INCOMPLETE))))"
+      },
+      {
+        "implementation": "project-unknown-eligibility",
+        "file": "rules/96-eligibility-projection.clp",
+        "source": "(defrule project-unknown-eligibility\n  (declare (salience -100))\n  (analysis-request (case-id ?case-id) (module eligibility))\n  (asserted-fact (case-id ?case-id) (subject ?person) (predicate eligibility-candidate) (value true))\n  (missing-requirement (case-id ?case-id) (subject ?person) (module eligibility))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate article-621-status)))\n  (not (module-result (case-id ?case-id) (subject ?person) (module eligibility) (predicate article-621-status)))\n  =>\n  (assert (module-result (case-id ?case-id) (subject ?person) (module eligibility) (predicate article-621-status) (value unknown) (derivations SYSTEM-INCOMPLETE))))"
+      },
+      {
+        "implementation": "project-unknown-called-to-inherit",
+        "file": "rules/95-heir-rank-projection.clp",
+        "source": "(defrule project-unknown-called-to-inherit\n  (declare (salience -90))\n  (analysis-request (case-id ?case-id) (module heir-rank))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate candidate-heir-rank) (value 1|2|3))\n  (missing-requirement (case-id ?case-id) (subject ?person) (module heir-rank))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate called-to-inherit)))\n  (not (module-result (case-id ?case-id) (subject ?person) (module heir-rank) (predicate called-to-inherit)))\n  =>\n  (assert (module-result (case-id ?case-id) (subject ?person) (module heir-rank) (predicate called-to-inherit) (value unknown) (derivations SYSTEM-INCOMPLETE))))"
+      },
+      {
+        "implementation": "project-unknown-heir-rank",
+        "file": "rules/95-heir-rank-projection.clp",
+        "source": "(defrule project-unknown-heir-rank\n  (declare (salience -100))\n  (analysis-request (case-id ?case-id) (module heir-rank))\n  (asserted-fact (case-id ?case-id) (subject ?person) (predicate heir-rank-candidate) (value true))\n  (missing-requirement (case-id ?case-id) (subject ?person) (module heir-rank) (predicate relationship-at-opening))\n  (not (module-result (case-id ?case-id) (subject ?person) (module heir-rank) (predicate candidate-heir-rank)))\n  =>\n  (assert (module-result (case-id ?case-id) (subject ?person) (module heir-rank) (predicate candidate-heir-rank) (value unknown) (derivations SYSTEM-INCOMPLETE))))"
+      },
+      {
+        "implementation": "project-unknown-representation",
+        "file": "rules/95-representation-projection.clp",
+        "source": "(defrule project-unknown-representation\n  (declare (salience -100))\n  (analysis-request (case-id ?case-id) (module representation))\n  (asserted-fact (case-id ?case-id) (subject ?person) (predicate representation-candidate) (value true))\n  (missing-requirement (case-id ?case-id) (subject ?person) (module representation))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate inherits-by-representation)))\n  =>\n  (assert (module-result (case-id ?case-id) (subject ?person) (module representation) (predicate inherits-by-representation) (value unknown) (derivations SYSTEM-INCOMPLETE))))"
+      },
+      {
+        "implementation": "project-unknown-compulsory-candidate",
+        "file": "rules/97-compulsory-share-projection.clp",
+        "source": "(defrule project-unknown-compulsory-candidate\n  (declare (salience -100))\n  (analysis-request (case-id ?case-id) (module compulsory-share))\n  (asserted-fact (case-id ?case-id) (subject ?person) (predicate compulsory-share-assessment-subject) (value true))\n  (missing-requirement (case-id ?case-id) (subject ?person) (module compulsory-share))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate)))\n  =>\n  (assert (module-result (case-id ?case-id) (subject ?person) (module compulsory-share) (predicate compulsory-heir-candidate) (value unknown) (derivations SYSTEM-INCOMPLETE))))"
+      },
+      {
+        "implementation": "project-unknown-compulsory-heir-status",
+        "file": "rules/97-compulsory-share-projection.clp",
+        "source": "(defrule project-unknown-compulsory-heir-status\n  (declare (salience -100))\n  (analysis-request (case-id ?case-id) (module compulsory-share))\n  (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir-candidate) (value true))\n  (missing-requirement (case-id ?case-id) (subject ?person) (module compulsory-share))\n  (not (derived-fact (case-id ?case-id) (subject ?person) (predicate compulsory-heir)))\n  =>\n  (assert (module-result (case-id ?case-id) (subject ?person) (module compulsory-share) (predicate compulsory-heir) (value unknown) (derivations SYSTEM-INCOMPLETE))))"
+      }
+    ]
+  }
+}

@@ -62,8 +62,10 @@ Mỗi diagnostic có `code`, `severity`, `message`, `location { line, column, of
 | Code | Mức mặc định | Ý nghĩa |
 |---|---|---|
 | `INVALID_UTF8` | error | File không giải mã được bằng UTF-8 nghiêm ngặt |
+| `INVALID_FILE_NAME` | error | Tên file không hợp lệ hoặc không có đuôi `.clp` |
 | `FILE_TOO_LARGE` | error | File vượt quá 1 MiB |
 | `TOO_MANY_FACTS` | error | Có hơn 500 asserted facts |
+| `NO_ASSERTED_FACT` | error | File không có asserted fact nào |
 | `UNEXPECTED_TOKEN` | error | Token không hợp lệ tại vị trí hiện tại |
 | `UNTERMINATED_STRING` | error | Chuỗi không có dấu đóng |
 | `UNTERMINATED_FORM` | error | S-expression không có dấu đóng |
@@ -73,6 +75,7 @@ Mỗi diagnostic có `code`, `severity`, `message`, `location { line, column, of
 | `DUPLICATE_SLOT` | error | Một slot xuất hiện nhiều lần trong cùng form |
 | `INVALID_SLOT_VALUE` | error | Giá trị không đúng kiểu hoặc domain |
 | `DUPLICATE_FACT_ID` | error | Hai facts dùng cùng ID |
+| `DUPLICATE_ANALYSIS_REQUEST` | error | File có nhiều hơn một analysis request |
 | `INCONSISTENT_CASE_ID` | error | File chứa nhiều case ID |
 | `UNSUPPORTED_PREDICATE` | error | Predicate không có trong contract module |
 | `MISSING_LABEL` | warning | Subject không có label thân thiện; vẫn được phép chạy |
