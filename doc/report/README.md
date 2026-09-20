@@ -28,6 +28,15 @@ Không nên dùng các tên kiểu “CLIPS Thừa Kế”, “Forward Chaining 
 - [outline.md](outline.md): sườn báo cáo chính thức, mục tiêu từng chương, hình/bảng cần có và dữ liệu cần thu thập.
 - [references.md](references.md): quy ước trích dẫn và danh mục nguồn khởi tạo; tiếp tục bổ sung trong lúc viết.
 
+## Bản thảo nội dung
+
+- [Chương 1 — Tổng quan đề tài](chapter-1-tong-quan.md)
+- [Chương 2 — Cơ sở lý thuyết và tri thức miền](chapter-2-co-so-ly-thuyet.md)
+- [Chương 3 — Thu nhận và biểu diễn tri thức](chapter-3-bieu-dien-tri-thuc.md)
+- [Chương 4 — Phân tích, thiết kế và hiện thực hệ thống](chapter-4-thiet-ke-he-thong.md)
+- [Chương 5 — Thực nghiệm và đánh giá](chapter-5-thuc-nghiem-danh-gia.md)
+- [Chương 6 — Kết luận và hướng phát triển](chapter-6-ket-luan.md)
+
 Khi bắt đầu viết bản chính, có thể tách nội dung theo chương nhưng vẫn giữ `outline.md` làm checklist biên tập. Không sao chép nguyên README hoặc tài liệu kế hoạch phát triển vào báo cáo; chúng là nguồn nội bộ để tổng hợp, không phải bằng chứng học thuật.
 
 ## Nguyên tắc biên tập
