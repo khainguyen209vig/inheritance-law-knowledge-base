@@ -14,7 +14,7 @@ Về giải thích, mỗi derived fact lưu Rule ID và supports. Inference trac
 
 Về ứng dụng, hệ thống đã có giao diện hội thoại có hướng dẫn, workspace theo mô-đun, graph gia đình, quản lý hồ sơ, lưu snapshot và Quick Logic Test. Dữ kiện vụ việc được lưu bằng SQLite; knowledge base nằm riêng trong các tệp CLIPS.
 
-Về kiểm thử, lần chạy tại thời điểm chuẩn bị báo cáo ghi nhận 88 kiểm tra CLIPS và 18 kiểm tra ứng dụng đều đạt. Bộ test bao phủ đường suy luận dương, loại trừ, thiếu dữ kiện, mâu thuẫn và nhiều trường hợp biên.
+Về kiểm thử, dự án đã xây dựng hạ tầng kiểm thử cho rules và các thành phần ứng dụng, gồm fixture cho nhiều nhánh suy luận và kiểm thử tích hợp. Bộ asset đánh giá chính thức và kết quả tổng hợp chưa được chốt, do đó báo cáo chưa đưa ra kết luận thực nghiệm định lượng ở phiên bản này.
 
 ## 6.2. Hạn chế
 
@@ -24,7 +24,7 @@ Phạm vi mô hình hóa chưa bao phủ toàn bộ chế định thừa kế v�
 
 Hệ thống chủ yếu trả kết quả theo mô-đun. Mặc dù đã có phép tính giá trị di sản và một số nguyên tắc phân chia, ứng dụng chưa tạo một phương án phân chia end-to-end cho mọi hồ sơ. Các vấn đề như định giá, chứng cứ, tranh chấp và quyết định của Tòa án nằm ngoài phạm vi.
 
-Bộ kiểm thử hiện là regression suite nội bộ. Chưa có tập dữ liệu độc lập đủ lớn, chưa đo mutation coverage của rules và chưa có usability study hoàn chỉnh. Vì vậy báo cáo không đưa ra chỉ số accuracy, precision hoặc recall.
+Bộ kiểm thử hiện chủ yếu phục vụ phát triển và hồi quy nội bộ. Bộ dữ liệu đánh giá độc lập, mutation coverage của rules và usability study chưa được hoàn thiện. Vì vậy báo cáo chưa đưa ra số liệu kết quả hoặc các chỉ số accuracy, precision và recall.
 
 Về kỹ thuật, cách khởi tạo một tiến trình CLIPS cho mỗi lần chạy ưu tiên sự cô lập và đơn giản nhưng chưa được benchmark cho tải đồng thời. Cơ chế quản trị trạng thái review cũng cần được duy trì nhất quán khi bổ sung hoặc thay đổi rules trong các phiên bản tiếp theo.
 
