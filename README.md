@@ -223,11 +223,7 @@ UI sử dụng Tailwind CSS và các shadcn source components trong `src/compone
 
 Trang `/modules` đọc module registry và hiển thị các mục tiêu phân tích cùng kiểu interaction dự kiến. Năm presenter đã triển khai là `will-validity`, `inheritance-type`, `eligibility`, `heir-rank` và `representation`; mỗi mô-đun có cách nhập và trình bày kết quả riêng. Presenter `representation` rà soát các nhánh trong graph của một hồ sơ có sẵn thay vì tạo cây quan hệ thứ hai.
 
-Trang gốc `/` chuyển hướng tới `/guided`, là điểm vào hội thoại có hướng dẫn cho người dùng phổ thông; kế hoạch chuyển đổi được ghi tại `doc/Development_Plan_Guided_Conversation.md`. `/cases` và `/modules` tiếp tục phục vụ quản lý hồ sơ và chế độ kỹ thuật. `/cases/:caseId` hiển thị facts hiện tại, mô-đun có thể chạy và lịch sử inference runs; `/cases/:caseId/runs/:runId` mở snapshot bất biến cùng trace và căn cứ pháp lý. Khi mở lại `will-validity`, presenter khôi phục answers từ facts đã lưu thay vì tạo một case mới. Người dùng có thể xóa hồ sơ từ danh sách hoặc trang chi tiết sau bước xác nhận; thao tác xóa đồng thời facts và toàn bộ inference snapshots liên quan.
-
-Kịch bản và phiếu ghi nhận dành cho usability test nội bộ nằm tại `doc/Usability_Test_Guided_Conversation.md`. Cần ít nhất hai thành viên không viết rules thực hiện; integration test hoặc rà soát của developer không được tính thay cho dữ liệu người dùng thật.
-
-Kế hoạch cho trang upload case study `.clp`, chọn câu hỏi, xem chuỗi suy luận có thể explore code và xuất báo cáo nằm tại `doc/Development_Plan_Quick_Logic_Test.md`. Trong giai đoạn này, usability test guided UI được tạm hoãn chứ không được đánh dấu hoàn thành.
+Trang gốc `/` chuyển hướng tới `/guided`, là điểm vào hội thoại có hướng dẫn cho người dùng phổ thông. `/cases` và `/modules` tiếp tục phục vụ quản lý hồ sơ và chế độ kỹ thuật. `/cases/:caseId` hiển thị facts hiện tại, mô-đun có thể chạy và lịch sử inference runs; `/cases/:caseId/runs/:runId` mở snapshot bất biến cùng trace và căn cứ pháp lý. Khi mở lại `will-validity`, presenter khôi phục answers từ facts đã lưu thay vì tạo một case mới. Người dùng có thể xóa hồ sơ từ danh sách hoặc trang chi tiết sau bước xác nhận; thao tác xóa đồng thời facts và toàn bộ inference snapshots liên quan.
 
 Guided session lưu topic và danh sách bước đã hoàn thành trong bảng `guided_sessions`; nội dung câu trả lời không bị sao chép vào transcript mà tiếp tục được lưu dưới dạng asserted facts. Vertical slice đầu tiên đã hỗ trợ `tên người để lại di sản → hình thức di chúc → CLIPS run → missing requirement tiếp theo`.
 
@@ -302,7 +298,6 @@ npm run build
 ```text
 .
 ├── doc/
-│   ├── Development_Plan.md          # Kế hoạch phát triển và quyết định kiến trúc
 │   ├── Loc_Rulebase.md              # Rule-base đọc được bởi con người
 │   ├── Loc_Rulebase.docx            # Tài liệu nguồn
 │   └── knowledge-based-architect.png
@@ -389,9 +384,9 @@ Không sửa trực tiếp `rule-metadata.clp`. Test sẽ phát hiện metadata 
 
 ## Tài liệu
 
-- [Kế hoạch phát triển](doc/Development_Plan.md)
 - [Rule-base dạng Markdown](doc/Loc_Rulebase.md)
 - [Rule-base V2 đề xuất để team review](doc/Loc_Rulebase_v2.md)
+- [Định dạng đầu vào Quick Logic Test](doc/Quick_Logic_Test_CLP_Format.md)
 - [Hướng dẫn knowledge base](knowledge-base/README.md)
 
 ## Roadmap gần nhất
