@@ -90,6 +90,8 @@ SQLite lưu bảy nhóm bảng chính:
 
 Khi xóa hồ sơ, facts và các bản ghi phụ thuộc được xử lý theo ràng buộc khóa ngoại. Lần chạy tham chiếu hồ sơ bằng `ON DELETE RESTRICT` ở cấp schema; service phải điều phối việc xóa đúng thứ tự để tránh mất snapshot ngoài ý muốn.
 
+DDL, danh mục API và contract line protocol được tổng hợp tại [Phụ lục E](appendix-e-system-contracts.md).
+
 ## 4.5. Module registry và điều phối phụ thuộc
 
 Module registry là danh mục TypeScript mô tả mười mô-đun, gồm ID, tiêu đề, mô tả, kiểu tương tác, predicate kết quả, dependency và runtime path. Bốn kiểu tương tác hiện có là questionnaire, family tree, people table và timeline.
@@ -109,6 +111,8 @@ Guided Conversation sử dụng dependency plan để chọn câu hỏi tiếp t
 **Quick Logic Test** cho phép thành viên nhóm tải case study `.clp`, xem preview facts, chọn câu hỏi, chạy suy luận, mở source rule và xuất kết quả. Luồng này không tạo hồ sơ SQLite, phù hợp với kiểm thử nhanh và trình diễn khả năng giải thích.
 
 Nguyên tắc chung của giao diện là hỏi observations thay vì hỏi kết luận. Người dùng khai báo quan hệ cha/mẹ–con, không chọn “hàng thừa kế thứ nhất”. Người dùng nhập trạng thái sống và hành vi liên quan, không nhập “được quyền hưởng”.
+
+Hướng dẫn thao tác và danh mục screenshot cần chốt được trình bày tại [Phụ lục F](appendix-f-ui-guide.md).
 
 ## 4.7. Phân hệ giải thích
 
@@ -151,3 +155,4 @@ Sau khi parse, hệ thống chuẩn hóa facts thành object nội bộ và ch�
 
 Next.js được sử dụng như framework full-stack [4], còn SQLite phù hợp với nguyên mẫu self-host vì là cơ sở dữ liệu nhúng và không yêu cầu máy chủ riêng [5]. Phiên bản chính xác của môi trường dùng để tái lập kết quả được ghi ở Chương 5 và phụ lục cài đặt.
 
+Các lệnh cài đặt, kiểm thử và quy trình tái lập được ghi tại [Phụ lục G](appendix-g-reproduction-guide.md).

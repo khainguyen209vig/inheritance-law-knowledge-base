@@ -14,7 +14,7 @@ Về giải thích, mỗi derived fact lưu Rule ID và supports. Inference trac
 
 Về ứng dụng, hệ thống đã có giao diện hội thoại có hướng dẫn, workspace theo mô-đun, graph gia đình, quản lý hồ sơ, lưu snapshot và Quick Logic Test. Dữ kiện vụ việc được lưu bằng SQLite; knowledge base nằm riêng trong các tệp CLIPS.
 
-Về kiểm thử, dự án đã xây dựng hạ tầng kiểm thử cho rules và các thành phần ứng dụng, gồm fixture cho nhiều nhánh suy luận và kiểm thử tích hợp. Bộ asset đánh giá chính thức và kết quả tổng hợp chưa được chốt, do đó báo cáo chưa đưa ra kết luận thực nghiệm định lượng ở phiên bản này.
+Về kiểm thử, dự án đã xây dựng hạ tầng kiểm thử cho rules và các thành phần ứng dụng, gồm fixture cho nhiều nhánh suy luận và kiểm thử tích hợp. Ba tình huống rút gọn từ bản án công khai được đối chiếu định tính trong Chương 5. Kết quả cho thấy các kết luận về chế độ chia, hàng thừa kế, thế vị và thời hiệu khớp với oracle của fixture, nhưng bộ artifact chưa chứng minh được phép phân chia giá trị đầy đủ theo nhánh thế vị; oracle của Case 2 còn có mâu thuẫn nội tại cần sửa. Do kích thước tập dữ liệu nhỏ và ground truth chưa được thẩm định độc lập, báo cáo không đưa ra accuracy, precision hoặc recall.
 
 ## 6.2. Hạn chế
 
@@ -24,7 +24,7 @@ Phạm vi mô hình hóa chưa bao phủ toàn bộ chế định thừa kế v�
 
 Hệ thống chủ yếu trả kết quả theo mô-đun. Mặc dù đã có phép tính giá trị di sản và một số nguyên tắc phân chia, ứng dụng chưa tạo một phương án phân chia end-to-end cho mọi hồ sơ. Các vấn đề như định giá, chứng cứ, tranh chấp và quyết định của Tòa án nằm ngoài phạm vi.
 
-Bộ kiểm thử hiện chủ yếu phục vụ phát triển và hồi quy nội bộ. Bộ dữ liệu đánh giá độc lập, mutation coverage của rules và usability study chưa được hoàn thiện. Vì vậy báo cáo chưa đưa ra số liệu kết quả hoặc các chỉ số accuracy, precision và recall.
+Bộ kiểm thử hiện chủ yếu phục vụ phát triển và hồi quy nội bộ. Ba case ở Chương 5 mới kiểm tra tính nhất quán giữa tình huống rút gọn, facts, expected output và báo cáo sinh ra; chúng chưa phải bộ dữ liệu đánh giá độc lập và chưa được đăng ký thành regression suite tự động. Mutation coverage của rules và usability study cũng chưa được hoàn thiện.
 
 Về kỹ thuật, cách khởi tạo một tiến trình CLIPS cho mỗi lần chạy ưu tiên sự cô lập và đơn giản nhưng chưa được benchmark cho tải đồng thời. Cơ chế quản trị trạng thái review cũng cần được duy trì nhất quán khi bổ sung hoặc thay đổi rules trong các phiên bản tiếp theo.
 
@@ -34,7 +34,7 @@ Hướng ưu tiên đầu tiên là tổ chức thẩm định cùng người c�
 
 Hướng thứ hai là tăng độ nguyên tử của facts. Các observations tổng hợp về nội dung, hình thức hoặc kết quả đánh giá bên ngoài cần được phân rã khi có đủ căn cứ. Việc này làm tăng số câu hỏi đầu vào nhưng cải thiện khả năng giải thích và giảm giả định ẩn.
 
-Hướng thứ ba là mở rộng đánh giá. Nhóm cần xây một tập tình huống độc lập, có expected result được xác nhận riêng; bổ sung property-based test, mutation test cho rules và kiểm tra coverage theo Rule ID, nhánh điều kiện và trạng thái kết quả.
+Hướng thứ ba là mở rộng đánh giá. Nhóm cần sửa phép phân bổ giá trị theo nhánh thế vị, chuyển ba case hiện có thành regression test tự động và xây thêm một tập tình huống độc lập có expected result được xác nhận riêng. Các kỹ thuật tiếp theo gồm property-based test, mutation test cho rules và kiểm tra coverage theo Rule ID, nhánh điều kiện và trạng thái kết quả.
 
 Hướng thứ tư là thực hiện usability test với người không tham gia viết rules. Các chỉ số nên gồm tỷ lệ hoàn thành tác vụ, thời gian, số lần cần trợ giúp, lỗi nhập quan hệ và khả năng giải thích lại kết quả. Kết quả này sẽ giúp cải thiện guided conversation và graph editor.
 

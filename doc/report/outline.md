@@ -361,17 +361,17 @@ Tiêu chí chuyển xuống phụ lục: nội dung cần cho tái lập hoặc 
 
 | Phụ lục | Nội dung | Đề xuất | Lý do |
 |---|---|---|---|
-| A | Fact contract/deftemplate và từ điển predicate đầy đủ | Nên có | Quan trọng để đối chiếu nhưng quá chi tiết cho Chương 3 |
-| B | Rule catalog A–J: Rule ID, mô tả, căn cứ và xác nhận review | Nên có | Cho phép kiểm tra độ bao phủ và đối chiếu việc review nội bộ mà không làm loãng thân bài |
-| C | Mã CLIPS tiêu biểu và mapping registry | Có chọn lọc | Chỉ đưa các đoạn đại diện; toàn bộ source đã nằm trong repository, không in hàng chục trang |
-| D | Danh mục fixture/test case, facts đầu vào và expected result | Nên có | Là bằng chứng tái lập cho Chương 5 |
-| E | Schema CSDL, API contract và line protocol | Có chọn lọc | Hữu ích cho hiện thực hóa nhưng không phải trọng tâm biểu diễn tri thức |
-| F | Ảnh giao diện bổ sung và hướng dẫn thao tác | Có chọn lọc | Thân bài chỉ giữ màn hình được phân tích; ảnh walkthrough dài để ở đây |
-| G | Hướng dẫn cài đặt, lệnh chạy và môi trường | Nên có | Hỗ trợ tái lập, tránh biến Chương 4 thành README |
-| H | Phiếu usability test và dữ liệu quan sát đã ẩn danh | Chỉ khi đã test | Không đưa biểu mẫu trống như thể là kết quả thực nghiệm |
-| I | Bảng phân công và đóng góp thành viên | Theo yêu cầu môn học | Mang tính quản trị, không thuộc lập luận học thuật |
-| J | Toàn văn các điều luật | Không khuyến nghị | Dài, dễ lỗi thời và trùng nguồn; nên dẫn văn bản chính thức, chỉ trích đoạn thật sự cần phân tích |
-| K | Log test thô đầy đủ | Không in mặc định | Nên lưu như artifact điện tử; báo cáo chỉ nêu hash/đường dẫn và bảng tổng hợp |
+| A | Fact contract/deftemplate và từ điển predicate đầy đủ | Đã tạo | Đối chiếu template, quy ước ID và allow-list predicate |
+| B | Rule catalog A–J: Rule ID, mô tả, căn cứ và xác nhận review | Đã tạo | Danh mục 87 entries, trạng thái báo cáo `reviewed` nội bộ |
+| C | Mã CLIPS tiêu biểu và mapping registry | Đã tạo có chọn lọc | Đưa chuỗi observation–derived fact–trace–output và liên kết source đầy đủ |
+| D | Danh mục fixture/test case, facts đầu vào và expected result | Đã tạo | Có trang tổng quan và D.1–D.3 cho ba tình huống Chương 5 |
+| E | Schema CSDL, API contract và line protocol | Đã tạo có chọn lọc | Tóm tắt bảng, endpoint, kiểu kết quả và biên CLIPS–TypeScript |
+| F | Ảnh giao diện bổ sung và hướng dẫn thao tác | Nội dung đã tạo; ảnh chờ khóa release | Không chèn screenshot tạm chưa đồng bộ với phiên bản trình diễn |
+| G | Hướng dẫn cài đặt, lệnh chạy và môi trường | Đã tạo | Ghi lệnh cài, test, build và tái lập case |
+| H | Phiếu usability test và dữ liệu quan sát đã ẩn danh | Đã tạo công cụ; chưa có kết quả | Phân biệt rõ protocol với dữ liệu người dùng thật |
+| I | Bảng phân công và đóng góp thành viên | Đã tạo từ dấu vết repo | Cần đồng bộ họ tên/MSSV với trang bìa trước khi nộp |
+| J | Toàn văn các điều luật | Chủ động không tạo | Dài, dễ lỗi thời và trùng nguồn chính thức |
+| K | Log test thô đầy đủ | Chủ động không tạo | Giữ artifact điện tử; Phụ lục G chỉ báo cáo phạm vi và kết quả tổng hợp |
 
 ## Danh sách hình và bảng cần chuẩn bị
 

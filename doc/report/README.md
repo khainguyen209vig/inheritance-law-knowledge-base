@@ -37,6 +37,22 @@ Không nên dùng các tên kiểu “CLIPS Thừa Kế”, “Forward Chaining 
 - [Chương 5 — Thực nghiệm và đánh giá](chapter-5-thuc-nghiem-danh-gia.md)
 - [Chương 6 — Kết luận và hướng phát triển](chapter-6-ket-luan.md)
 
+### Bộ phụ lục
+
+- [Danh mục phụ lục](appendices.md)
+- [Phụ lục A — Fact contract và từ điển predicate](appendix-a-fact-contract.md)
+- [Phụ lục B — Danh mục Rule ID và trạng thái review](appendix-b-rule-catalog.md)
+- [Phụ lục C — Mã CLIPS tiêu biểu và ánh xạ registry](appendix-c-clips-mapping.md)
+- [Phụ lục D — Danh mục bộ tình huống thực nghiệm](appendix-d-case-tests.md)
+- [Phụ lục D.1 — Case 1: 227/2019/DS-ST](appendix-d1-case-1.md)
+- [Phụ lục D.2 — Case 2: 202/2021/DS-PT](appendix-d2-case-2.md)
+- [Phụ lục D.3 — Case 3: 64/2018/DS-ST](appendix-d3-case-3.md)
+- [Phụ lục E — Schema CSDL, API contract và line protocol](appendix-e-system-contracts.md)
+- [Phụ lục F — Hướng dẫn thao tác và kế hoạch ảnh giao diện](appendix-f-ui-guide.md)
+- [Phụ lục G — Cài đặt, kiểm thử và tái lập](appendix-g-reproduction-guide.md)
+- [Phụ lục H — Công cụ usability test](appendix-h-usability-instrument.md)
+- [Phụ lục I — Phân công và dấu vết đóng góp](appendix-i-contributions.md)
+
 Khi bắt đầu viết bản chính, có thể tách nội dung theo chương nhưng vẫn giữ `outline.md` làm checklist biên tập. Không sao chép nguyên README hoặc tài liệu kế hoạch phát triển vào báo cáo; chúng là nguồn nội bộ để tổng hợp, không phải bằng chứng học thuật.
 
 ## Nguyên tắc biên tập

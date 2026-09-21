@@ -91,6 +91,8 @@ Hệ thống phân biệt bốn nhóm dữ kiện:
 
 Sự phân lớp ngăn domain rules phụ thuộc vào màn hình hiện tại. `analysis-request` không xuất hiện trong điều kiện của domain rules; nó chỉ phục vụ projection kết quả.
 
+Danh mục đầy đủ các template, quy ước định danh và predicate đầu vào được trình bày tại [Phụ lục A](appendix-a-fact-contract.md).
+
 ## 3.4. Mô hình luật và metadata
 
 Một luật miền trong hệ thống gồm hai lớp. Lớp metadata mô tả Rule ID, mô-đun, loại luật, tiêu đề, lý do, kết luận, căn cứ, phân đoạn văn bản và các implementation. Lớp CLIPS chứa điều kiện thực thi cụ thể.
@@ -124,6 +126,8 @@ Ví dụ rút gọn của R-B01:
 R-B01 gắn với điểm a khoản 1 Điều 630. Rule không sinh trực tiếp `valid-will=true`; nó chỉ sinh kết luận trung gian `valid-intention=true`. R-B02 đánh giá nội dung và hình thức. R-B03 chỉ kết luận di chúc hợp pháp khi cả hai nhóm điều kiện đã đạt. Việc chia nhỏ tạo ra dấu vết có ý nghĩa và cho phép hệ thống chỉ đúng điều kiện chưa đạt.
 
 Tất cả Rule ID thuộc phạm vi báo cáo đã hoàn tất review nội bộ và được sử dụng với trạng thái thống nhất `reviewed`.
+
+[Phụ lục B](appendix-b-rule-catalog.md) liệt kê toàn bộ Rule ID theo mô-đun; [Phụ lục C](appendix-c-clips-mapping.md) trình bày các đoạn CLIPS tiêu biểu và cách ánh xạ registry–implementation.
 
 ## 3.5. Tổ chức cơ sở tri thức theo mô-đun
 
